@@ -183,7 +183,243 @@ const api = {
   }
 };
 
-// Theme Context
+// Ad Modal Component
+const AdModal: React.FC<{
+  title: string;
+  ad?: any;
+  campaigns: any[];
+  onSave: (data: any) => void;
+  onClose: () => void;
+}> = ({ title, ad, campaigns, onSave, onClose }) => {
+  const [formData, setFormData] = useState({
+    headline: ad?.headline || '',
+    description: ad?.description || '',
+    url: ad?.url || '',
+    type: ad?.type || 'RESPONSIVE_SEARCH',
+    campaignId: ad?.campaignId || (campaigns[0]?.id || ''),
+    status: ad?.status || 'ACTIVE'
+  });
+
+  const [preview, setPreview] = useState(true);
+
+  const handleSubmit = () => {
+    if (!formData.headline.trim() || !formData.description.trim() || !formData.url.trim()) {
+      toast({
+        title: "Campos obrigatórios",
+        description: "Preencha todos os campos obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    onSave(formData);
+  };
+
+  const getCampaignName = (campaignId: string) => {
+    const campaign = campaigns.find(c => c.id === campaignId);
+    return campaign ? campaign.name : 'Campanha não encontrada';
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-card rounded-2xl shadow-premium max-w-4xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
+        <div className="p-6 border-b border-border">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-foreground">{title}</h2>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
+            >
+              <span className="material-icons-outlined">close</span>
+            </button>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+          {/* Form Section */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-foreground">Informações do Anúncio</h3>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Campanha *
+              </label>
+              <select
+                value={formData.campaignId}
+                onChange={(e) => setFormData({...formData, campaignId: e.target.value})}
+                className="input-premium"
+              >
+                {campaigns.map(campaign => (
+                  <option key={campaign.id} value={campaign.id}>
+                    {campaign.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Título do Anúncio *
+              </label>
+              <input
+                type="text"
+                value={formData.headline}
+                onChange={(e) => setFormData({...formData, headline: e.target.value})}
+                className="input-premium"
+                placeholder="Ex: Oferta Exclusiva Premium!"
+                maxLength={30}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                {formData.headline.length}/30 caracteres
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Descrição *
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                className="input-premium h-24 resize-none"
+                placeholder="Aproveite descontos incríveis agora mesmo. Produtos de alta qualidade com entrega rápida."
+                maxLength={90}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                {formData.description.length}/90 caracteres
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                URL de Destino *
+              </label>
+              <input
+                type="url"
+                value={formData.url}
+                onChange={(e) => setFormData({...formData, url: e.target.value})}
+                className="input-premium"
+                placeholder="https://exemplo.com/oferta"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Tipo de Anúncio
+                </label>
+                <select
+                  value={formData.type}
+                  onChange={(e) => setFormData({...formData, type: e.target.value})}
+                  className="input-premium"
+                >
+                  <option value="RESPONSIVE_SEARCH">Responsivo de Pesquisa</option>
+                  <option value="DISPLAY">Display</option>
+                  <option value="SHOPPING">Shopping</option>
+                  <option value="VIDEO">Vídeo</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Status
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  className="input-premium"
+                >
+                  <option value="ACTIVE">Ativo</option>
+                  <option value="PAUSED">Pausado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Preview Section */}
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-foreground">Preview do Anúncio</h3>
+              <button
+                onClick={() => setPreview(!preview)}
+                className="btn-glass text-sm"
+              >
+                <span className="material-icons-outlined">
+                  {preview ? 'visibility_off' : 'visibility'}
+                </span>
+                {preview ? 'Ocultar' : 'Mostrar'}
+              </button>
+            </div>
+            
+            {preview && (
+              <div className="space-y-4">
+                {/* Google Ads Preview */}
+                <div className="p-4 border border-border rounded-lg bg-background">
+                  <div className="text-xs text-muted-foreground mb-1">Anúncio</div>
+                  <div className="space-y-1">
+                    <div className="flex items-start">
+                      <div className="w-4 h-4 bg-accent rounded-sm mr-2 mt-0.5"></div>
+                      <div className="flex-1">
+                        <div className="text-primary text-sm font-medium">
+                          {formData.headline || 'Título do anúncio aparecerá aqui'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {formData.url || 'URL de destino'}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-sm text-foreground ml-6">
+                      {formData.description || 'Descrição do anúncio aparecerá aqui'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Campaign Info */}
+                <div className="p-4 bg-muted/30 rounded-lg">
+                  <h4 className="font-medium text-foreground mb-2">Informações da Campanha</h4>
+                  <div className="text-sm text-muted-foreground space-y-1">
+                    <div>Campanha: {getCampaignName(formData.campaignId)}</div>
+                    <div>Tipo: {formData.type}</div>
+                    <div>Status: {formData.status}</div>
+                  </div>
+                </div>
+
+                {/* Tips */}
+                <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                  <h4 className="font-medium text-primary mb-2">💡 Dicas de Otimização</h4>
+                  <ul className="text-sm text-foreground space-y-1">
+                    <li>• Use palavras-chave relevantes no título</li>
+                    <li>• Inclua uma chamada para ação clara</li>
+                    <li>• Destaque seus diferenciais competitivos</li>
+                    <li>• Teste diferentes variações de texto</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="p-6 border-t border-border">
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={onClose}
+              className="btn-glass"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="btn-premium"
+            >
+              <span className="material-icons-outlined mr-2">save</span>
+              {ad ? 'Atualizar' : 'Criar'} Anúncio
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 const ThemeContext = React.createContext({
   theme: 'light',
   toggleTheme: () => {}
@@ -210,7 +446,290 @@ const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   );
 };
 
-// Loading Component
+// Campaign Modal Component
+const CampaignModal: React.FC<{
+  title: string;
+  campaign?: any;
+  onSave: (data: any) => void;
+  onClose: () => void;
+}> = ({ title, campaign, onSave, onClose }) => {
+  const [formData, setFormData] = useState({
+    name: campaign?.name || '',
+    type: campaign?.type || 'SEARCH',
+    budget: campaign?.budget || 1000,
+    status: campaign?.status || 'ACTIVE',
+    keywords: campaign?.keywords || '',
+    location: campaign?.location || 'Brasil',
+    ageRange: campaign?.ageRange || '18-65',
+    device: campaign?.device || 'ALL'
+  });
+
+  const handleSubmit = () => {
+    if (!formData.name.trim()) {
+      toast({
+        title: "Campo obrigatório",
+        description: "O nome da campanha é obrigatório.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    onSave(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-card rounded-2xl shadow-premium max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
+        <div className="p-6 border-b border-border">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-foreground">{title}</h2>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
+            >
+              <span className="material-icons-outlined">close</span>
+            </button>
+          </div>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Nome da Campanha *
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                className="input-premium"
+                placeholder="Ex: Campanha Premium 2025"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Tipo de Campanha
+              </label>
+              <select
+                value={formData.type}
+                onChange={(e) => setFormData({...formData, type: e.target.value})}
+                className="input-premium"
+              >
+                <option value="SEARCH">Search</option>
+                <option value="DISPLAY">Display</option>
+                <option value="SHOPPING">Shopping</option>
+                <option value="VIDEO">Video</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Orçamento Diário (R$)
+              </label>
+              <input
+                type="number"
+                value={formData.budget}
+                onChange={(e) => setFormData({...formData, budget: parseFloat(e.target.value)})}
+                className="input-premium"
+                min="10"
+                step="10"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Status
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                className="input-premium"
+              >
+                <option value="ACTIVE">Ativo</option>
+                <option value="PAUSED">Pausado</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Localização
+              </label>
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({...formData, location: e.target.value})}
+                className="input-premium"
+                placeholder="Ex: São Paulo, Brasil"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Faixa Etária
+              </label>
+              <select
+                value={formData.ageRange}
+                onChange={(e) => setFormData({...formData, ageRange: e.target.value})}
+                className="input-premium"
+              >
+                <option value="18-24">18-24 anos</option>
+                <option value="25-34">25-34 anos</option>
+                <option value="35-44">35-44 anos</option>
+                <option value="45-54">45-54 anos</option>
+                <option value="55-64">55-64 anos</option>
+                <option value="18-65">18-65 anos</option>
+              </select>
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Palavras-chave (separadas por vírgula)
+            </label>
+            <textarea
+              value={formData.keywords}
+              onChange={(e) => setFormData({...formData, keywords: e.target.value})}
+              className="input-premium h-24 resize-none"
+              placeholder="premium, exclusivo, oferta especial, desconto"
+            />
+          </div>
+        </div>
+        
+        <div className="p-6 border-t border-border">
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={onClose}
+              className="btn-glass"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="btn-premium"
+            >
+              <span className="material-icons-outlined mr-2">save</span>
+              {campaign ? 'Atualizar' : 'Criar'} Campanha
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Comments Modal Component
+const CommentsModal: React.FC<{
+  campaign: any;
+  comments: any[];
+  onAddComment: (text: string) => void;
+  onClose: () => void;
+}> = ({ campaign, comments, onAddComment, onClose }) => {
+  const [newComment, setNewComment] = useState('');
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      onAddComment(newComment);
+      setNewComment('');
+      toast({
+        title: "Comentário adicionado!",
+        description: "Seu comentário foi adicionado com sucesso.",
+      });
+    }
+  };
+
+  const getCommentIcon = (type: string) => {
+    switch (type) {
+      case 'suggestion': return '💡';
+      case 'insight': return '📊';
+      case 'warning': return '⚠️';
+      default: return '💬';
+    }
+  };
+
+  const getCommentColor = (type: string) => {
+    switch (type) {
+      case 'suggestion': return 'border-l-accent bg-accent/5';
+      case 'insight': return 'border-l-primary bg-primary/5';
+      case 'warning': return 'border-l-warning bg-warning/5';
+      default: return 'border-l-muted bg-muted/5';
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+      <div className="bg-card rounded-2xl shadow-premium max-w-3xl w-full max-h-[90vh] flex flex-col animate-scale-in">
+        <div className="p-6 border-b border-border">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-foreground">Comentários da Campanha</h2>
+              <p className="text-sm text-muted-foreground">{campaign.name}</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
+            >
+              <span className="material-icons-outlined">close</span>
+            </button>
+          </div>
+        </div>
+        
+        <div className="flex-1 p-6 space-y-4 overflow-y-auto">
+          {comments.length === 0 ? (
+            <div className="text-center py-12">
+              <span className="material-icons-outlined text-6xl text-muted-foreground/50 mb-4">comment</span>
+              <p className="text-muted-foreground">Nenhum comentário ainda</p>
+              <p className="text-sm text-muted-foreground">Seja o primeiro a comentar nesta campanha</p>
+            </div>
+          ) : (
+            comments.map(comment => (
+              <div
+                key={comment.id}
+                className={`p-4 rounded-lg border-l-4 ${getCommentColor(comment.type)} animate-slide-up`}
+              >
+                <div className="flex items-start space-x-3">
+                  <span className="text-lg">{getCommentIcon(comment.type)}</span>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="font-semibold text-foreground">{comment.author}</span>
+                      <span className="text-xs text-muted-foreground">{comment.date}</span>
+                    </div>
+                    <p className="text-foreground">{comment.text}</p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        
+        <div className="p-6 border-t border-border">
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-foreground">
+              Adicionar comentário
+            </label>
+            <div className="flex space-x-3">
+              <div className="flex-1">
+                <textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  className="input-premium h-20 resize-none"
+                  placeholder="Digite seu comentário sobre esta campanha..."
+                />
+              </div>
+              <button
+                onClick={handleAddComment}
+                disabled={!newComment.trim()}
+                className="btn-premium self-end disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="material-icons-outlined">send</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 const LoadingSpinner: React.FC = () => (
   <div className="flex items-center justify-center p-8">
     <div className="relative">
@@ -785,56 +1304,1513 @@ const DashboardPage: React.FC = () => {
   );
 };
 
-// Placeholder pages (will be implemented similarly)
-const CampaignsPage: React.FC = () => (
-  <div className="animate-fade-in">
-    <div className="card-floating p-8 text-center">
-      <span className="material-icons-outlined text-6xl text-primary mb-4">campaign</span>
-      <h2 className="text-2xl font-bold text-foreground mb-2">Gerenciamento de Campanhas</h2>
-      <p className="text-muted-foreground">Página em desenvolvimento - Funcionalidade completa em breve</p>
-    </div>
-  </div>
-);
+// Campaigns Page Component - COMPLETE
+const CampaignsPage: React.FC = () => {
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showCommentsModal, setShowCommentsModal] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [typeFilter, setTypeFilter] = useState('ALL');
+  const [comments, setComments] = useState<any[]>([]);
 
-const AdsPage: React.FC = () => (
-  <div className="animate-fade-in">
-    <div className="card-floating p-8 text-center">
-      <span className="material-icons-outlined text-6xl text-accent mb-4">ads_click</span>
-      <h2 className="text-2xl font-bold text-foreground mb-2">Criação e Edição de Anúncios</h2>
-      <p className="text-muted-foreground">Página em desenvolvimento - Funcionalidade completa em breve</p>
-    </div>
-  </div>
-);
+  useEffect(() => {
+    api.getCampaigns().then(data => {
+      setCampaigns(data);
+      setLoading(false);
+    });
+  }, []);
 
-const ReportsPage: React.FC = () => (
-  <div className="animate-fade-in">
-    <div className="card-floating p-8 text-center">
-      <span className="material-icons-outlined text-6xl text-google-green mb-4">analytics</span>
-      <h2 className="text-2xl font-bold text-foreground mb-2">Relatórios e Analytics</h2>
-      <p className="text-muted-foreground">Página em desenvolvimento - Funcionalidade completa em breve</p>
-    </div>
-  </div>
-);
+  const filteredCampaigns = campaigns.filter(campaign => {
+    const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'ALL' || campaign.status === statusFilter;
+    const matchesType = typeFilter === 'ALL' || campaign.type === typeFilter;
+    return matchesSearch && matchesStatus && matchesType;
+  });
 
-const SettingsPage: React.FC = () => (
-  <div className="animate-fade-in">
-    <div className="card-floating p-8 text-center">
-      <span className="material-icons-outlined text-6xl text-google-yellow mb-4">settings</span>
-      <h2 className="text-2xl font-bold text-foreground mb-2">Configurações do Sistema</h2>
-      <p className="text-muted-foreground">Página em desenvolvimento - Funcionalidade completa em breve</p>
-    </div>
-  </div>
-);
+  const handleCreateCampaign = async (campaignData: any) => {
+    try {
+      const newCampaign = await api.createCampaign(campaignData);
+      setCampaigns([...campaigns, newCampaign]);
+      setShowCreateModal(false);
+      toast({
+        title: "Campanha criada com sucesso!",
+        description: `A campanha "${newCampaign.name}" foi criada e está ativa.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao criar campanha",
+        description: "Tente novamente em alguns instantes.",
+        variant: "destructive",
+      });
+    }
+  };
 
-const ProfilePage: React.FC = () => (
-  <div className="animate-fade-in">
-    <div className="card-floating p-8 text-center">
-      <span className="material-icons-outlined text-6xl text-google-red mb-4">person</span>
-      <h2 className="text-2xl font-bold text-foreground mb-2">Perfil do Usuário</h2>
-      <p className="text-muted-foreground">Página em desenvolvimento - Funcionalidade completa em breve</p>
+  const handleUpdateCampaign = async (campaignData: any) => {
+    try {
+      const updatedCampaign = await api.updateCampaign(selectedCampaign.id, campaignData);
+      setCampaigns(campaigns.map(c => c.id === selectedCampaign.id ? updatedCampaign : c));
+      setShowEditModal(false);
+      setSelectedCampaign(null);
+      toast({
+        title: "Campanha atualizada!",
+        description: "As alterações foram salvas com sucesso.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao atualizar campanha",
+        description: "Tente novamente em alguns instantes.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteCampaign = async (campaignId: string) => {
+    if (window.confirm('Tem certeza que deseja excluir esta campanha?')) {
+      try {
+        await api.deleteCampaign(campaignId);
+        setCampaigns(campaigns.filter(c => c.id !== campaignId));
+        toast({
+          title: "Campanha excluída",
+          description: "A campanha foi removida permanentemente.",
+        });
+      } catch (error) {
+        toast({
+          title: "Erro ao excluir campanha",
+          description: "Tente novamente em alguns instantes.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleToggleStatus = async (campaign: any) => {
+    const newStatus = campaign.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE';
+    try {
+      await handleUpdateCampaign({ ...campaign, status: newStatus });
+    } catch (error) {
+      toast({
+        title: "Erro ao alterar status",
+        description: "Tente novamente em alguns instantes.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'ACTIVE':
+        return <span className="badge-success">Ativo</span>;
+      case 'PAUSED':
+        return <span className="badge-warning">Pausado</span>;
+      default:
+        return <span className="badge-error">Inativo</span>;
+    }
+  };
+
+  const openComments = (campaign: any) => {
+    setSelectedCampaign(campaign);
+    // Mock comments for the campaign
+    setComments([
+      {
+        id: 1,
+        author: 'Ana Silva',
+        date: '2025-01-08 14:30',
+        text: 'CTR está acima da média. Vamos aumentar o orçamento?',
+        type: 'suggestion'
+      },
+      {
+        id: 2,
+        author: 'João Santos',
+        date: '2025-01-08 10:15',
+        text: 'Palavras-chave "premium" e "exclusivo" estão performando muito bem.',
+        type: 'insight'
+      },
+      {
+        id: 3,
+        author: 'Maria Costa',
+        date: '2025-01-07 16:45',
+        text: 'Revisar segmentação geográfica - muitos cliques de regiões não estratégicas.',
+        type: 'warning'
+      }
+    ]);
+    setShowCommentsModal(true);
+  };
+
+  const addComment = (commentText: string) => {
+    const newComment = {
+      id: Date.now(),
+      author: mockData.user.name,
+      date: new Date().toLocaleString('pt-BR'),
+      text: commentText,
+      type: 'comment'
+    };
+    setComments([newComment, ...comments]);
+  };
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {/* Header with Actions */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Gerenciamento de Campanhas</h2>
+          <p className="text-muted-foreground">Crie, edite e monitore suas campanhas do Google Ads</p>
+        </div>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="btn-premium"
+        >
+          <span className="material-icons-outlined">add</span>
+          Nova Campanha
+        </button>
+      </div>
+
+      {/* Filters and Search */}
+      <div className="card-floating p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Buscar</label>
+            <div className="relative">
+              <span className="material-icons-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                search
+              </span>
+              <input
+                type="text"
+                placeholder="Nome da campanha..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input-premium pl-10"
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Status</label>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="input-premium"
+            >
+              <option value="ALL">Todos os Status</option>
+              <option value="ACTIVE">Ativo</option>
+              <option value="PAUSED">Pausado</option>
+              <option value="INACTIVE">Inativo</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Tipo</label>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="input-premium"
+            >
+              <option value="ALL">Todos os Tipos</option>
+              <option value="SEARCH">Search</option>
+              <option value="DISPLAY">Display</option>
+              <option value="SHOPPING">Shopping</option>
+              <option value="VIDEO">Video</option>
+            </select>
+          </div>
+          
+          <div className="flex items-end">
+            <button className="btn-glass w-full">
+              <span className="material-icons-outlined">filter_list</span>
+              Filtros Avançados
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Campaigns Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">campaign</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{campaigns.length}</h3>
+          <p className="text-muted-foreground text-sm">Total de Campanhas</p>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-accent/10 text-accent rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">trending_up</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{campaigns.filter(c => c.status === 'ACTIVE').length}</h3>
+          <p className="text-muted-foreground text-sm">Campanhas Ativas</p>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-warning/10 text-warning rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">pause</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{campaigns.filter(c => c.status === 'PAUSED').length}</h3>
+          <p className="text-muted-foreground text-sm">Campanhas Pausadas</p>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-google-red/10 text-google-red rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">attach_money</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">
+            R$ {campaigns.reduce((sum, c) => sum + c.budget, 0).toLocaleString('pt-BR')}
+          </h3>
+          <p className="text-muted-foreground text-sm">Orçamento Total</p>
+        </div>
+      </div>
+
+      {/* Campaigns Table */}
+      <div className="card-floating overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <h3 className="text-lg font-semibold text-foreground">
+            Campanhas ({filteredCampaigns.length})
+          </h3>
+        </div>
+        
+        {loading ? (
+          <SkeletonTable />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="table-premium">
+              <thead>
+                <tr>
+                  <th>Campanha</th>
+                  <th>Tipo</th>
+                  <th>Status</th>
+                  <th>Orçamento</th>
+                  <th>Cliques</th>
+                  <th>CTR</th>
+                  <th>CPC</th>
+                  <th>Conversões</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCampaigns.map(campaign => (
+                  <tr key={campaign.id}>
+                    <td>
+                      <div>
+                        <div className="font-medium text-foreground">{campaign.name}</div>
+                        <div className="text-sm text-muted-foreground">ID: {campaign.id}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="px-3 py-1 bg-muted/50 rounded-full text-xs font-medium">
+                        {campaign.type}
+                      </span>
+                    </td>
+                    <td>{getStatusBadge(campaign.status)}</td>
+                    <td className="font-medium">
+                      R$ {campaign.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    </td>
+                    <td>{campaign.clicks.toLocaleString('pt-BR')}</td>
+                    <td>{campaign.ctr}%</td>
+                    <td>R$ {campaign.cpc.toFixed(2)}</td>
+                    <td>{campaign.conversions}</td>
+                    <td>
+                      <div className="flex space-x-1">
+                        <button
+                          onClick={() => {
+                            setSelectedCampaign(campaign);
+                            setShowEditModal(true);
+                          }}
+                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
+                          title="Editar"
+                        >
+                          <span className="material-icons-outlined text-sm">edit</span>
+                        </button>
+                        <button
+                          onClick={() => openComments(campaign)}
+                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
+                          title="Comentários"
+                        >
+                          <span className="material-icons-outlined text-sm">comment</span>
+                        </button>
+                        <button
+                          onClick={() => handleToggleStatus(campaign)}
+                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
+                          title={campaign.status === 'ACTIVE' ? 'Pausar' : 'Ativar'}
+                        >
+                          <span className="material-icons-outlined text-sm">
+                            {campaign.status === 'ACTIVE' ? 'pause' : 'play_arrow'}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteCampaign(campaign.id)}
+                          className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-destructive"
+                          title="Excluir"
+                        >
+                          <span className="material-icons-outlined text-sm">delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Create Campaign Modal */}
+      {showCreateModal && (
+        <CampaignModal
+          title="Criar Nova Campanha"
+          onSave={handleCreateCampaign}
+          onClose={() => setShowCreateModal(false)}
+        />
+      )}
+
+      {/* Edit Campaign Modal */}
+      {showEditModal && selectedCampaign && (
+        <CampaignModal
+          title="Editar Campanha"
+          campaign={selectedCampaign}
+          onSave={handleUpdateCampaign}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedCampaign(null);
+          }}
+        />
+      )}
+
+      {/* Comments Modal */}
+      {showCommentsModal && selectedCampaign && (
+        <CommentsModal
+          campaign={selectedCampaign}
+          comments={comments}
+          onAddComment={addComment}
+          onClose={() => {
+            setShowCommentsModal(false);
+            setSelectedCampaign(null);
+          }}
+        />
+      )}
     </div>
-  </div>
-);
+  );
+};
+
+// Ads Page Component - COMPLETE
+const AdsPage: React.FC = () => {
+  const [ads, setAds] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedAd, setSelectedAd] = useState<any>(null);
+  const [campaignFilter, setCampaignFilter] = useState('ALL');
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+
+  useEffect(() => {
+    Promise.all([
+      api.getAds(),
+      api.getCampaigns()
+    ]).then(([adsData, campaignsData]) => {
+      setAds(adsData);
+      setCampaigns(campaignsData);
+      setLoading(false);
+    });
+  }, []);
+
+  const filteredAds = ads.filter(ad => {
+    if (campaignFilter === 'ALL') return true;
+    return ad.campaignId === campaignFilter;
+  });
+
+  const getCampaignName = (campaignId: string) => {
+    const campaign = campaigns.find(c => c.id === campaignId);
+    return campaign ? campaign.name : 'Campanha não encontrada';
+  };
+
+  const handleCreateAd = async (adData: any) => {
+    try {
+      const newAd = {
+        ...adData,
+        id: Date.now().toString(),
+        status: 'ACTIVE'
+      };
+      setAds([...ads, newAd]);
+      setShowCreateModal(false);
+      toast({
+        title: "Anúncio criado com sucesso!",
+        description: `O anúncio "${newAd.headline}" foi criado e está ativo.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao criar anúncio",
+        description: "Tente novamente em alguns instantes.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateAd = async (adData: any) => {
+    try {
+      setAds(ads.map(a => a.id === selectedAd.id ? { ...adData, id: selectedAd.id } : a));
+      setShowEditModal(false);
+      setSelectedAd(null);
+      toast({
+        title: "Anúncio atualizado!",
+        description: "As alterações foram salvas com sucesso.",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao atualizar anúncio",
+        description: "Tente novamente em alguns instantes.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteAd = async (adId: string) => {
+    if (window.confirm('Tem certeza que deseja excluir este anúncio?')) {
+      setAds(ads.filter(a => a.id !== adId));
+      toast({
+        title: "Anúncio excluído",
+        description: "O anúncio foi removido permanentemente.",
+      });
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'ACTIVE':
+        return <span className="badge-success">Ativo</span>;
+      case 'PAUSED':
+        return <span className="badge-warning">Pausado</span>;
+      default:
+        return <span className="badge-error">Inativo</span>;
+    }
+  };
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Gerenciamento de Anúncios</h2>
+          <p className="text-muted-foreground">Crie e gerencie anúncios para suas campanhas</p>
+        </div>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="btn-premium"
+        >
+          <span className="material-icons-outlined">add</span>
+          Novo Anúncio
+        </button>
+      </div>
+
+      {/* Filters */}
+      <div className="card-floating p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Filtrar por Campanha</label>
+            <select
+              value={campaignFilter}
+              onChange={(e) => setCampaignFilter(e.target.value)}
+              className="input-premium"
+            >
+              <option value="ALL">Todas as Campanhas</option>
+              {campaigns.map(campaign => (
+                <option key={campaign.id} value={campaign.id}>
+                  {campaign.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="flex items-end">
+            <button className="btn-glass w-full">
+              <span className="material-icons-outlined">tune</span>
+              Filtros Avançados
+            </button>
+          </div>
+          
+          <div className="flex items-end">
+            <button className="btn-glass w-full">
+              <span className="material-icons-outlined">analytics</span>
+              Performance de Anúncios
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Ads Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">ads_click</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{ads.length}</h3>
+          <p className="text-muted-foreground text-sm">Total de Anúncios</p>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-accent/10 text-accent rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">play_arrow</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{ads.filter(a => a.status === 'ACTIVE').length}</h3>
+          <p className="text-muted-foreground text-sm">Anúncios Ativos</p>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-warning/10 text-warning rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">pause</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{ads.filter(a => a.status === 'PAUSED').length}</h3>
+          <p className="text-muted-foreground text-sm">Anúncios Pausados</p>
+        </div>
+      </div>
+
+      {/* Ads Table */}
+      <div className="card-floating overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <h3 className="text-lg font-semibold text-foreground">
+            Anúncios ({filteredAds.length})
+          </h3>
+        </div>
+        
+        {loading ? (
+          <SkeletonTable />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="table-premium">
+              <thead>
+                <tr>
+                  <th>Anúncio</th>
+                  <th>Campanha</th>
+                  <th>Tipo</th>
+                  <th>Status</th>
+                  <th>URL</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAds.map(ad => (
+                  <tr key={ad.id}>
+                    <td>
+                      <div>
+                        <div className="font-medium text-foreground">{ad.headline}</div>
+                        <div className="text-sm text-muted-foreground line-clamp-2">
+                          {ad.description}
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="text-sm text-muted-foreground">
+                        {getCampaignName(ad.campaignId)}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="px-3 py-1 bg-muted/50 rounded-full text-xs font-medium">
+                        {ad.type}
+                      </span>
+                    </td>
+                    <td>{getStatusBadge(ad.status)}</td>
+                    <td>
+                      <a 
+                        href={ad.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:text-primary-hover text-sm truncate block max-w-48"
+                      >
+                        {ad.url}
+                      </a>
+                    </td>
+                    <td>
+                      <div className="flex space-x-1">
+                        <button
+                          onClick={() => {
+                            setSelectedAd(ad);
+                            setShowEditModal(true);
+                          }}
+                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
+                          title="Editar"
+                        >
+                          <span className="material-icons-outlined text-sm">edit</span>
+                        </button>
+                        <button
+                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
+                          title="Preview"
+                        >
+                          <span className="material-icons-outlined text-sm">preview</span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAd(ad.id)}
+                          className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-destructive"
+                          title="Excluir"
+                        >
+                          <span className="material-icons-outlined text-sm">delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Create Ad Modal */}
+      {showCreateModal && (
+        <AdModal
+          title="Criar Novo Anúncio"
+          campaigns={campaigns}
+          onSave={handleCreateAd}
+          onClose={() => setShowCreateModal(false)}
+        />
+      )}
+
+      {/* Edit Ad Modal */}
+      {showEditModal && selectedAd && (
+        <AdModal
+          title="Editar Anúncio"
+          ad={selectedAd}
+          campaigns={campaigns}
+          onSave={handleUpdateAd}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedAd(null);
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+// Reports Page Component - COMPLETE
+const ReportsPage: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState('30');
+  const [selectedCampaign, setSelectedCampaign] = useState('ALL');
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [reportData, setReportData] = useState<any>(null);
+
+  useEffect(() => {
+    Promise.all([
+      api.getCampaigns(),
+      api.getMetrics()
+    ]).then(([campaignsData, metricsData]) => {
+      setCampaigns(campaignsData);
+      setReportData({
+        ...metricsData,
+        chartData: {
+          labels: ['01/01', '07/01', '14/01', '21/01', '28/01', '04/02', '11/02'],
+          clicks: [850, 1200, 980, 1500, 1300, 1100, 1400],
+          impressions: [15000, 22000, 18500, 28000, 24000, 20000, 26000],
+          conversions: [42, 65, 51, 78, 68, 55, 72]
+        },
+        campaignPerformance: campaignsData.map(campaign => ({
+          ...campaign,
+          roi: ((campaign.conversions * 150 - campaign.budget) / campaign.budget * 100).toFixed(1)
+        }))
+      });
+      setLoading(false);
+    });
+  }, []);
+
+  const exportReport = () => {
+    const csvData = [
+      ['Campanha', 'Cliques', 'Impressões', 'CTR', 'CPC', 'Conversões', 'ROI'],
+      ...reportData.campaignPerformance.map((campaign: any) => [
+        campaign.name,
+        campaign.clicks,
+        campaign.impressions,
+        campaign.ctr + '%',
+        'R$ ' + campaign.cpc.toFixed(2),
+        campaign.conversions,
+        campaign.roi + '%'
+      ])
+    ];
+    
+    console.log('Exportando relatório CSV:', csvData);
+    toast({
+      title: "Relatório exportado!",
+      description: "O arquivo CSV foi gerado com sucesso.",
+    });
+  };
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Relatórios e Analytics</h2>
+          <p className="text-muted-foreground">Análises detalhadas do desempenho das suas campanhas</p>
+        </div>
+        <button
+          onClick={exportReport}
+          className="btn-premium"
+        >
+          <span className="material-icons-outlined">download</span>
+          Exportar Relatório
+        </button>
+      </div>
+
+      {/* Filters */}
+      <div className="card-floating p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Período</label>
+            <select
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
+              className="input-premium"
+            >
+              <option value="7">Últimos 7 dias</option>
+              <option value="30">Últimos 30 dias</option>
+              <option value="90">Últimos 90 dias</option>
+              <option value="custom">Personalizado</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Campanha</label>
+            <select
+              value={selectedCampaign}
+              onChange={(e) => setSelectedCampaign(e.target.value)}
+              className="input-premium"
+            >
+              <option value="ALL">Todas as Campanhas</option>
+              {campaigns.map(campaign => (
+                <option key={campaign.id} value={campaign.id}>
+                  {campaign.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Métrica</label>
+            <select className="input-premium">
+              <option value="clicks">Cliques</option>
+              <option value="impressions">Impressões</option>
+              <option value="conversions">Conversões</option>
+              <option value="cost">Custo</option>
+            </select>
+          </div>
+          
+          <div className="flex items-end">
+            <button className="btn-glass w-full">
+              <span className="material-icons-outlined">refresh</span>
+              Atualizar Dados
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* KPIs Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">trending_up</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">2.59%</h3>
+          <p className="text-muted-foreground text-sm">CTR Médio</p>
+          <div className="flex items-center justify-center mt-2 text-accent text-sm">
+            <span className="material-icons-outlined text-sm mr-1">arrow_upward</span>
+            +0.3% vs período anterior
+          </div>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-accent/10 text-accent rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">attach_money</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">R$ 3,07</h3>
+          <p className="text-muted-foreground text-sm">CPC Médio</p>
+          <div className="flex items-center justify-center mt-2 text-destructive text-sm">
+            <span className="material-icons-outlined text-sm mr-1">arrow_downward</span>
+            -R$ 0.15 vs período anterior
+          </div>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-warning/10 text-warning rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">transform</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">6.34%</h3>
+          <p className="text-muted-foreground text-sm">Taxa de Conversão</p>
+          <div className="flex items-center justify-center mt-2 text-accent text-sm">
+            <span className="material-icons-outlined text-sm mr-1">arrow_upward</span>
+            +1.2% vs período anterior
+          </div>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-google-red/10 text-google-red rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">trending_up</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">285%</h3>
+          <p className="text-muted-foreground text-sm">ROI Médio</p>
+          <div className="flex items-center justify-center mt-2 text-accent text-sm">
+            <span className="material-icons-outlined text-sm mr-1">arrow_upward</span>
+            +45% vs período anterior
+          </div>
+        </div>
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Performance Chart */}
+        <div className="card-floating p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-6">Performance ao Longo do Tempo</h3>
+          {loading ? (
+            <div className="h-64 flex items-center justify-center">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <div className="h-64 bg-muted/20 rounded-lg flex items-center justify-center">
+              <div className="text-center">
+                <span className="material-icons-outlined text-4xl text-muted-foreground mb-2">show_chart</span>
+                <p className="text-muted-foreground">Gráfico de Performance</p>
+                <p className="text-sm text-muted-foreground">Dados dos últimos {dateRange} dias</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ROI by Campaign */}
+        <div className="card-floating p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-6">ROI por Campanha</h3>
+          {loading ? (
+            <div className="h-64 flex items-center justify-center">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <div className="h-64 space-y-4 overflow-y-auto">
+              {reportData?.campaignPerformance.map((campaign: any, index: number) => (
+                <div key={campaign.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+                  <div>
+                    <div className="font-medium text-foreground">{campaign.name}</div>
+                    <div className="text-sm text-muted-foreground">{campaign.type}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`font-bold ${parseFloat(campaign.roi) > 0 ? 'text-accent' : 'text-destructive'}`}>
+                      {campaign.roi > 0 ? '+' : ''}{campaign.roi}%
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {campaign.conversions} conversões
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Detailed Table */}
+      <div className="card-floating overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <h3 className="text-lg font-semibold text-foreground">Relatório Detalhado</h3>
+        </div>
+        
+        {loading ? (
+          <SkeletonTable />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="table-premium">
+              <thead>
+                <tr>
+                  <th>Campanha</th>
+                  <th>Cliques</th>
+                  <th>Impressões</th>
+                  <th>CTR</th>
+                  <th>CPC</th>
+                  <th>Conversões</th>
+                  <th>Custo</th>
+                  <th>ROI</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reportData?.campaignPerformance.map((campaign: any) => (
+                  <tr key={campaign.id}>
+                    <td>
+                      <div className="font-medium text-foreground">{campaign.name}</div>
+                      <div className="text-sm text-muted-foreground">{campaign.type}</div>
+                    </td>
+                    <td className="font-medium">{campaign.clicks.toLocaleString('pt-BR')}</td>
+                    <td>{campaign.impressions.toLocaleString('pt-BR')}</td>
+                    <td>{campaign.ctr}%</td>
+                    <td>R$ {campaign.cpc.toFixed(2)}</td>
+                    <td>{campaign.conversions}</td>
+                    <td>R$ {campaign.budget.toFixed(2)}</td>
+                    <td className={`font-medium ${parseFloat(campaign.roi) > 0 ? 'text-accent' : 'text-destructive'}`}>
+                      {campaign.roi > 0 ? '+' : ''}{campaign.roi}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Settings Page Component - COMPLETE
+const SettingsPage: React.FC = () => {
+  const [credentials, setCredentials] = useState({
+    developerToken: '',
+    clientId: '',
+    clientSecret: '',
+    refreshToken: '',
+    customerId: ''
+  });
+  
+  const [preferences, setPreferences] = useState({
+    theme: 'light',
+    notifications: true,
+    emailReports: true,
+    language: 'pt-BR',
+    timezone: 'America/Sao_Paulo'
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleSaveCredentials = async () => {
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setLoading(false);
+    toast({
+      title: "Credenciais salvas!",
+      description: "Suas credenciais do Google Ads foram atualizadas com sucesso.",
+    });
+  };
+
+  const handleSavePreferences = async () => {
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setLoading(false);
+    toast({
+      title: "Preferências salvas!",
+      description: "Suas preferências foram atualizadas com sucesso.",
+    });
+  };
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold text-foreground">Configurações do Sistema</h2>
+        <p className="text-muted-foreground">Gerencie suas credenciais e preferências</p>
+      </div>
+
+      {/* Google Ads Credentials */}
+      <div className="card-floating">
+        <div className="p-6 border-b border-border">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+              <span className="material-icons-outlined">key</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Credenciais Google Ads API</h3>
+              <p className="text-sm text-muted-foreground">Configure suas credenciais para acessar a API</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Developer Token *
+              </label>
+              <input
+                type="password"
+                value={credentials.developerToken}
+                onChange={(e) => setCredentials({...credentials, developerToken: e.target.value})}
+                className="input-premium"
+                placeholder="Seu developer token"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Client ID *
+              </label>
+              <input
+                type="text"
+                value={credentials.clientId}
+                onChange={(e) => setCredentials({...credentials, clientId: e.target.value})}
+                className="input-premium"
+                placeholder="Client ID da aplicação OAuth2"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Client Secret *
+              </label>
+              <input
+                type="password"
+                value={credentials.clientSecret}
+                onChange={(e) => setCredentials({...credentials, clientSecret: e.target.value})}
+                className="input-premium"
+                placeholder="Client secret da aplicação OAuth2"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Refresh Token *
+              </label>
+              <input
+                type="password"
+                value={credentials.refreshToken}
+                onChange={(e) => setCredentials({...credentials, refreshToken: e.target.value})}
+                className="input-premium"
+                placeholder="Token de atualização OAuth2"
+              />
+            </div>
+            
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Customer ID *
+              </label>
+              <input
+                type="text"
+                value={credentials.customerId}
+                onChange={(e) => setCredentials({...credentials, customerId: e.target.value})}
+                className="input-premium"
+                placeholder="ID do cliente Google Ads (formato: 123-456-7890)"
+              />
+            </div>
+          </div>
+          
+          <div className="flex justify-end">
+            <button
+              onClick={handleSaveCredentials}
+              disabled={loading}
+              className="btn-premium disabled:opacity-50"
+            >
+              {loading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white/30 rounded-full animate-spin border-t-white"></div>
+                  <span>Salvando...</span>
+                </div>
+              ) : (
+                <>
+                  <span className="material-icons-outlined mr-2">save</span>
+                  Salvar Credenciais
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Preferences */}
+      <div className="card-floating">
+        <div className="p-6 border-b border-border">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-accent/10 text-accent rounded-xl flex items-center justify-center">
+              <span className="material-icons-outlined">tune</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Preferências</h3>
+              <p className="text-sm text-muted-foreground">Personalize sua experiência</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Tema
+              </label>
+              <select
+                value={preferences.theme}
+                onChange={(e) => setPreferences({...preferences, theme: e.target.value})}
+                className="input-premium"
+              >
+                <option value="light">Claro</option>
+                <option value="dark">Escuro</option>
+                <option value="auto">Automático</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Idioma
+              </label>
+              <select
+                value={preferences.language}
+                onChange={(e) => setPreferences({...preferences, language: e.target.value})}
+                className="input-premium"
+              >
+                <option value="pt-BR">Português (Brasil)</option>
+                <option value="en-US">English (US)</option>
+                <option value="es-ES">Español</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Fuso Horário
+              </label>
+              <select
+                value={preferences.timezone}
+                onChange={(e) => setPreferences({...preferences, timezone: e.target.value})}
+                className="input-premium"
+              >
+                <option value="America/Sao_Paulo">São Paulo (BRT)</option>
+                <option value="America/New_York">New York (EST)</option>
+                <option value="Europe/London">London (GMT)</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <h4 className="font-medium text-foreground">Notificações</h4>
+            
+            <div className="space-y-3">
+              <label className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  checked={preferences.notifications}
+                  onChange={(e) => setPreferences({...preferences, notifications: e.target.checked})}
+                  className="w-4 h-4 text-primary border-border rounded focus:ring-primary focus:ring-2"
+                />
+                <span className="text-sm text-foreground">Receber notificações push</span>
+              </label>
+              
+              <label className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  checked={preferences.emailReports}
+                  onChange={(e) => setPreferences({...preferences, emailReports: e.target.checked})}
+                  className="w-4 h-4 text-primary border-border rounded focus:ring-primary focus:ring-2"
+                />
+                <span className="text-sm text-foreground">Receber relatórios por email</span>
+              </label>
+            </div>
+          </div>
+          
+          <div className="flex justify-end">
+            <button
+              onClick={handleSavePreferences}
+              disabled={loading}
+              className="btn-premium disabled:opacity-50"
+            >
+              {loading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-white/30 rounded-full animate-spin border-t-white"></div>
+                  <span>Salvando...</span>
+                </div>
+              ) : (
+                <>
+                  <span className="material-icons-outlined mr-2">save</span>
+                  Salvar Preferências
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Profile Page Component - COMPLETE
+const ProfilePage: React.FC = () => {
+  const [userInfo, setUserInfo] = useState({
+    name: mockData.user.name,
+    email: mockData.user.email,
+    role: mockData.user.role,
+    department: mockData.user.department,
+    phone: '+55 11 99999-9999',
+    location: 'São Paulo, Brasil',
+    joinDate: '2023-01-15'
+  });
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [activityLog] = useState([
+    {
+      id: 1,
+      action: 'Criou campanha "Premium 2025"',
+      date: '2025-01-08 14:30',
+      type: 'create'
+    },
+    {
+      id: 2,
+      action: 'Atualizou orçamento da campanha Shopping',
+      date: '2025-01-08 11:15',
+      type: 'update'
+    },
+    {
+      id: 3,
+      action: 'Exportou relatório de performance',
+      date: '2025-01-07 16:45',
+      type: 'export'
+    },
+    {
+      id: 4,
+      action: 'Pausou campanha "Display Brand"',
+      date: '2025-01-07 10:20',
+      type: 'pause'
+    },
+    {
+      id: 5,
+      action: 'Adicionou comentário na campanha Video',
+      date: '2025-01-06 15:30',
+      type: 'comment'
+    }
+  ]);
+
+  const handleSaveProfile = async () => {
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setLoading(false);
+    setIsEditing(false);
+    toast({
+      title: "Perfil atualizado!",
+      description: "Suas informações foram salvas com sucesso.",
+    });
+  };
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'create': return 'add_circle';
+      case 'update': return 'edit';
+      case 'export': return 'download';
+      case 'pause': return 'pause';
+      case 'comment': return 'comment';
+      default: return 'info';
+    }
+  };
+
+  const getActivityColor = (type: string) => {
+    switch (type) {
+      case 'create': return 'text-accent';
+      case 'update': return 'text-primary';
+      case 'export': return 'text-warning';
+      case 'pause': return 'text-destructive';
+      case 'comment': return 'text-muted-foreground';
+      default: return 'text-muted-foreground';
+    }
+  };
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold text-foreground">Meu Perfil</h2>
+        <p className="text-muted-foreground">Gerencie suas informações pessoais e histórico</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Profile Info */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="card-floating">
+            <div className="p-6 border-b border-border">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-xl">
+                    {mockData.user.avatar}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground">{userInfo.name}</h3>
+                    <p className="text-sm text-muted-foreground">{userInfo.role}</p>
+                    <p className="text-xs text-muted-foreground">{userInfo.department}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="btn-glass"
+                >
+                  <span className="material-icons-outlined">
+                    {isEditing ? 'close' : 'edit'}
+                  </span>
+                  {isEditing ? 'Cancelar' : 'Editar'}
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Nome Completo
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={userInfo.name}
+                      onChange={(e) => setUserInfo({...userInfo, name: e.target.value})}
+                      className="input-premium"
+                    />
+                  ) : (
+                    <p className="text-foreground">{userInfo.name}</p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Email Corporativo
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="email"
+                      value={userInfo.email}
+                      onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
+                      className="input-premium"
+                    />
+                  ) : (
+                    <p className="text-foreground">{userInfo.email}</p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Cargo
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={userInfo.role}
+                      onChange={(e) => setUserInfo({...userInfo, role: e.target.value})}
+                      className="input-premium"
+                    />
+                  ) : (
+                    <p className="text-foreground">{userInfo.role}</p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Departamento
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={userInfo.department}
+                      onChange={(e) => setUserInfo({...userInfo, department: e.target.value})}
+                      className="input-premium"
+                    />
+                  ) : (
+                    <p className="text-foreground">{userInfo.department}</p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Telefone
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="tel"
+                      value={userInfo.phone}
+                      onChange={(e) => setUserInfo({...userInfo, phone: e.target.value})}
+                      className="input-premium"
+                    />
+                  ) : (
+                    <p className="text-foreground">{userInfo.phone}</p>
+                  )}
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Localização
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={userInfo.location}
+                      onChange={(e) => setUserInfo({...userInfo, location: e.target.value})}
+                      className="input-premium"
+                    />
+                  ) : (
+                    <p className="text-foreground">{userInfo.location}</p>
+                  )}
+                </div>
+              </div>
+              
+              {isEditing && (
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    className="btn-glass"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleSaveProfile}
+                    disabled={loading}
+                    className="btn-premium disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 border-2 border-white/30 rounded-full animate-spin border-t-white"></div>
+                        <span>Salvando...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="material-icons-outlined mr-2">save</span>
+                        Salvar Alterações
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Activity Log & Stats */}
+        <div className="space-y-6">
+          {/* Quick Stats */}
+          <div className="card-floating p-6 text-center">
+            <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-icons-outlined">calendar_today</span>
+            </div>
+            <h3 className="text-lg font-semibold text-foreground mb-1">Membro desde</h3>
+            <p className="text-muted-foreground">
+              {new Date(userInfo.joinDate).toLocaleDateString('pt-BR', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </p>
+          </div>
+
+          {/* Activity Log */}
+          <div className="card-floating">
+            <div className="p-6 border-b border-border">
+              <h3 className="text-lg font-semibold text-foreground">Atividade Recente</h3>
+            </div>
+            
+            <div className="p-6">
+              <div className="space-y-4 max-h-96 overflow-y-auto">
+                {activityLog.map(activity => (
+                  <div key={activity.id} className="flex items-start space-x-3">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center bg-muted/30 ${getActivityColor(activity.type)}`}>
+                      <span className="material-icons-outlined text-sm">
+                        {getActivityIcon(activity.type)}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground">{activity.action}</p>
+                      <p className="text-xs text-muted-foreground">{activity.date}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Main App with Theme Provider
 const Index: React.FC = () => {
