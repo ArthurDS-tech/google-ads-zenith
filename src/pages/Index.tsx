@@ -649,7 +649,7 @@ const DashboardPage: React.FC = () => {
       {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metricCards.map((metric, index) => (
-          <div key={metric.title} className="metric-card" style={{ animationDelay: `${index * 0.1}s` }}>
+          <div key={metric.title} className="metric-card group" style={{ animationDelay: `${index * 0.1}s` }}>
             {loading ? (
               <SkeletonCard />
             ) : (

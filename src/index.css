@@ -233,7 +233,7 @@
 
   /* Metric card animation */
   .metric-card {
-    @apply card-floating p-6 text-center group;
+    @apply card-floating p-6 text-center;
   }
 
   .metric-icon {
