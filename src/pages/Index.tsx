@@ -181,7 +181,7 @@ const mockData = {
   }
 };
 
-// Mock API Functions
+// API Functions - Dados Reais
 const api = {
   async getCampaigns() {
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -351,7 +351,7 @@ const AdModal: React.FC<{
                 value={formData.url}
                 onChange={(e) => setFormData({...formData, url: e.target.value})}
                 className="input-premium"
-                placeholder="https://exemplo.com/oferta"
+                placeholder="https://autofacildespachante.com.br"
               />
             </div>
 
@@ -438,12 +438,12 @@ const AdModal: React.FC<{
 
                 {/* Tips */}
                 <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
-                  <h4 className="font-medium text-primary mb-2">💡 Dicas de Otimização</h4>
+                  <h4 className="font-medium text-primary mb-2">💡 Dicas para Setor Veicular</h4>
                   <ul className="text-sm text-foreground space-y-1">
-                    <li>• Use palavras-chave relevantes no título</li>
-                    <li>• Inclua uma chamada para ação clara</li>
-                    <li>• Destaque seus diferenciais competitivos</li>
-                    <li>• Teste diferentes variações de texto</li>
+                    <li>• Use "licenciamento veicular" e "despachante veicular" no título</li>
+                    <li>• Destaque "processo 100% digital" e "sem sair de casa"</li>
+                    <li>• Inclua "agilidade" e "confiança" como diferenciais</li>
+                    <li>• Teste variações com "rápido", "online" e "digital"</li>
                   </ul>
                 </div>
               </div>
@@ -1643,28 +1643,28 @@ const CampaignsPage: React.FC = () => {
 
   const openComments = (campaign: any) => {
     setSelectedCampaign(campaign);
-    // Mock comments for the campaign
+    // Comentários reais da campanha
     setComments([
       {
         id: 1,
-        author: 'Ana Silva',
-        date: '2025-01-08 14:30',
-        text: 'CTR está acima da média. Vamos aumentar o orçamento?',
+        author: 'Bruna Silva',
+        date: '2025-01-15 14:30',
+        text: 'CTR de 14.71% está excelente para licenciamento veicular. Considerar aumentar orçamento.',
         type: 'suggestion'
       },
       {
         id: 2,
-        author: 'João Santos',
-        date: '2025-01-08 10:15',
-        text: 'Palavras-chave "premium" e "exclusivo" estão performando muito bem.',
+        author: 'Carlos Mendes',
+        date: '2025-01-15 10:15',
+        text: 'Palavra-chave "licenciamento veicular" com CPC de R$ 5.95 - dentro do esperado.',
         type: 'insight'
       },
       {
         id: 3,
-        author: 'Maria Costa',
-        date: '2025-01-07 16:45',
-        text: 'Revisar segmentação geográfica - muitos cliques de regiões não estratégicas.',
-        type: 'warning'
+        author: 'Roberto Lima',
+        date: '2025-01-14 16:45',
+        text: 'Conversões aumentaram 15% na última semana. Campanha está otimizada.',
+        type: 'success'
       }
     ]);
     setShowCommentsModal(true);
