@@ -173,9 +173,9 @@ const mockData = {
     }
   ],
   user: {
-    name: "Roberto Silva",
-    email: "roberto.silva@despachante.com.br",
-    avatar: "RS",
+    name: "Bruna Silva",
+    email: "bruna@autofacildespachante.com.br",
+    avatar: "BS",
     role: "Google Ads Specialist",
     department: "Marketing Veicular"
   }
@@ -1002,7 +1002,7 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
                 type="email"
                 className="input-premium text-foreground"
                 placeholder="nome@google.com"
-                defaultValue="ana.silva@google.com"
+                defaultValue="bruna@autofacildespachante.com.br"
               />
             </div>
             
@@ -1012,7 +1012,7 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
                 type="password"
                 className="input-premium text-foreground"
                 placeholder="••••••••"
-                defaultValue="password123"
+                defaultValue="DESP102030"
               />
             </div>
             
