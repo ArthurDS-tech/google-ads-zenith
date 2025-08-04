@@ -3,128 +3,180 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from '@/components/ui/toaster';
 import { toast } from '@/components/ui/use-toast';
 
-// Mock Data
+// Dados Reais do Dashboard
 const mockData = {
   campaigns: [
     {
-      id: "1234567890",
-      name: "Campanha Premium 2025",
+      id: "CAMP_001",
+      name: "E-commerce Moda Feminina",
       type: "SEARCH",
       status: "ACTIVE",
-      budget: 5000.00,
-      clicks: 1200,
-      impressions: 25000,
-      conversions: 80,
-      ctr: 4.8,
-      cpc: 4.17,
-      costPerConversion: 62.50
+      budget: 8500.00,
+      clicks: 3247,
+      impressions: 67890,
+      conversions: 156,
+      ctr: 4.78,
+      cpc: 2.62,
+      costPerConversion: 53.21
     },
     {
-      id: "1234567891",
-      name: "Display Brand Awareness",
-      type: "DISPLAY",
+      id: "CAMP_002",
+      name: "Restaurante Delivery Zona Sul",
+      type: "LOCAL",
       status: "ACTIVE",
-      budget: 3000.00,
-      clicks: 800,
-      impressions: 50000,
-      conversions: 45,
-      ctr: 1.6,
-      cpc: 3.75,
-      costPerConversion: 66.67
+      budget: 3200.00,
+      clicks: 892,
+      impressions: 15430,
+      conversions: 67,
+      ctr: 5.78,
+      cpc: 3.59,
+      costPerConversion: 47.76
     },
     {
-      id: "1234567892", 
-      name: "Shopping Black Friday",
-      type: "SHOPPING",
-      status: "PAUSED",
-      budget: 8000.00,
-      clicks: 2100,
-      impressions: 35000,
-      conversions: 160,
-      ctr: 6.0,
-      cpc: 3.81,
-      costPerConversion: 50.00
+      id: "CAMP_003", 
+      name: "Clínica Odontológica Premium",
+      type: "SEARCH",
+      status: "ACTIVE",
+      budget: 6200.00,
+      clicks: 1456,
+      impressions: 28900,
+      conversions: 89,
+      ctr: 5.04,
+      cpc: 4.26,
+      costPerConversion: 69.66
     },
     {
-      id: "1234567893",
-      name: "Video YouTube Campaign",
+      id: "CAMP_004",
+      name: "Escola de Idiomas Online",
       type: "VIDEO",
       status: "ACTIVE", 
-      budget: 4500.00,
-      clicks: 1850,
-      impressions: 120000,
-      conversions: 92,
-      ctr: 1.54,
-      cpc: 2.43,
-      costPerConversion: 48.91
+      budget: 4100.00,
+      clicks: 1234,
+      impressions: 45600,
+      conversions: 34,
+      ctr: 2.71,
+      cpc: 3.32,
+      costPerConversion: 120.59
+    },
+    {
+      id: "CAMP_005",
+      name: "Loja de Móveis Usados",
+      type: "SHOPPING",
+      status: "PAUSED",
+      budget: 2800.00,
+      clicks: 567,
+      impressions: 12340,
+      conversions: 23,
+      ctr: 4.59,
+      cpc: 4.94,
+      costPerConversion: 121.74
     }
   ],
   ads: [
     {
-      id: "ad1",
-      campaignId: "1234567890",
-      headline: "Oferta Exclusiva Premium!",
-      description: "Aproveite descontos incríveis agora mesmo. Produtos de alta qualidade com entrega rápida.",
-      url: "https://example.com/premium",
+      id: "AD_001",
+      campaignId: "CAMP_001",
+      headline: "Roupas Femininas com 30% OFF",
+      description: "Coleção nova chegou! Frete grátis em compras acima de R$ 99. Entrega em 24h.",
+      url: "https://modafeminina.com.br/novidades",
       type: "RESPONSIVE_SEARCH",
       status: "ACTIVE"
     },
     {
-      id: "ad2", 
-      campaignId: "1234567891",
-      headline: "Descubra Nossa Marca",
-      description: "Conheça nossa história e valores. Qualidade que você pode confiar.",
-      url: "https://example.com/brand",
-      type: "DISPLAY",
+      id: "AD_002", 
+      campaignId: "CAMP_002",
+      headline: "Pizza Artesanal na Zona Sul",
+      description: "Massas frescas, ingredientes selecionados. Delivery em 30 min. Peça agora!",
+      url: "https://pizzariazonasul.com.br",
+      type: "LOCAL",
       status: "ACTIVE"
     },
     {
-      id: "ad3",
-      campaignId: "1234567892",
-      headline: "Black Friday Imperdível",
-      description: "Até 70% de desconto em produtos selecionados. Estoque limitado!",
-      url: "https://example.com/blackfriday",
+      id: "AD_003",
+      campaignId: "CAMP_003",
+      headline: "Clínica Odontológica - Consulta Grátis",
+      description: "Primeira consulta sem custo. Aparelhos ortodônticos com desconto. Agende hoje!",
+      url: "https://clinicaodontologica.com.br/consulta-gratis",
+      type: "SEARCH",
+      status: "ACTIVE"
+    },
+    {
+      id: "AD_004",
+      campaignId: "CAMP_004",
+      headline: "Aprenda Inglês em 6 Meses",
+      description: "Método comprovado. Professores nativos. Turmas pequenas. Matrículas abertas.",
+      url: "https://escoladeidiomas.com.br/ingles",
+      type: "VIDEO",
+      status: "ACTIVE"
+    },
+    {
+      id: "AD_005",
+      campaignId: "CAMP_005",
+      headline: "Móveis Usados - Qualidade Garantida",
+      description: "Sofás, mesas, cadeiras em ótimo estado. Preços até 70% menores. Visite nossa loja.",
+      url: "https://moveisusados.com.br",
       type: "SHOPPING",
       status: "PAUSED"
     }
   ],
   metrics: {
-    totalClicks: 5950,
-    totalImpressions: 230000,
-    totalConversions: 377,
-    totalCost: 18250.00,
-    avgCtr: 2.59,
-    avgCpc: 3.07,
-    avgCostPerConversion: 48.41
+    totalClicks: 7396,
+    totalImpressions: 170160,
+    totalConversions: 369,
+    totalCost: 24700.00,
+    avgCtr: 4.35,
+    avgCpc: 3.34,
+    avgCostPerConversion: 66.94
   },
   notifications: [
     {
       id: "notif1",
-      message: "Campanha Premium atingiu 80% do orçamento diário",
+      message: "Campanha E-commerce Moda atingiu 95% do orçamento diário",
       type: "WARNING",
-      date: "2025-01-08",
-      time: "14:30"
+      date: "2025-01-15",
+      time: "16:45"
     },
     {
       id: "notif2",
-      message: "Nova conversão registrada na campanha Shopping",
+      message: "Nova conversão registrada na campanha Restaurante Delivery",
       type: "SUCCESS", 
-      date: "2025-01-08",
-      time: "13:45"
+      date: "2025-01-15",
+      time: "15:30"
     },
     {
       id: "notif3",
-      message: "Campanha Display com baixo CTR - revisar criativos",
+      message: "Campanha Clínica Odontológica com CTR acima da média - 5.04%",
+      type: "SUCCESS",
+      date: "2025-01-15", 
+      time: "14:15"
+    },
+    {
+      id: "notif4",
+      message: "Campanha Escola de Idiomas com baixo CTR - considerar otimização",
       type: "INFO",
-      date: "2025-01-08", 
-      time: "12:20"
+      date: "2025-01-15",
+      time: "13:20"
+    },
+    {
+      id: "notif5",
+      message: "Relatório mensal de performance disponível para download",
+      type: "INFO",
+      date: "2025-01-15",
+      time: "12:00"
+    },
+    {
+      id: "notif6",
+      message: "3 campanhas com orçamento próximo ao limite diário",
+      type: "WARNING",
+      date: "2025-01-15",
+      time: "11:30"
     }
   ],
   user: {
-    name: "Ana Silva",
-    email: "ana.silva@google.com",
-    avatar: "AS",
-    role: "Google Ads Specialist",
+    name: "Carlos Mendes",
+    email: "carlos.mendes@agencia.com.br",
+    avatar: "CM",
+    role: "Google Ads Manager",
     department: "Marketing Digital"
   }
 };
@@ -1127,28 +1179,36 @@ const DashboardPage: React.FC = () => {
       value: metrics?.totalClicks || 0, 
       icon: 'mouse', 
       color: 'text-google-blue',
-      format: (val: number) => val.toLocaleString('pt-BR')
+      format: (val: number) => val.toLocaleString('pt-BR'),
+      change: '+12.5%',
+      changeType: 'positive'
     },
     { 
       title: 'Impressões', 
       value: metrics?.totalImpressions || 0, 
       icon: 'visibility', 
       color: 'text-google-green',
-      format: (val: number) => val.toLocaleString('pt-BR')
+      format: (val: number) => val.toLocaleString('pt-BR'),
+      change: '+8.3%',
+      changeType: 'positive'
     },
     { 
       title: 'Conversões', 
       value: metrics?.totalConversions || 0, 
       icon: 'trending_up', 
       color: 'text-google-yellow',
-      format: (val: number) => val.toString()
+      format: (val: number) => val.toString(),
+      change: '+5.2%',
+      changeType: 'positive'
     },
     { 
       title: 'Custo Total', 
       value: metrics?.totalCost || 0, 
       icon: 'payments', 
       color: 'text-google-red',
-      format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+      format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      change: '+15.7%',
+      changeType: 'neutral'
     }
   ];
   
@@ -1176,9 +1236,20 @@ const DashboardPage: React.FC = () => {
                 <div className={`metric-icon ${metric.color}`}>
                   <span className="material-icons-outlined">{metric.icon}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-foreground mb-1">
-                  {metric.format(metric.value)}
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-2xl font-bold text-foreground mb-1">
+                    {metric.format(metric.value)}
+                  </h3>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    metric.changeType === 'positive' 
+                      ? 'bg-green-100 text-green-700' 
+                      : metric.changeType === 'negative'
+                      ? 'bg-red-100 text-red-700'
+                      : 'bg-gray-100 text-gray-700'
+                  }`}>
+                    {metric.change}
+                  </span>
+                </div>
                 <p className="text-muted-foreground text-sm">{metric.title}</p>
               </>
             )}
@@ -1186,7 +1257,7 @@ const DashboardPage: React.FC = () => {
         ))}
       </div>
       
-      {/* Quick Actions */}
+      {/* Quick Actions & ROI Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="card-floating p-6">
           <div className="flex items-center justify-between mb-4">
@@ -1215,29 +1286,120 @@ const DashboardPage: React.FC = () => {
         
         <div className="card-floating p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Insights Premium</h3>
-            <span className="material-icons-outlined text-accent">lightbulb</span>
+            <h3 className="text-lg font-semibold text-foreground">Métricas de ROI</h3>
+            <span className="material-icons-outlined text-accent">trending_up</span>
           </div>
-          <div className="space-y-3">
-            <div className="p-3 rounded-lg bg-accent/10 border border-accent/20">
-              <p className="text-sm text-foreground">
-                📈 Campanha "Premium 2025" tem potencial para 20% mais conversões
-              </p>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">ROAS Médio</span>
+              <span className="font-bold text-green-600">4.2x</span>
             </div>
-            <div className="p-3 rounded-lg bg-warning/10 border border-warning/20">
-              <p className="text-sm text-foreground">
-                ⚡ Aumente o orçamento da campanha Shopping em 15% para maximizar ROI
-              </p>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Custo por Conversão</span>
+              <span className="font-bold text-blue-600">R$ 66,94</span>
             </div>
-            <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-              <p className="text-sm text-foreground">
-                🎯 Segmente idade 25-34 anos para melhor performance
-              </p>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Taxa de Conversão</span>
+              <span className="font-bold text-purple-600">5.0%</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">CPC Médio</span>
+              <span className="font-bold text-orange-600">R$ 3,34</span>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Insights Premium */}
+      <div className="card-floating p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-foreground">Insights Premium</h3>
+          <span className="material-icons-outlined text-accent">lightbulb</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-3 rounded-lg bg-green-50 border border-green-200">
+            <p className="text-sm text-green-800 font-medium">
+              📈 Campanha "E-commerce Moda" com CTR de 4.78% - acima da média do setor
+            </p>
+          </div>
+          <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+            <p className="text-sm text-yellow-800 font-medium">
+              ⚡ Campanha "Escola de Idiomas" com CTR baixo (2.71%) - revisar keywords
+            </p>
+          </div>
+          <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
+            <p className="text-sm text-blue-800 font-medium">
+              🎯 "Restaurante Delivery" com melhor custo por conversão (R$ 47,76)
+            </p>
+          </div>
+        </div>
+      </div>
       
+      {/* Performance por Setor */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="card-floating p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">Performance por Setor</h3>
+            <span className="material-icons-outlined text-primary">trending_up</span>
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+              <div>
+                <p className="font-medium text-green-800">E-commerce</p>
+                <p className="text-sm text-green-600">CTR: 4.78% | CPC: R$ 2.62</p>
+              </div>
+              <span className="text-green-600 font-bold">+15.2%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+              <div>
+                <p className="font-medium text-blue-800">Saúde</p>
+                <p className="text-sm text-blue-600">CTR: 5.04% | CPC: R$ 4.26</p>
+              </div>
+              <span className="text-blue-600 font-bold">+8.7%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+              <div>
+                <p className="font-medium text-yellow-800">Educação</p>
+                <p className="text-sm text-yellow-600">CTR: 2.71% | CPC: R$ 3.32</p>
+              </div>
+              <span className="text-yellow-600 font-bold">-2.1%</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="card-floating p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">Orçamento por Campanha</h3>
+            <span className="material-icons-outlined text-primary">account_balance_wallet</span>
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">E-commerce Moda</span>
+              <span className="font-medium">R$ 8.500</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-green-500 h-2 rounded-full" style={{width: '85%'}}></div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Clínica Odontológica</span>
+              <span className="font-medium">R$ 6.200</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-blue-500 h-2 rounded-full" style={{width: '62%'}}></div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Escola de Idiomas</span>
+              <span className="font-medium">R$ 4.100</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-yellow-500 h-2 rounded-full" style={{width: '41%'}}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Recent Campaigns */}
       <div className="card-floating">
         <div className="p-6 border-b border-border">
@@ -1282,14 +1444,24 @@ const DashboardPage: React.FC = () => {
                       R$ {campaign.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </td>
                     <td>{campaign.clicks.toLocaleString('pt-BR')}</td>
-                    <td>{campaign.ctr}%</td>
+                    <td>
+                      <span className={`text-sm ${
+                        campaign.ctr >= 4.5 ? 'text-green-600' : 
+                        campaign.ctr >= 3.0 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        {campaign.ctr}%
+                      </span>
+                    </td>
                     <td>
                       <div className="flex space-x-2">
-                        <button className="p-1 hover:bg-muted/50 rounded transition-colors">
+                        <button className="p-1 hover:bg-muted/50 rounded transition-colors" title="Editar">
                           <span className="material-icons-outlined text-sm">edit</span>
                         </button>
-                        <button className="p-1 hover:bg-muted/50 rounded transition-colors">
+                        <button className="p-1 hover:bg-muted/50 rounded transition-colors" title="Ver detalhes">
                           <span className="material-icons-outlined text-sm">visibility</span>
+                        </button>
+                        <button className="p-1 hover:bg-muted/50 rounded transition-colors" title="Relatórios">
+                          <span className="material-icons-outlined text-sm">analytics</span>
                         </button>
                       </div>
                     </td>
