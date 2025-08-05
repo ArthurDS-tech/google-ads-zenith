@@ -43,7 +43,7 @@ const LiveChat: React.FC = () => {
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(["CLIENTE SITE"]);
   const [showTagModal, setShowTagModal] = useState(false);
 
   // Tags verdadeiras fornecidas
@@ -2150,17 +2150,25 @@ const CampaignsPage: React.FC = () => {
                   <td className="font-medium">{c.custo}</td>
                   <td>
                     <div className="flex space-x-1">
-                      <button className="p-2 hover:bg-muted/50 rounded-lg transition-colors" title="Editar">
-                        <span className="material-icons-outlined text-sm">edit</span>
-                      </button>
-                      <button className="p-2 hover:bg-muted/50 rounded-lg transition-colors" title="Ver detalhes">
+                      <button 
+                        className="p-2 hover:bg-muted/50 rounded-lg transition-colors" 
+                        title="Ver site da campanha"
+                        onClick={() => {
+                          // Mapear campanhas para URLs
+                          const campaignUrls: { [key: string]: string } = {
+                            "lead-search-despmarcelino-lpauto-estados_sul-junho_2026": "https://blog.grandeflorianopolis.autofacilpagamentos.com.br/",
+                            "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25": "https://blog.autofacilpagamentos.com.br/auto-facil-palhoca/",
+                            "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25": "https://blog.autofacilpagamentos.com.br/",
+                            "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25": "https://blog.autofacilpagamentos.com.br/marcelino-florianopolis/",
+                            "Leads-Search-Autofacilcertificados-09-07-25": "https://autofacilcertificados.com.br/"
+                          };
+                          const url = campaignUrls[c.nome];
+                          if (url) {
+                            window.open(url, '_blank');
+                          }
+                        }}
+                      >
                         <span className="material-icons-outlined text-sm">visibility</span>
-                      </button>
-                      <button className="p-2 hover:bg-muted/50 rounded-lg transition-colors" title="Relatórios">
-                        <span className="material-icons-outlined text-sm">analytics</span>
-                      </button>
-                      <button className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-destructive" title="Pausar">
-                        <span className="material-icons-outlined text-sm">pause</span>
                       </button>
                     </div>
                   </td>
@@ -2229,32 +2237,54 @@ const AdsPage: React.FC = () => {
   };
 
   const handleExportAds = () => {
+    // Criar dados mais organizados e bonitos
     const csvData = [
-      ['Título', 'Descrição', 'Campanha', 'Tipo', 'Status', 'URL'],
-      ...filteredAndSortedAds.map(ad => [
+      // Cabeçalho principal
+      ['RELATÓRIO DE ANÚNCIOS - DESPACHANTE MARCELINO'],
+      [''],
+      ['Data de Exportação:', new Date().toLocaleDateString('pt-BR')],
+      ['Hora de Exportação:', new Date().toLocaleTimeString('pt-BR')],
+      ['Total de Anúncios:', filteredAndSortedAds.length.toString()],
+      [''],
+      // Cabeçalhos das colunas
+      ['ID', 'Título do Anúncio', 'Descrição', 'Campanha', 'Tipo de Anúncio', 'Status', 'URL de Destino', 'Data de Criação'],
+      // Separador visual
+      ['---', '---', '---', '---', '---', '---', '---', '---'],
+      // Dados dos anúncios
+      ...filteredAndSortedAds.map((ad, index) => [
+        `"${(index + 1).toString().padStart(3, '0')}"`,
         `"${ad.headline.replace(/"/g, '""')}"`,
         `"${ad.description.replace(/"/g, '""')}"`,
         `"${getCampaignName(ad.campaignId).replace(/"/g, '""')}"`,
-        `"${ad.type}"`,
-        `"${ad.status}"`,
-        `"${ad.url}"`
-      ])
+        `"${ad.type.replace('_', ' ')}"`,
+        `"${ad.status === 'ACTIVE' ? 'ATIVO' : 'INATIVO'}"`,
+        `"${ad.url}"`,
+        `"${new Date().toLocaleDateString('pt-BR')}"`
+      ]),
+      [''],
+      // Rodapé com informações
+      ['INFORMAÇÕES ADICIONAIS:'],
+      ['• Anúncios Ativos:', filteredAndSortedAds.filter(ad => ad.status === 'ACTIVE').length.toString()],
+      ['• Anúncios Inativos:', filteredAndSortedAds.filter(ad => ad.status !== 'ACTIVE').length.toString()],
+      ['• Campanhas Únicas:', [...new Set(filteredAndSortedAds.map(ad => ad.campaignId))].length.toString()],
+      [''],
+      ['Gerado automaticamente pelo sistema de gestão de anúncios.']
     ];
 
-    const csvContent = csvData.map(row => row.join(',')).join('\n');
+    const csvContent = csvData.map(row => row.join(';')).join('\n');
     const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `anuncios_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `relatorio_anuncios_despachante_marcelino_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     toast({
-      title: "Relatório exportado!",
-      description: "O arquivo CSV foi baixado com sucesso.",
+      title: "Relatório exportado com sucesso!",
+      description: "O arquivo CSV foi baixado com formatação melhorada.",
     });
   };
 
