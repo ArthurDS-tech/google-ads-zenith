@@ -130,9 +130,21 @@ const WebhookSystem = {
 // Componente de Chat em Tempo Real
 const LiveChat: React.FC = () => {
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
-  const [replyText, setReplyText] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
+  const [filterTag, setFilterTag] = useState('all');
+  const [showTagFilter, setShowTagFilter] = useState(false);
+
+  // Tags verdadeiras fornecidas
+  const allTags = [
+    "Maju", "BMW VEICULOS", "BMW MOTOS", "BMW MINI COOPER", "REPECON FIAT", "AUTOMEGA", 
+    "LOJISTA", "DICAS", "PIX VISTORIA", "CLIENTE BALCAO", "PV", "Troca", "Zero", 
+    "zero fora", "seminovo", "Site AF PH", "Realizado", "Não realizado", "Qualificação", 
+    "Pendente", "Orçamento Enviado", "PGTO", "Grupos", "AVISO", "Particular SJ", 
+    "ZERO TUDO", "ZERO ESCOLHA", "TROCA ESCOLHA", "TROCA TUDO", "Ana", 
+    "Aguardando Verificação", "Blumenau", "RECALL", "Resolvendo com COO", "BLUMENAU", 
+    "Negociando", "Parceiro", "Doc VD", "CLIENTE SITE"
+  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -177,19 +189,9 @@ const LiveChat: React.FC = () => {
   const filteredMessages = WebhookSystem.messages.filter(msg => {
     const statusMatch = filterStatus === 'all' || msg.status === filterStatus;
     const priorityMatch = filterPriority === 'all' || msg.priority === filterPriority;
-    return statusMatch && priorityMatch;
+    const tagMatch = filterTag === 'all' || msg.tags.includes(filterTag);
+    return statusMatch && priorityMatch && tagMatch;
   });
-
-  const handleReply = () => {
-    if (replyText.trim() && selectedMessage) {
-      toast({
-        title: "Resposta enviada!",
-        description: `Resposta enviada para ${selectedMessage.client}`,
-      });
-      setReplyText('');
-      setSelectedMessage(null);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -197,7 +199,7 @@ const LiveChat: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Chat em Tempo Real</h2>
-          <p className="text-muted-foreground">Gerencie mensagens dos clientes</p>
+          <p className="text-muted-foreground">Visualize mensagens dos clientes</p>
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
@@ -240,6 +242,45 @@ const LiveChat: React.FC = () => {
             <option value="medium">Média</option>
             <option value="low">Baixa</option>
           </select>
+
+          <div className="relative">
+            <button
+              onClick={() => setShowTagFilter(!showTagFilter)}
+              className="input-premium flex items-center space-x-2"
+            >
+              <span>Tags: {filterTag === 'all' ? 'Todas' : filterTag}</span>
+              <span className="material-icons-outlined text-sm">expand_more</span>
+            </button>
+            
+            {showTagFilter && (
+              <div className="absolute top-full left-0 mt-1 w-64 max-h-60 overflow-y-auto bg-card border border-border rounded-lg shadow-lg z-50">
+                <div className="p-2">
+                  <button
+                    onClick={() => {
+                      setFilterTag('all');
+                      setShowTagFilter(false);
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-muted/50 rounded text-sm"
+                  >
+                    Todas as Tags
+                  </button>
+                  <div className="border-t border-border my-2"></div>
+                  {allTags.map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => {
+                        setFilterTag(tag);
+                        setShowTagFilter(false);
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-muted/50 rounded text-sm"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -301,7 +342,7 @@ const LiveChat: React.FC = () => {
           </div>
         </div>
 
-        {/* Chat Individual */}
+        {/* Chat Individual - Apenas Visualização */}
         <div className="lg:col-span-2">
           <div className="card-floating h-96 flex flex-col">
             {selectedMessage ? (
@@ -330,7 +371,7 @@ const LiveChat: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Mensagens */}
+                {/* Mensagens - Apenas Visualização */}
                 <div className="flex-1 p-4 overflow-y-auto space-y-4">
                   <div className="flex justify-end">
                     <div className="bg-primary text-primary-foreground rounded-lg px-4 py-2 max-w-xs">
@@ -349,23 +390,14 @@ const LiveChat: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Input de Resposta */}
+                {/* Área de Tags */}
                 <div className="p-4 border-t border-border">
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      placeholder="Digite sua resposta..."
-                      className="flex-1 input-premium"
-                    />
-                    <button
-                      onClick={handleReply}
-                      disabled={!replyText.trim()}
-                      className="btn-premium disabled:opacity-50"
-                    >
-                      Enviar
-                    </button>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedMessage.tags.map((tag, index) => (
+                      <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </>
@@ -373,7 +405,7 @@ const LiveChat: React.FC = () => {
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center">
                   <span className="material-icons-outlined text-4xl text-muted-foreground mb-4">chat</span>
-                  <p className="text-muted-foreground">Selecione uma mensagem para começar o chat</p>
+                  <p className="text-muted-foreground">Selecione uma mensagem para visualizar o chat</p>
                 </div>
               </div>
             )}
@@ -2056,22 +2088,13 @@ const CampaignsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Tabela de Campanhas */}
       <div className="card-floating overflow-hidden">
         <div className="p-6 border-b border-border">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-foreground">
               Campanhas ({campanhas.length})
             </h3>
-            <div className="flex gap-2">
-              <button className="btn-glass">
-                <span className="material-icons-outlined">download</span>
-                Exportar
-              </button>
-              <button className="btn-glass">
-                <span className="material-icons-outlined">refresh</span>
-                Atualizar
-              </button>
-            </div>
           </div>
         </div>
         
