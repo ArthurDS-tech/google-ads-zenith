@@ -70,6 +70,39 @@ const WebhookSystem = {
       tags: ["documentação", "palhoça", "atendimento"],
       source: "telefone",
       priority: "medium"
+    },
+    {
+      id: "msg_006",
+      client: "Fernanda Lima",
+      phone: "+55 48 99999-1111",
+      message: "Gostaria de saber sobre os serviços de despachante. Vocês fazem transferência de veículos?",
+      timestamp: "2025-06-30T16:30:00Z",
+      status: "new",
+      tags: ["transferência", "consulta", "serviços"],
+      source: "site",
+      priority: "high"
+    },
+    {
+      id: "msg_007",
+      client: "Roberto Alves",
+      phone: "+55 48 99999-2222",
+      message: "Preciso de ajuda com multas. Qual o processo para resolver?",
+      timestamp: "2025-06-30T16:25:00Z",
+      status: "in_progress",
+      tags: ["multas", "processo", "ajuda"],
+      source: "site",
+      priority: "medium"
+    },
+    {
+      id: "msg_008",
+      client: "Lucia Pereira",
+      phone: "+55 48 99999-3333",
+      message: "Quanto custa o licenciamento anual? E qual a documentação necessária?",
+      timestamp: "2025-06-30T16:20:00Z",
+      status: "new",
+      tags: ["licenciamento", "custo", "documentação"],
+      source: "site",
+      priority: "high"
     }
   ],
 
@@ -125,7 +158,19 @@ const LiveChat: React.FC = () => {
       case 'instagram': return '📷';
       case 'facebook': return '📘';
       case 'telefone': return '📞';
+      case 'site': return '🌐';
       default: return '💬';
+    }
+  };
+
+  const getClientTag = (source: string) => {
+    switch (source) {
+      case 'whatsapp': return { text: 'WhatsApp', color: 'bg-green-100 text-green-800' };
+      case 'instagram': return { text: 'Instagram', color: 'bg-pink-100 text-pink-800' };
+      case 'facebook': return { text: 'Facebook', color: 'bg-blue-100 text-blue-800' };
+      case 'telefone': return { text: 'Telefone', color: 'bg-purple-100 text-purple-800' };
+      case 'site': return { text: 'Site', color: 'bg-orange-100 text-orange-800' };
+      default: return { text: 'Chat', color: 'bg-gray-100 text-gray-800' };
     }
   };
 
@@ -161,6 +206,12 @@ const LiveChat: React.FC = () => {
           </div>
           <div className="text-sm text-muted-foreground">
             {WebhookSystem.webhookStats.messagesPerMinute} msg/min
+          </div>
+          {/* Tag de Cliente de Site */}
+          <div className="flex items-center space-x-2">
+            <span className="px-3 py-1 bg-orange-100 text-orange-800 text-sm font-medium rounded-full border border-orange-200">
+              🌐 Cliente Site
+            </span>
           </div>
         </div>
       </div>
@@ -200,46 +251,52 @@ const LiveChat: React.FC = () => {
               <h3 className="font-semibold text-foreground">Mensagens ({filteredMessages.length})</h3>
             </div>
             <div className="max-h-96 overflow-y-auto">
-              {filteredMessages.map((message) => (
-                <div
-                  key={message.id}
-                  onClick={() => setSelectedMessage(message)}
-                  className={`p-4 border-b border-border/50 cursor-pointer hover:bg-muted/50 transition-colors ${
-                    selectedMessage?.id === message.id ? 'bg-primary/10 border-primary/20' : ''
-                  }`}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">{getSourceIcon(message.source)}</span>
-                      <div>
-                        <h4 className="font-medium text-foreground">{message.client}</h4>
-                        <p className="text-sm text-muted-foreground">{message.phone}</p>
+              {filteredMessages.map((message) => {
+                const clientTag = getClientTag(message.source);
+                return (
+                  <div
+                    key={message.id}
+                    onClick={() => setSelectedMessage(message)}
+                    className={`p-4 border-b border-border/50 cursor-pointer hover:bg-muted/50 transition-colors ${
+                      selectedMessage?.id === message.id ? 'bg-primary/10 border-primary/20' : ''
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">{getSourceIcon(message.source)}</span>
+                        <div>
+                          <h4 className="font-medium text-foreground">{message.client}</h4>
+                          <p className="text-sm text-muted-foreground">{message.phone}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${clientTag.color}`}>
+                          {clientTag.text}
+                        </span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(message.priority)}`}>
+                          {message.priority}
+                        </span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(message.status)}`}>
+                          {message.status}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(message.priority)}`}>
-                        {message.priority}
-                      </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(message.status)}`}>
-                        {message.status}
+                    <p className="text-sm text-foreground mb-2 line-clamp-2">{message.message}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap gap-1">
+                        {message.tags.map((tag, index) => (
+                          <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(message.timestamp).toLocaleTimeString('pt-BR')}
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm text-foreground mb-2 line-clamp-2">{message.message}</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-wrap gap-1">
-                      {message.tags.map((tag, index) => (
-                        <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(message.timestamp).toLocaleTimeString('pt-BR')}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -260,6 +317,9 @@ const LiveChat: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getClientTag(selectedMessage.source).color}`}>
+                        {getClientTag(selectedMessage.source).text}
+                      </span>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedMessage.status)}`}>
                         {selectedMessage.status}
                       </span>
