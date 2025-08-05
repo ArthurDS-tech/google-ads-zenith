@@ -414,7 +414,7 @@ const LiveChat: React.FC = () => {
               {/* Filtro por Tags */}
               <div className="mb-6">
                 <h4 className="font-medium text-foreground mb-3">Tags</h4>
-                <div className="space-y-2 max-h-32 overflow-y-auto">
+                <div className="space-y-2 max-h-48 overflow-y-auto">
                   <button
                     onClick={() => setSelectedTags([])}
                     className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
@@ -425,16 +425,25 @@ const LiveChat: React.FC = () => {
                   >
                     Todas as Tags
                   </button>
-                  {allTags.slice(0, 10).map((tag) => (
+                  {allTags.map((tag) => (
                     <button
                       key={tag}
-                      onClick={() => setSelectedTags([tag])}
+                      onClick={() => {
+                        if (selectedTags.includes(tag)) {
+                          setSelectedTags(selectedTags.filter(t => t !== tag));
+                        } else {
+                          setSelectedTags([...selectedTags, tag]);
+                        }
+                      }}
                       className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
                         selectedTags.includes(tag) 
                           ? 'bg-blue-100 text-blue-800 font-medium' 
                           : 'hover:bg-muted/50'
                       }`}
                     >
+                      {selectedTags.includes(tag) && (
+                        <span className="material-icons-outlined text-sm mr-1">check</span>
+                      )}
                       {tag}
                     </button>
                   ))}
@@ -2282,16 +2291,7 @@ const CampaignsPage: React.FC = () => {
           <h2 className="text-2xl font-bold text-foreground">Campanhas</h2>
           <p className="text-muted-foreground">Gerencie suas campanhas do Google Ads</p>
         </div>
-        <div className="flex gap-3">
-          <button className="btn-glass">
-            <span className="material-icons-outlined">filter_list</span>
-            Filtros
-          </button>
-          <button className="btn-premium">
-            <span className="material-icons-outlined">add</span>
-            Nova Campanha
-          </button>
-        </div>
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -2755,8 +2755,6 @@ const AdsPage: React.FC = () => {
                 <tr>
                   <th>Anúncio</th>
                   <th>Campanha</th>
-                  <th>Tipo</th>
-                  <th>Status</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -2776,12 +2774,6 @@ const AdsPage: React.FC = () => {
                         {getCampaignName(ad.campaignId)}
                       </span>
                     </td>
-                    <td>
-                      <span className="px-3 py-1 bg-muted/50 rounded-full text-xs font-medium">
-                        {ad.type}
-                      </span>
-                    </td>
-                    <td>{getStatusBadge(ad.status)}</td>
                     <td>
                       <div className="flex space-x-1">
                         <button
