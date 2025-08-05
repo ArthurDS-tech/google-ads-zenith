@@ -1589,363 +1589,198 @@ const GoogleAdsApp: React.FC = () => {
 
 // Dashboard Page Component
 const DashboardPage: React.FC = () => {
-  const [metrics, setMetrics] = useState<any>(null);
-  const [campaigns, setCampaigns] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    Promise.all([
-      api.getMetrics(),
-      api.getCampaigns()
-    ]).then(([metricsData, campaignsData]) => {
-      setMetrics(metricsData);
-      setCampaigns(campaignsData.slice(0, 5));
-      setLoading(false);
-    });
-  }, []);
-  
-  const metricCards = [
-    { 
-      title: 'Total de Cliques', 
-      value: metrics?.totalClicks || 0, 
-      icon: 'mouse', 
-      color: 'text-google-blue',
-      format: (val: number) => val.toLocaleString('pt-BR'),
-      change: '+12.5%',
-      changeType: 'positive'
+  // Dados estáticos conforme fornecido
+  const periodoAnalise = "01/07/2025 a 01/08/2025";
+  const periodoComparacao = "Sem período de comparação";
+  const custo = "R$1.561,29";
+  const impressoes = "22.688";
+  const cliques = "1.127";
+  const ctr = "4,97%";
+  const cpcMedio = "R$1,39";
+  const taxaConversao = "16,81%";
+  const custoPorConversao = "R$8,24";
+  const conversoes = "189,5";
+  const impressoesPrimeiraPos = "15,98%";
+  const impressoesTopo = "70,24%";
+
+  const campanhas = [
+    {
+      nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
+      impressoes: "8.023",
+      cliques: "456",
+      ctr: "5,68%",
+      cpc: "R$0,69",
+      conversoes: "79",
+      custoPorConversao: "R$3,96",
+      taxaConversao: "17,32%",
+      taxaCliques: "12,23%",
+      taxaTopo: "67,68%",
+      custo: "R$313,02"
     },
-    { 
-      title: 'Impressões', 
-      value: metrics?.totalImpressions || 0, 
-      icon: 'visibility', 
-      color: 'text-google-green',
-      format: (val: number) => val.toLocaleString('pt-BR'),
-      change: '+8.7%',
-      changeType: 'positive'
+    {
+      nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: "3.477",
+      cliques: "186",
+      ctr: "5,35%",
+      cpc: "R$1,62",
+      conversoes: "26,5",
+      custoPorConversao: "R$11,39",
+      taxaConversao: "14,25%",
+      taxaCliques: "18,99%",
+      taxaTopo: "76,01%",
+      custo: "R$301,88"
     },
-    { 
-      title: 'Conversões', 
-      value: metrics?.totalConversions || 0, 
-      icon: 'trending_up', 
-      color: 'text-google-yellow',
-      format: (val: number) => val.toFixed(1),
-      change: '+22.5%',
-      changeType: 'positive'
+    {
+      nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: "4.441",
+      cliques: "173",
+      ctr: "3,9%",
+      cpc: "R$1,71",
+      conversoes: "29,5",
+      custoPorConversao: "R$10,01",
+      taxaConversao: "17,05%",
+      taxaCliques: "17,39%",
+      taxaTopo: "72,1%",
+      custo: "R$295,34"
     },
-    { 
-      title: 'Custo Total', 
-      value: metrics?.totalCost || 0, 
-      icon: 'payments', 
-      color: 'text-google-red',
-      format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-      change: '+15.2%',
-      changeType: 'neutral'
+    {
+      nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25",
+      impressoes: "3.268",
+      cliques: "164",
+      ctr: "5,02%",
+      cpc: "R$1,87",
+      conversoes: "28,5",
+      custoPorConversao: "R$10,78",
+      taxaConversao: "17,38%",
+      taxaCliques: "15,1%",
+      taxaTopo: "70,3%",
+      custo: "R$307,26"
+    },
+    {
+      nome: "Leads-Search-Autofacilcertificados-09-07-25",
+      impressoes: "1.814",
+      cliques: "73",
+      ctr: "4,02%",
+      cpc: "R$3,36",
+      conversoes: "17",
+      custoPorConversao: "R$14,41",
+      taxaConversao: "23,29%",
+      taxaCliques: "12,99%",
+      taxaTopo: "66,77%",
+      custo: "R$244,94"
     }
   ];
-  
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return <span className="badge-success">Ativo</span>;
-      case 'PAUSED':
-        return <span className="badge-warning">Pausado</span>;
-      default:
-        return <span className="badge-error">Inativo</span>;
-    }
-  };
-  
+
+  const campanhasNomes = [
+    "[LEAD] [SERACH] [LP AUTOFÁCIL] Florianópolis - 05/11/24",
+    "Auto Facil WORKING",
+    "[LEAD] [SERACH] [LP AUTOFÁCIL] São José - 02/10/24",
+    "Auto Facil WORKING",
+    "[LEAD] [SERACH] [LP AUTOFÁCIL] Palhoça - 05/11/2024",
+    "Auto Facil WORKING"
+  ];
+
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metricCards.map((metric, index) => (
-          <div key={metric.title} className="metric-card group" style={{ animationDelay: `${index * 0.1}s` }}>
-            {loading ? (
-              <SkeletonCard />
-            ) : (
-              <>
-                <div className={`metric-icon ${metric.color}`}>
-                  <span className="material-icons-outlined">{metric.icon}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-bold text-foreground mb-1">
-                    {metric.format(metric.value)}
-                  </h3>
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    metric.changeType === 'positive' 
-                      ? 'bg-green-100 text-green-700' 
-                      : metric.changeType === 'negative'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-gray-100 text-gray-700'
-                  }`}>
-                    {metric.change}
-                  </span>
-                </div>
-                <p className="text-muted-foreground text-sm">{metric.title}</p>
-              </>
-            )}
-          </div>
-        ))}
-      </div>
-      
-      {/* Quick Actions & ROI Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="card-floating p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Ações Rápidas</h3>
-            <span className="material-icons-outlined text-primary">bolt</span>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <button className="btn-premium">
-              <span className="material-icons-outlined">add</span>
-              Nova Campanha
-            </button>
-            <button className="btn-glass">
-              <span className="material-icons-outlined">analytics</span>
-              Ver Relatórios
-            </button>
-            <button className="btn-glass">
-              <span className="material-icons-outlined">tune</span>
-              Otimizar
-            </button>
-            <button className="btn-glass">
-              <span className="material-icons-outlined">download</span>
-              Exportar Dados
-            </button>
-          </div>
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Dashboard de Despachante Marcelino</h2>
+          <div className="text-muted-foreground text-sm mt-1">Período de análise: <b>{periodoAnalise}</b></div>
+          <div className="text-muted-foreground text-sm">Período de comparação: <b>{periodoComparacao}</b></div>
         </div>
-        
-        <div className="card-floating p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Métricas de ROI</h3>
-            <span className="material-icons-outlined text-accent">trending_up</span>
-          </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">ROAS Médio</span>
-              <span className="font-bold text-green-600">4.2x</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Custo por Conversão</span>
-              <span className="font-bold text-blue-600">R$ 33,67</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Taxa de Conversão</span>
-              <span className="font-bold text-purple-600">22.5%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">CPC Médio</span>
-              <span className="font-bold text-orange-600">R$ 7,58</span>
-            </div>
-          </div>
+        <button className="btn btn-primary">Atualizar período</button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="metric-card">
+          <div className="metric-title">Custo</div>
+          <div className="metric-value">{custo}</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-title">Impressões</div>
+          <div className="metric-value">{impressoes}</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-title">Cliques</div>
+          <div className="metric-value">{cliques}</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-title">CTR</div>
+          <div className="metric-value">{ctr}</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-title">CPC médio</div>
+          <div className="metric-value">{cpcMedio}</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-title">Taxa de Conversão</div>
+          <div className="metric-value">{taxaConversao}</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-title">Custo por Conversão</div>
+          <div className="metric-value">{custoPorConversao}</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-title">Conversões</div>
+          <div className="metric-value">{conversoes}</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-title">% de impressões (1ª posição)</div>
+          <div className="metric-value">{impressoesPrimeiraPos}</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-title">% de impressões (parte superior)</div>
+          <div className="metric-value">{impressoesTopo}</div>
         </div>
       </div>
 
-      {/* Insights Premium */}
-      <div className="card-floating p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">Insights Premium</h3>
-          <span className="material-icons-outlined text-accent">lightbulb</span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-3 rounded-lg bg-green-50 border border-green-200">
-            <p className="text-sm text-green-800 font-medium">
-              📈 Campanha "São José" com CTR de 3.89% - melhor performance regional
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
-            <p className="text-sm text-blue-800 font-medium">
-              🎯 "Florianópolis" com 320 cliques e 85 conversões - excelente ROI
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-200">
-            <p className="text-sm text-yellow-800 font-medium">
-              ⚡ "Palhoça" com CTR baixo (2.54%) - considerar otimização de keywords
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Análise de Palavras-Chave */}
-      <div className="card-floating p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">Análise de Palavras-Chave</h3>
-          <span className="material-icons-outlined text-primary">search</span>
-        </div>
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Todas as Campanhas</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="min-w-full bg-card border border-border rounded-lg">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-2 font-medium">Palavra-Chave</th>
-                <th className="text-center py-2 font-medium">Cliques</th>
-                <th className="text-center py-2 font-medium">Custo</th>
-                <th className="text-center py-2 font-medium">CTR</th>
-                <th className="text-center py-2 font-medium">CPC</th>
+              <tr>
+                <th className="px-4 py-2">Campanha</th>
+                <th className="px-4 py-2">Impressões</th>
+                <th className="px-4 py-2">Cliques</th>
+                <th className="px-4 py-2">CTR</th>
+                <th className="px-4 py-2">CPC</th>
+                <th className="px-4 py-2">Conversões</th>
+                <th className="px-4 py-2">Custo/Conv.</th>
+                <th className="px-4 py-2">Taxa Conv.</th>
+                <th className="px-4 py-2">Taxa Cliques</th>
+                <th className="px-4 py-2">Taxa Topo</th>
+                <th className="px-4 py-2">Custo</th>
               </tr>
             </thead>
-            <tbody className="space-y-2">
-              <tr className="border-b border-border/50">
-                <td className="py-2 font-medium">despachante florianópolis</td>
-                <td className="text-center py-2">320</td>
-                <td className="text-center py-2">R$ 2.720,00</td>
-                <td className="text-center py-2 text-green-600">3.76%</td>
-                <td className="text-center py-2">R$ 8,50</td>
-              </tr>
-              <tr className="border-b border-border/50">
-                <td className="py-2 font-medium">despachante são josé</td>
-                <td className="text-center py-2">280</td>
-                <td className="text-center py-2">R$ 2.184,00</td>
-                <td className="text-center py-2 text-green-600">3.89%</td>
-                <td className="text-center py-2">R$ 7,80</td>
-              </tr>
-              <tr className="border-b border-border/50">
-                <td className="py-2 font-medium">despachante palhoça</td>
-                <td className="text-center py-2">259</td>
-                <td className="text-center py-2">R$ 1.605,86</td>
-                <td className="text-center py-2 text-yellow-600">2.54%</td>
-                <td className="text-center py-2">R$ 6,20</td>
-              </tr>
+            <tbody>
+              {campanhas.map((c, i) => (
+                <tr key={i} className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">{c.nome}</td>
+                  <td className="px-4 py-2">{c.impressoes}</td>
+                  <td className="px-4 py-2">{c.cliques}</td>
+                  <td className="px-4 py-2">{c.ctr}</td>
+                  <td className="px-4 py-2">{c.cpc}</td>
+                  <td className="px-4 py-2">{c.conversoes}</td>
+                  <td className="px-4 py-2">{c.custoPorConversao}</td>
+                  <td className="px-4 py-2">{c.taxaConversao}</td>
+                  <td className="px-4 py-2">{c.taxaCliques}</td>
+                  <td className="px-4 py-2">{c.taxaTopo}</td>
+                  <td className="px-4 py-2">{c.custo}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Performance por Setor */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="card-floating p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Performance por Setor</h3>
-            <span className="material-icons-outlined text-primary">trending_up</span>
-          </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-              <div>
-                <p className="font-medium text-green-800">Florianópolis</p>
-                <p className="text-sm text-green-600">CTR: 3.76% | CPC: R$ 8.50</p>
-              </div>
-              <span className="text-green-600 font-bold">+15.2%</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-              <div>
-                <p className="font-medium text-blue-800">São José</p>
-                <p className="text-sm text-blue-600">CTR: 3.89% | CPC: R$ 7.80</p>
-              </div>
-              <span className="text-blue-600 font-bold">+12.8%</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-              <div>
-                <p className="font-medium text-yellow-800">Palhoça</p>
-                <p className="text-sm text-yellow-600">CTR: 2.54% | CPC: R$ 6.20</p>
-              </div>
-              <span className="text-yellow-600 font-bold">+8.5%</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="card-floating p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Orçamento por Campanha</h3>
-            <span className="material-icons-outlined text-primary">account_balance_wallet</span>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Florianópolis</span>
-              <span className="font-medium">R$ 8.000</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-green-500 h-2 rounded-full" style={{width: '90%'}}></div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">São José</span>
-              <span className="font-medium">R$ 6.000</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-blue-500 h-2 rounded-full" style={{width: '75%'}}></div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Palhoça</span>
-              <span className="font-medium">R$ 5.000</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-yellow-500 h-2 rounded-full" style={{width: '65%'}}></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Campaigns */}
-      <div className="card-floating">
-        <div className="p-6 border-b border-border">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-foreground">Campanhas Recentes</h3>
-            <button className="text-primary hover:text-primary-hover transition-colors">
-              Ver todas
-            </button>
-          </div>
-        </div>
-        
-        {loading ? (
-          <SkeletonTable />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="table-premium">
-              <thead>
-                <tr>
-                  <th>Nome da Campanha</th>
-                  <th>Tipo</th>
-                  <th>Status</th>
-                  <th>Orçamento</th>
-                  <th>Cliques</th>
-                  <th>CTR</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {campaigns.map(campaign => (
-                  <tr key={campaign.id}>
-                    <td>
-                      <div className="font-medium text-foreground">{campaign.name}</div>
-                      <div className="text-sm text-muted-foreground">ID: {campaign.id}</div>
-                    </td>
-                    <td>
-                      <span className="px-2 py-1 bg-muted/50 rounded-lg text-xs font-medium">
-                        {campaign.type}
-                      </span>
-                    </td>
-                    <td>{getStatusBadge(campaign.status)}</td>
-                    <td className="font-medium">
-                      R$ {campaign.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td>{campaign.clicks.toLocaleString('pt-BR')}</td>
-                    <td>
-                      <span className={`text-sm ${
-                        campaign.ctr >= 4.0 ? 'text-green-600' : 
-                        campaign.ctr >= 3.0 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {campaign.ctr}%
-                      </span>
-                    </td>
-                    <td>
-                      <div className="flex space-x-2">
-                        <button className="p-1 hover:bg-muted/50 rounded transition-colors" title="Editar">
-                          <span className="material-icons-outlined text-sm">edit</span>
-                        </button>
-                        <button className="p-1 hover:bg-muted/50 rounded transition-colors" title="Ver detalhes">
-                          <span className="material-icons-outlined text-sm">visibility</span>
-                        </button>
-                        <button className="p-1 hover:bg-muted/50 rounded transition-colors" title="Relatórios">
-                          <span className="material-icons-outlined text-sm">analytics</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Campanhas</h3>
+        <ul className="list-disc pl-6 space-y-1">
+          {campanhasNomes.map((nome, i) => (
+            <li key={i}>{nome}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
@@ -2338,13 +2173,11 @@ const CampaignsPage: React.FC = () => {
                 {filteredAndSortedCampaigns.map(campaign => (
                   <tr key={campaign.id}>
                     <td>
-                      <div>
-                        <div className="font-medium text-foreground">{campaign.name}</div>
-                        <div className="text-sm text-muted-foreground">ID: {campaign.id}</div>
-                      </div>
+                      <div className="font-medium text-foreground">{campaign.name}</div>
+                      <div className="text-sm text-muted-foreground">ID: {campaign.id}</div>
                     </td>
                     <td>
-                      <span className="px-3 py-1 bg-muted/50 rounded-full text-xs font-medium">
+                      <span className="px-2 py-1 bg-muted/50 rounded-lg text-xs font-medium">
                         {campaign.type}
                       </span>
                     </td>
@@ -2353,7 +2186,14 @@ const CampaignsPage: React.FC = () => {
                       R$ {campaign.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </td>
                     <td>{campaign.clicks.toLocaleString('pt-BR')}</td>
-                    <td>{campaign.ctr}%</td>
+                    <td>
+                      <span className={`text-sm ${
+                        campaign.ctr >= 4.0 ? 'text-green-600' : 
+                        campaign.ctr >= 3.0 ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        {campaign.ctr}%
+                      </span>
+                    </td>
                     <td>R$ {campaign.cpc.toFixed(2)}</td>
                     <td>{campaign.conversions}</td>
                     <td>
