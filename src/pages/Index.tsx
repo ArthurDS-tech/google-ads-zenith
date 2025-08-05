@@ -1523,10 +1523,7 @@ const GoogleAdsApp: React.FC = () => {
             {navigationItems.map(item => (
               <li key={item.id}>
                 <button
-                  onClick={() => {
-                    console.log('Clicou em:', item.id); // Debug
-                    setCurrentPage(item.id);
-                  }}
+                  onClick={() => setCurrentPage(item.id)}
                   className={`nav-item w-full ${currentPage === item.id ? 'active' : ''}`}
                 >
                   <span className="material-icons-outlined text-xl">{item.icon}</span>
@@ -1858,10 +1855,8 @@ const DashboardPage: React.FC = () => {
   );
 };
 
-// Campaigns Page Component - CORRIGIDO PARA DADOS ESTÁTICOS
+// Campaigns Page Component - LAYOUT MELHORADO GOOGLE ADS
 const CampaignsPage: React.FC = () => {
-  console.log('CampaignsPage está sendo renderizado'); // Debug
-
   // Dados estáticos do relatório
   const campanhas = [
     {
@@ -1875,7 +1870,8 @@ const CampaignsPage: React.FC = () => {
       taxaConversao: "17,32%",
       taxaCliques: "12,23%",
       taxaTopo: "67,68%",
-      custo: "R$313,02"
+      custo: "R$313,02",
+      status: "Ativo"
     },
     {
       nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
@@ -1888,7 +1884,8 @@ const CampaignsPage: React.FC = () => {
       taxaConversao: "14,25%",
       taxaCliques: "18,99%",
       taxaTopo: "76,01%",
-      custo: "R$301,88"
+      custo: "R$301,88",
+      status: "Ativo"
     },
     {
       nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
@@ -1901,7 +1898,8 @@ const CampaignsPage: React.FC = () => {
       taxaConversao: "17,05%",
       taxaCliques: "17,39%",
       taxaTopo: "72,1%",
-      custo: "R$295,34"
+      custo: "R$295,34",
+      status: "Ativo"
     },
     {
       nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25",
@@ -1914,7 +1912,8 @@ const CampaignsPage: React.FC = () => {
       taxaConversao: "17,38%",
       taxaCliques: "15,1%",
       taxaTopo: "70,3%",
-      custo: "R$307,26"
+      custo: "R$307,26",
+      status: "Ativo"
     },
     {
       nome: "Leads-Search-Autofacilcertificados-09-07-25",
@@ -1927,53 +1926,157 @@ const CampaignsPage: React.FC = () => {
       taxaConversao: "23,29%",
       taxaCliques: "12,99%",
       taxaTopo: "66,77%",
-      custo: "R$244,94"
+      custo: "R$244,94",
+      status: "Ativo"
     }
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in" style={{ minHeight: '400px' }}>
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-        <h2 className="text-2xl font-bold text-foreground mb-2">✅ Página de Campanhas Funcionando</h2>
-        <p className="text-blue-800">Esta é a página de campanhas com os dados do relatório.</p>
+    <div className="space-y-6 animate-fade-in">
+      {/* Header com Ações */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Campanhas</h2>
+          <p className="text-muted-foreground">Gerencie suas campanhas do Google Ads</p>
+        </div>
+        <div className="flex gap-3">
+          <button className="btn-glass">
+            <span className="material-icons-outlined">filter_list</span>
+            Filtros
+          </button>
+          <button className="btn-premium">
+            <span className="material-icons-outlined">add</span>
+            Nova Campanha
+          </button>
+        </div>
       </div>
-      
-      <h2 className="text-2xl font-bold text-foreground mb-4">Todas as Campanhas</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-card border border-border rounded-lg">
-          <thead>
-            <tr>
-              <th className="px-4 py-2">Campanha</th>
-              <th className="px-4 py-2">Impressões</th>
-              <th className="px-4 py-2">Cliques</th>
-              <th className="px-4 py-2">CTR</th>
-              <th className="px-4 py-2">CPC</th>
-              <th className="px-4 py-2">Conversões</th>
-              <th className="px-4 py-2">Custo/Conv.</th>
-              <th className="px-4 py-2">Taxa Conv.</th>
-              <th className="px-4 py-2">Taxa Cliques</th>
-              <th className="px-4 py-2">Taxa Topo</th>
-              <th className="px-4 py-2">Custo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {campanhas.map((c, i) => (
-              <tr key={i} className="border-t border-border">
-                <td className="px-4 py-2 font-medium">{c.nome}</td>
-                <td className="px-4 py-2">{c.impressoes}</td>
-                <td className="px-4 py-2">{c.cliques}</td>
-                <td className="px-4 py-2">{c.ctr}</td>
-                <td className="px-4 py-2">{c.cpc}</td>
-                <td className="px-4 py-2">{c.conversoes}</td>
-                <td className="px-4 py-2">{c.custoPorConversao}</td>
-                <td className="px-4 py-2">{c.taxaConversao}</td>
-                <td className="px-4 py-2">{c.taxaCliques}</td>
-                <td className="px-4 py-2">{c.taxaTopo}</td>
-                <td className="px-4 py-2">{c.custo}</td>
+
+      {/* Cards de Estatísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">campaign</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{campanhas.length}</h3>
+          <p className="text-muted-foreground text-sm">Campanhas Ativas</p>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-accent/10 text-accent rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">trending_up</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">R$ 1.461,50</h3>
+          <p className="text-muted-foreground text-sm">Custo Total</p>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-google-green/10 text-google-green rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">mouse</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">1.052</h3>
+          <p className="text-muted-foreground text-sm">Total de Cliques</p>
+        </div>
+        
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-google-yellow/10 text-google-yellow rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">check_circle</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">180</h3>
+          <p className="text-muted-foreground text-sm">Conversões</p>
+        </div>
+      </div>
+
+      {/* Tabela de Campanhas */}
+      <div className="card-floating overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-foreground">
+              Campanhas ({campanhas.length})
+            </h3>
+            <div className="flex gap-2">
+              <button className="btn-glass">
+                <span className="material-icons-outlined">download</span>
+                Exportar
+              </button>
+              <button className="btn-glass">
+                <span className="material-icons-outlined">refresh</span>
+                Atualizar
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="table-premium">
+            <thead>
+              <tr>
+                <th className="text-left">
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" className="rounded" />
+                    Campanha
+                  </div>
+                </th>
+                <th>Status</th>
+                <th>Impressões</th>
+                <th>Cliques</th>
+                <th>CTR</th>
+                <th>CPC</th>
+                <th>Conversões</th>
+                <th>Custo/Conv.</th>
+                <th>Custo</th>
+                <th>Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {campanhas.map((c, i) => (
+                <tr key={i} className="hover:bg-muted/30 transition-colors">
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" className="rounded" />
+                      <div>
+                        <div className="font-medium text-foreground">{c.nome}</div>
+                        <div className="text-sm text-muted-foreground">Search Network</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span className="badge-success">{c.status}</span>
+                  </td>
+                  <td className="font-medium">{c.impressoes}</td>
+                  <td className="font-medium">{c.cliques}</td>
+                  <td>
+                    <span className={`text-sm ${
+                      parseFloat(c.ctr.replace(',', '.')) >= 4.0 ? 'text-green-600' : 
+                      parseFloat(c.ctr.replace(',', '.')) >= 3.0 ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
+                      {c.ctr}
+                    </span>
+                  </td>
+                  <td className="font-medium">{c.cpc}</td>
+                  <td>{c.conversoes}</td>
+                  <td className="font-medium">{c.custoPorConversao}</td>
+                  <td className="font-medium">{c.custo}</td>
+                  <td>
+                    <div className="flex space-x-1">
+                      <button className="p-2 hover:bg-muted/50 rounded-lg transition-colors" title="Editar">
+                        <span className="material-icons-outlined text-sm">edit</span>
+                      </button>
+                      <button className="p-2 hover:bg-muted/50 rounded-lg transition-colors" title="Ver detalhes">
+                        <span className="material-icons-outlined text-sm">visibility</span>
+                      </button>
+                      <button className="p-2 hover:bg-muted/50 rounded-lg transition-colors" title="Relatórios">
+                        <span className="material-icons-outlined text-sm">analytics</span>
+                      </button>
+                      <button className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-destructive" title="Pausar">
+                        <span className="material-icons-outlined text-sm">pause</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
