@@ -1550,7 +1550,6 @@ const GoogleAdsApp: React.FC = () => {
   // Navigation items
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'webhooks', label: 'Webhooks', icon: 'webhook' },
     { id: 'chat', label: 'Chat', icon: 'chat' },
     { id: 'campaigns', label: 'Campanhas', icon: 'campaign' },
     { id: 'ads', label: 'Anúncios', icon: 'ads_click' },
@@ -1634,7 +1633,6 @@ const GoogleAdsApp: React.FC = () => {
         {/* Page Content */}
         <main className="flex-1 p-6 overflow-auto">
           {currentPage === 'dashboard' && <DashboardPage />}
-          {currentPage === 'webhooks' && <WebhookStats />}
           {currentPage === 'chat' && <LiveChat />}
           {currentPage === 'campaigns' && <CampaignsPage />}
           {currentPage === 'ads' && <AdsPage />}
