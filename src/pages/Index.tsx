@@ -25,10 +25,10 @@ const WebhookSystem = {
       status: "new",
       tags: ["Troca"],
       source: "whatsapp",
-      priority: "medium",
       attendant: "Ester",
       channel: "AUTO FACIL DESPACHANTE - DVA",
-      sector: "DVA"
+      sector: "DVA",
+      organizationMemberId: "ZW-E1ydfRz6GV84t"
     },
     {
       id: "msg_002",
@@ -39,10 +39,10 @@ const WebhookSystem = {
       status: "in_progress",
       tags: ["CLIENTE SITE", "Pendente"],
       source: "whatsapp",
-      priority: "high",
       attendant: "Sarah",
       channel: "AUTO FACIL DESPACHANTE - DVA",
-      sector: "DVA"
+      sector: "DVA",
+      organizationMemberId: "ZW-E1ydfRz6GV84t"
     },
     {
       id: "msg_003",
@@ -53,10 +53,10 @@ const WebhookSystem = {
       status: "resolved",
       tags: ["Transferência", "Realizado"],
       source: "whatsapp",
-      priority: "medium",
       attendant: "Kênia",
       channel: "AUTO FACIL DESPACHANTE - DVA",
-      sector: "DVA"
+      sector: "DVA",
+      organizationMemberId: "ZW-E1ydfRz6GV84t"
     }
   ],
 
@@ -484,18 +484,20 @@ const LiveChat: React.FC = () => {
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center space-x-2">
-                        <span className="text-lg">{getSourceIcon(message.source)}</span>
+                        <span className="text-lg">💬</span>
                         <div>
                           <h4 className="font-medium text-foreground">{message.client}</h4>
                           <p className="text-sm text-muted-foreground">{message.phone}</p>
+                          {message.attendant && (
+                            <p className="text-xs text-blue-600 font-medium">
+                              Atendente: {message.attendant}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${clientTag.color}`}>
                           {clientTag.text}
-                        </span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(message.priority)}`}>
-                          {message.priority}
                         </span>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(message.status)}`}>
                           {message.status}
@@ -531,10 +533,15 @@ const LiveChat: React.FC = () => {
                 <div className="p-4 border-b border-border">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <span className="text-2xl">{getSourceIcon(selectedMessage.source)}</span>
+                      <span className="text-2xl">💬</span>
                       <div>
                         <h3 className="font-semibold text-foreground">{selectedMessage.client}</h3>
                         <p className="text-sm text-muted-foreground">{selectedMessage.phone}</p>
+                        {selectedMessage.attendant && (
+                          <p className="text-xs text-blue-600 font-medium">
+                            Atendente: {selectedMessage.attendant}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -543,9 +550,6 @@ const LiveChat: React.FC = () => {
                       </span>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedMessage.status)}`}>
                         {selectedMessage.status}
-                      </span>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedMessage.priority)}`}>
-                        {selectedMessage.priority}
                       </span>
                     </div>
                   </div>
