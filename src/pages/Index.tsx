@@ -615,53 +615,10 @@ const mockData = {
     avgCpc: 7.58,
     avgCostPerConversion: 33.67
   },
-  notifications: [
-    {
-      id: "notif1",
-      message: "Campanha Florianópolis atingiu 90% do orçamento diário",
-      type: "WARNING",
-      date: "2025-06-30",
-      time: "16:45"
-    },
-    {
-      id: "notif2",
-      message: "Nova conversão registrada na campanha São José",
-      type: "SUCCESS", 
-      date: "2025-06-30",
-      time: "15:30"
-    },
-    {
-      id: "notif3",
-      message: "Campanha São José com CTR de 3.89% - acima da média",
-      type: "SUCCESS",
-      date: "2025-06-30", 
-      time: "14:15"
-    },
-    {
-      id: "notif4",
-      message: "Campanha Palhoça com CTR de 2.54% - considerar otimização",
-      type: "INFO",
-      date: "2025-06-30",
-      time: "13:20"
-    },
-    {
-      id: "notif5",
-      message: "Relatório mensal de junho 2025 disponível para download",
-      type: "INFO",
-      date: "2025-06-30",
-      time: "12:00"
-    },
-    {
-      id: "notif6",
-      message: "CPC médio de R$ 7.58 - dentro do esperado para o setor",
-      type: "INFO",
-      date: "2025-06-30",
-      time: "11:30"
-    }
-  ],
+  notifications: [],
   user: {
-    name: "Bruna Silva",
-    email: "bruna@despachantebruna.com.br",
+    name: "bruna@autofacildespachante.com.br",
+    email: "bruna@autofacildespachante.com.br",
     role: "Despachante",
     department: "Documentação Veicular",
     avatar: "👩‍💼"
@@ -1472,7 +1429,7 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
             <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="material-icons-outlined text-3xl text-white">account_circle</span>
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Despachante Bruna</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Despachante Marcelino</h1>
             <p className="text-white/80">Dashboard de Gestão de Campanhas</p>
           </div>
           
@@ -1484,7 +1441,7 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
                 type="email"
                 className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
                 placeholder="Seu email"
-                defaultValue="bruna@despachantebruna.com.br"
+                defaultValue="bruna@autofacildespachante.com.br"
               />
             </div>
             
@@ -1548,9 +1505,6 @@ const GoogleAdsApp: React.FC = () => {
     { id: 'chat', label: 'Chat', icon: 'chat' },
     { id: 'campaigns', label: 'Campanhas', icon: 'campaign' },
     { id: 'ads', label: 'Anúncios', icon: 'ads_click' },
-    { id: 'reports', label: 'Relatórios', icon: 'analytics' },
-    { id: 'settings', label: 'Configurações', icon: 'settings' },
-    { id: 'profile', label: 'Perfil', icon: 'person' },
   ];
   
   return (
@@ -1567,7 +1521,7 @@ const GoogleAdsApp: React.FC = () => {
             </div>
             <div>
               <h2 className="font-bold text-foreground">Google Ads</h2>
-              <p className="text-xs text-muted-foreground">Dashboard Despachante Bruna</p>
+              <p className="text-xs text-muted-foreground">Dashboard Despachante Marcelino</p>
             </div>
           </div>
         </div>
@@ -1631,9 +1585,6 @@ const GoogleAdsApp: React.FC = () => {
           {currentPage === 'chat' && <LiveChat />}
           {currentPage === 'campaigns' && <CampaignsPage />}
           {currentPage === 'ads' && <AdsPage />}
-          {currentPage === 'reports' && <ReportsPage />}
-          {currentPage === 'settings' && <SettingsPage />}
-          {currentPage === 'profile' && <ProfilePage />}
         </main>
       </div>
     </div>
@@ -1646,11 +1597,89 @@ const DashboardPage: React.FC = () => {
   const periodoAnalise = "01/07/2025 a 01/08/2025";
   const periodoComparacao = "Sem período de comparação";
 
+  const campanhas = [
+    {
+      nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
+      impressoes: 8023,
+      cliques: 456,
+      ctr: 5.68,
+      cpc: 0.69,
+      conversoes: 79,
+      custoPorConversao: 3.96,
+      taxaConversao: 17.32,
+      taxaCliques: 12.23,
+      taxaTopo: 67.68,
+      custo: 313.02
+    },
+    {
+      nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: 3477,
+      cliques: 186,
+      ctr: 5.35,
+      cpc: 1.62,
+      conversoes: 26.5,
+      custoPorConversao: 11.39,
+      taxaConversao: 14.25,
+      taxaCliques: 18.99,
+      taxaTopo: 76.01,
+      custo: 301.88
+    },
+    {
+      nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: 4441,
+      cliques: 173,
+      ctr: 3.9,
+      cpc: 1.71,
+      conversoes: 29.5,
+      custoPorConversao: 10.01,
+      taxaConversao: 17.05,
+      taxaCliques: 17.39,
+      taxaTopo: 72.1,
+      custo: 295.34
+    },
+    {
+      nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25",
+      impressoes: 3268,
+      cliques: 164,
+      ctr: 5.02,
+      cpc: 1.87,
+      conversoes: 28.5,
+      custoPorConversao: 10.78,
+      taxaConversao: 17.38,
+      taxaCliques: 15.1,
+      taxaTopo: 70.3,
+      custo: 307.26
+    },
+    {
+      nome: "Leads-Search-Autofacilcertificados-09-07-25",
+      impressoes: 1814,
+      cliques: 73,
+      ctr: 4.02,
+      cpc: 3.36,
+      conversoes: 17,
+      custoPorConversao: 14.41,
+      taxaConversao: 23.29,
+      taxaCliques: 12.99,
+      taxaTopo: 66.77,
+      custo: 244.94
+    }
+  ];
+
+  // Cálculos dinâmicos das métricas
+  const totalImpressoes = campanhas.reduce((sum, c) => sum + c.impressoes, 0);
+  const totalCliques = campanhas.reduce((sum, c) => sum + c.cliques, 0);
+  const totalCusto = campanhas.reduce((sum, c) => sum + c.custo, 0);
+  const totalConversoes = campanhas.reduce((sum, c) => sum + c.conversoes, 0);
+  const ctrMedio = totalImpressoes > 0 ? (totalCliques / totalImpressoes) * 100 : 0;
+  const cpcMedio = totalCliques > 0 ? totalCusto / totalCliques : 0;
+  const custoPorConversao = totalConversoes > 0 ? totalCusto / totalConversoes : 0;
+  const taxaConversao = totalCliques > 0 ? (totalConversoes / totalCliques) * 100 : 0;
+
   // Cards de métricas com design antigo
   const metricCards = [
     {
       title: 'Custo',
-      value: 1561.29,
+      value: totalCusto,
       icon: 'payments',
       color: 'text-google-red',
       format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
@@ -1659,7 +1688,7 @@ const DashboardPage: React.FC = () => {
     },
     {
       title: 'Impressões',
-      value: 22688,
+      value: totalImpressoes,
       icon: 'visibility',
       color: 'text-google-green',
       format: (val: number) => val.toLocaleString('pt-BR'),
@@ -1668,7 +1697,7 @@ const DashboardPage: React.FC = () => {
     },
     {
       title: 'Cliques',
-      value: 1127,
+      value: totalCliques,
       icon: 'mouse',
       color: 'text-google-blue',
       format: (val: number) => val.toLocaleString('pt-BR'),
@@ -1677,7 +1706,7 @@ const DashboardPage: React.FC = () => {
     },
     {
       title: 'CTR',
-      value: 4.97,
+      value: ctrMedio,
       icon: 'trending_up',
       color: 'text-google-yellow',
       format: (val: number) => `${val.toFixed(2)}%`,
@@ -1686,7 +1715,7 @@ const DashboardPage: React.FC = () => {
     },
     {
       title: 'CPC médio',
-      value: 1.39,
+      value: cpcMedio,
       icon: 'attach_money',
       color: 'text-google-blue',
       format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
@@ -1695,7 +1724,7 @@ const DashboardPage: React.FC = () => {
     },
     {
       title: 'Taxa de Conversão',
-      value: 16.81,
+      value: taxaConversao,
       icon: 'percent',
       color: 'text-google-green',
       format: (val: number) => `${val.toFixed(2)}%`,
@@ -1704,7 +1733,7 @@ const DashboardPage: React.FC = () => {
     },
     {
       title: 'Custo por Conversão',
-      value: 8.24,
+      value: custoPorConversao,
       icon: 'calculate',
       color: 'text-google-red',
       format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
@@ -1713,7 +1742,7 @@ const DashboardPage: React.FC = () => {
     },
     {
       title: 'Conversões',
-      value: 189.5,
+      value: totalConversoes,
       icon: 'check_circle',
       color: 'text-google-yellow',
       format: (val: number) => val.toLocaleString('pt-BR'),
@@ -1740,7 +1769,7 @@ const DashboardPage: React.FC = () => {
     },
   ];
 
-  const campanhas = [
+  const campanhasDisplay = [
     {
       nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
       impressoes: "8.023",
@@ -1808,20 +1837,11 @@ const DashboardPage: React.FC = () => {
     }
   ];
 
-  const campanhasNomes = [
-    "[LEAD] [SERACH] [LP AUTOFÁCIL] Florianópolis - 05/11/24",
-    "Auto Facil WORKING",
-    "[LEAD] [SERACH] [LP AUTOFÁCIL] São José - 02/10/24",
-    "Auto Facil WORKING",
-    "[LEAD] [SERACH] [LP AUTOFÁCIL] Palhoça - 05/11/2024",
-    "Auto Facil WORKING"
-  ];
-
   return (
     <div className="space-y-8 animate-fade-in">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Dashboard de Despachante Bruna</h2>
+          <h2 className="text-2xl font-bold text-foreground">Dashboard de Despachante Marcelino</h2>
           <div className="text-muted-foreground text-sm mt-1">Período de análise: <b>{periodoAnalise}</b></div>
           <div className="text-muted-foreground text-sm">Período de comparação: <b>{periodoComparacao}</b></div>
         </div>
@@ -1899,8 +1919,8 @@ const DashboardPage: React.FC = () => {
       <div>
         <h3 className="text-lg font-semibold mb-2">Campanhas</h3>
         <ul className="list-disc pl-6 space-y-1">
-          {campanhasNomes.map((nome, i) => (
-            <li key={i}>{nome}</li>
+          {campanhasDisplay.map((nome, i) => (
+            <li key={i}>{nome.nome}</li>
           ))}
         </ul>
       </div>
@@ -2189,17 +2209,17 @@ const AdsPage: React.FC = () => {
     const csvData = [
       ['Título', 'Descrição', 'Campanha', 'Tipo', 'Status', 'URL'],
       ...filteredAndSortedAds.map(ad => [
-        ad.headline,
-        ad.description,
-        getCampaignName(ad.campaignId),
-        ad.type,
-        ad.status,
-        ad.url
+        `"${ad.headline.replace(/"/g, '""')}"`,
+        `"${ad.description.replace(/"/g, '""')}"`,
+        `"${getCampaignName(ad.campaignId).replace(/"/g, '""')}"`,
+        `"${ad.type}"`,
+        `"${ad.status}"`,
+        `"${ad.url}"`
       ])
     ];
 
     const csvContent = csvData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
