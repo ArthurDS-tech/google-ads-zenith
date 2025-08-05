@@ -1592,16 +1592,100 @@ const DashboardPage: React.FC = () => {
   // Dados estáticos conforme fornecido
   const periodoAnalise = "01/07/2025 a 01/08/2025";
   const periodoComparacao = "Sem período de comparação";
-  const custo = "R$1.561,29";
-  const impressoes = "22.688";
-  const cliques = "1.127";
-  const ctr = "4,97%";
-  const cpcMedio = "R$1,39";
-  const taxaConversao = "16,81%";
-  const custoPorConversao = "R$8,24";
-  const conversoes = "189,5";
-  const impressoesPrimeiraPos = "15,98%";
-  const impressoesTopo = "70,24%";
+
+  // Cards de métricas com design antigo
+  const metricCards = [
+    {
+      title: 'Custo',
+      value: 1561.29,
+      icon: 'payments',
+      color: 'text-google-red',
+      format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Impressões',
+      value: 22688,
+      icon: 'visibility',
+      color: 'text-google-green',
+      format: (val: number) => val.toLocaleString('pt-BR'),
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Cliques',
+      value: 1127,
+      icon: 'mouse',
+      color: 'text-google-blue',
+      format: (val: number) => val.toLocaleString('pt-BR'),
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'CTR',
+      value: 4.97,
+      icon: 'trending_up',
+      color: 'text-google-yellow',
+      format: (val: number) => `${val.toFixed(2)}%`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'CPC médio',
+      value: 1.39,
+      icon: 'attach_money',
+      color: 'text-google-blue',
+      format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Taxa de Conversão',
+      value: 16.81,
+      icon: 'percent',
+      color: 'text-google-green',
+      format: (val: number) => `${val.toFixed(2)}%`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Custo por Conversão',
+      value: 8.24,
+      icon: 'calculate',
+      color: 'text-google-red',
+      format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Conversões',
+      value: 189.5,
+      icon: 'check_circle',
+      color: 'text-google-yellow',
+      format: (val: number) => val.toLocaleString('pt-BR'),
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: '% de impressões (1ª posição)',
+      value: 15.98,
+      icon: 'looks_one',
+      color: 'text-google-blue',
+      format: (val: number) => `${val.toFixed(2)}%`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: '% de impressões (parte superior)',
+      value: 70.24,
+      icon: 'vertical_align_top',
+      color: 'text-google-green',
+      format: (val: number) => `${val.toFixed(2)}%`,
+      change: '',
+      changeType: 'neutral',
+    },
+  ];
 
   const campanhas = [
     {
@@ -1691,47 +1775,32 @@ const DashboardPage: React.FC = () => {
         <button className="btn btn-primary">Atualizar período</button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="metric-card">
-          <div className="metric-title">Custo</div>
-          <div className="metric-value">{custo}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-title">Impressões</div>
-          <div className="metric-value">{impressoes}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-title">Cliques</div>
-          <div className="metric-value">{cliques}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-title">CTR</div>
-          <div className="metric-value">{ctr}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-title">CPC médio</div>
-          <div className="metric-value">{cpcMedio}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-title">Taxa de Conversão</div>
-          <div className="metric-value">{taxaConversao}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-title">Custo por Conversão</div>
-          <div className="metric-value">{custoPorConversao}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-title">Conversões</div>
-          <div className="metric-value">{conversoes}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-title">% de impressões (1ª posição)</div>
-          <div className="metric-value">{impressoesPrimeiraPos}</div>
-        </div>
-        <div className="metric-card">
-          <div className="metric-title">% de impressões (parte superior)</div>
-          <div className="metric-value">{impressoesTopo}</div>
-        </div>
+      {/* Cards de métricas com design antigo */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        {metricCards.map((metric, index) => (
+          <div key={metric.title} className="metric-card group" style={{ animationDelay: `${index * 0.1}s` }}>
+            <div className={`metric-icon ${metric.color}`}>
+              <span className="material-icons-outlined">{metric.icon}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-bold text-foreground mb-1">
+                {metric.format(metric.value)}
+              </h3>
+              {metric.change && (
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  metric.changeType === 'positive'
+                    ? 'bg-green-100 text-green-700'
+                    : metric.changeType === 'negative'
+                    ? 'bg-red-100 text-red-700'
+                    : 'bg-gray-100 text-gray-700'
+                }`}>
+                  {metric.change}
+                </span>
+              )}
+            </div>
+            <p className="text-muted-foreground text-sm">{metric.title}</p>
+          </div>
+        ))}
       </div>
 
       <div>
