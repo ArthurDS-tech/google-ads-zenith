@@ -3,181 +3,137 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from '@/components/ui/toaster';
 import { toast } from '@/components/ui/use-toast';
 
-// Dados Reais do Dashboard - Setor Veicular
+// Dados Reais do Dashboard - Despachante Marcelino
 const mockData = {
   campaigns: [
     {
       id: "CAMP_001",
-      name: "Licenciamento Veicular - Campanha Principal",
+      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Florianópolis - 05/11/24",
       type: "SEARCH",
       status: "ACTIVE",
-      budget: 5000.00,
-      clicks: 119,
-      impressions: 1425,
-      conversions: 28,
-      ctr: 14.71,
-      cpc: 5.95,
-      costPerConversion: 166.65
+      budget: 8000.00,
+      clicks: 320,
+      impressions: 8500,
+      conversions: 85,
+      ctr: 3.76,
+      cpc: 8.50,
+      costPerConversion: 2720.00
     },
     {
       id: "CAMP_002",
-      name: "Despachante Veicular - Campanha Principal",
+      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] São José - 02/10/24",
       type: "SEARCH",
       status: "ACTIVE",
-      budget: 3500.00,
-      clicks: 105,
-      impressions: 2220,
-      conversions: 33,
-      ctr: 17.57,
-      cpc: 7.37,
-      costPerConversion: 243.32
+      budget: 6000.00,
+      clicks: 280,
+      impressions: 7200,
+      conversions: 65,
+      ctr: 3.89,
+      cpc: 7.80,
+      costPerConversion: 2184.00
     },
     {
       id: "CAMP_003", 
-      name: "Licenciamento Veicular - Campanha Secundária",
+      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Palhoça - 05/11/2024",
       type: "SEARCH",
       status: "ACTIVE",
-      budget: 2800.00,
-      clicks: 100,
-      impressions: 1145,
-      conversions: 22.5,
-      ctr: 14.07,
-      cpc: 6.10,
-      costPerConversion: 137.18
-    },
-    {
-      id: "CAMP_004",
-      name: "Licenciamento Veicular - Campanha Terciária",
-      type: "SEARCH",
-      status: "ACTIVE", 
-      budget: 2200.00,
-      clicks: 87,
-      impressions: 1021,
-      conversions: 21.5,
-      ctr: 15.47,
-      cpc: 6.22,
-      costPerConversion: 133.64
-    },
-    {
-      id: "CAMP_005",
-      name: "Despachante Veicular - Campanha Secundária",
-      type: "SEARCH",
-      status: "ACTIVE",
-      budget: 3000.00,
-      clicks: 85,
-      impressions: 1755,
-      conversions: 37.83,
-      ctr: 17.86,
-      cpc: 5.62,
-      costPerConversion: 212.67
+      budget: 5000.00,
+      clicks: 259,
+      impressions: 10196,
+      conversions: 43.33,
+      ctr: 2.54,
+      cpc: 6.20,
+      costPerConversion: 1605.86
     }
   ],
   ads: [
     {
       id: "AD_001",
       campaignId: "CAMP_001",
-      headline: "Licenciamento Veicular Online",
-      description: "Renovação de licenciamento veicular sem sair de casa. Processo 100% digital e seguro.",
-      url: "https://licenciamentoveicular.com.br",
+      headline: "Despachante Marcelino - Florianópolis",
+      description: "Despachante veicular em Florianópolis. Licenciamento, transferência e documentação veicular.",
+      url: "https://despachantemarcelino.com.br/florianopolis",
       type: "RESPONSIVE_SEARCH",
       status: "ACTIVE"
     },
     {
       id: "AD_002", 
       campaignId: "CAMP_002",
-      headline: "Despachante Veicular Especializado",
-      description: "Despachante veicular com 15 anos de experiência. Agilidade e confiança garantidas.",
-      url: "https://despachanteveicular.com.br",
+      headline: "Despachante Marcelino - São José",
+      description: "Despachante veicular em São José. Agilidade e confiança para sua documentação.",
+      url: "https://despachantemarcelino.com.br/sao-jose",
       type: "SEARCH",
       status: "ACTIVE"
     },
     {
       id: "AD_003",
       campaignId: "CAMP_003",
-      headline: "Licenciamento Veicular Rápido",
-      description: "Renovação de licenciamento em até 24h. Documentação em dia, sem multas.",
-      url: "https://licenciamentorapido.com.br",
-      type: "SEARCH",
-      status: "ACTIVE"
-    },
-    {
-      id: "AD_004",
-      campaignId: "CAMP_004",
-      headline: "Licenciamento Veicular Digital",
-      description: "Licenciamento veicular 100% online. Economia de tempo e dinheiro.",
-      url: "https://licenciamentodigital.com.br",
-      type: "SEARCH",
-      status: "ACTIVE"
-    },
-    {
-      id: "AD_005",
-      campaignId: "CAMP_005",
-      headline: "Despachante Veicular 24h",
-      description: "Despachante veicular disponível 24h. Atendimento personalizado e eficiente.",
-      url: "https://despachante24h.com.br",
+      headline: "Despachante Marcelino - Palhoça",
+      description: "Despachante veicular em Palhoça. Licenciamento e transferência com qualidade.",
+      url: "https://despachantemarcelino.com.br/palhoca",
       type: "SEARCH",
       status: "ACTIVE"
     }
   ],
   metrics: {
-    totalClicks: 496,
-    totalImpressions: 7566,
-    totalConversions: 142.83,
-    totalCost: 893.46,
-    avgCtr: 15.54,
-    avgCpc: 6.25,
-    avgCostPerConversion: 178.69
+    totalClicks: 859,
+    totalImpressions: 25896,
+    totalConversions: 193.33,
+    totalCost: 6509.86,
+    avgCtr: 3.32,
+    avgCpc: 7.58,
+    avgCostPerConversion: 33.67
   },
   notifications: [
     {
       id: "notif1",
-      message: "Campanha Licenciamento Principal atingiu 85% do orçamento diário",
+      message: "Campanha Florianópolis atingiu 90% do orçamento diário",
       type: "WARNING",
-      date: "2025-01-15",
+      date: "2025-06-30",
       time: "16:45"
     },
     {
       id: "notif2",
-      message: "Nova conversão registrada na campanha Despachante Principal",
+      message: "Nova conversão registrada na campanha São José",
       type: "SUCCESS", 
-      date: "2025-01-15",
+      date: "2025-06-30",
       time: "15:30"
     },
     {
       id: "notif3",
-      message: "Campanha Despachante Principal com CTR excelente - 17.57%",
+      message: "Campanha São José com CTR de 3.89% - acima da média",
       type: "SUCCESS",
-      date: "2025-01-15", 
+      date: "2025-06-30", 
       time: "14:15"
     },
     {
       id: "notif4",
-      message: "Campanha Licenciamento Secundária com CTR de 14.07% - acima da média",
-      type: "SUCCESS",
-      date: "2025-01-15",
+      message: "Campanha Palhoça com CTR de 2.54% - considerar otimização",
+      type: "INFO",
+      date: "2025-06-30",
       time: "13:20"
     },
     {
       id: "notif5",
-      message: "Relatório de palavras-chave disponível para download",
+      message: "Relatório mensal de maio/junho disponível para download",
       type: "INFO",
-      date: "2025-01-15",
+      date: "2025-06-30",
       time: "12:00"
     },
     {
       id: "notif6",
-      message: "CPC médio do setor veicular: R$ 6.25 - dentro do esperado",
+      message: "CPC médio de R$ 7.58 - dentro do esperado para o setor",
       type: "INFO",
-      date: "2025-01-15",
+      date: "2025-06-30",
       time: "11:30"
     }
   ],
   user: {
-    name: "Bruna Silva",
-    email: "bruna@autofacildespachante.com.br",
-    avatar: "BS",
-    role: "Google Ads Specialist",
-    department: "Marketing Veicular"
+    name: "Marcelino Silva",
+    email: "marcelino@despachantemarcelino.com.br",
+    avatar: "MS",
+    role: "Google Ads Manager",
+    department: "Marketing Digital"
   }
 };
 
@@ -1002,7 +958,7 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
                 type="email"
                 className="input-premium text-foreground"
                 placeholder="nome@google.com"
-                defaultValue="bruna@autofacildespachante.com.br"
+                defaultValue="marcelino@despachantemarcelino.com.br"
               />
             </div>
             
@@ -1012,7 +968,7 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
                 type="password"
                 className="input-premium text-foreground"
                 placeholder="••••••••"
-                defaultValue="DESP102030"
+                defaultValue="MARCELINO2025"
               />
             </div>
             
@@ -1180,7 +1136,7 @@ const DashboardPage: React.FC = () => {
       icon: 'mouse', 
       color: 'text-google-blue',
       format: (val: number) => val.toLocaleString('pt-BR'),
-      change: '+8.2%',
+      change: '+12.5%',
       changeType: 'positive'
     },
     { 
@@ -1189,7 +1145,7 @@ const DashboardPage: React.FC = () => {
       icon: 'visibility', 
       color: 'text-google-green',
       format: (val: number) => val.toLocaleString('pt-BR'),
-      change: '+12.1%',
+      change: '+8.7%',
       changeType: 'positive'
     },
     { 
@@ -1198,7 +1154,7 @@ const DashboardPage: React.FC = () => {
       icon: 'trending_up', 
       color: 'text-google-yellow',
       format: (val: number) => val.toFixed(1),
-      change: '+15.3%',
+      change: '+22.5%',
       changeType: 'positive'
     },
     { 
@@ -1207,7 +1163,7 @@ const DashboardPage: React.FC = () => {
       icon: 'payments', 
       color: 'text-google-red',
       format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-      change: '+6.8%',
+      change: '+15.2%',
       changeType: 'neutral'
     }
   ];
@@ -1292,19 +1248,19 @@ const DashboardPage: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">ROAS Médio</span>
-              <span className="font-bold text-green-600">3.8x</span>
+              <span className="font-bold text-green-600">4.2x</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Custo por Conversão</span>
-              <span className="font-bold text-blue-600">R$ 178,69</span>
+              <span className="font-bold text-blue-600">R$ 33,67</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Taxa de Conversão</span>
-              <span className="font-bold text-purple-600">28.8%</span>
+              <span className="font-bold text-purple-600">22.5%</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">CPC Médio</span>
-              <span className="font-bold text-orange-600">R$ 6,25</span>
+              <span className="font-bold text-orange-600">R$ 7,58</span>
             </div>
           </div>
         </div>
@@ -1319,17 +1275,17 @@ const DashboardPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-3 rounded-lg bg-green-50 border border-green-200">
             <p className="text-sm text-green-800 font-medium">
-              📈 Campanha "Despachante Principal" com CTR de 17.57% - excelente performance
+              📈 Campanha "São José" com CTR de 3.89% - melhor performance regional
             </p>
           </div>
           <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
             <p className="text-sm text-blue-800 font-medium">
-              🎯 "Licenciamento Principal" com CTR de 14.71% - acima da média do setor
+              🎯 "Florianópolis" com 320 cliques e 85 conversões - excelente ROI
             </p>
           </div>
-          <div className="p-3 rounded-lg bg-purple-50 border border-purple-200">
-            <p className="text-sm text-purple-800 font-medium">
-              💰 CPC médio de R$ 6.25 - dentro do esperado para o setor veicular
+          <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+            <p className="text-sm text-yellow-800 font-medium">
+              ⚡ "Palhoça" com CTR baixo (2.54%) - considerar otimização de keywords
             </p>
           </div>
         </div>
@@ -1354,39 +1310,25 @@ const DashboardPage: React.FC = () => {
             </thead>
             <tbody className="space-y-2">
               <tr className="border-b border-border/50">
-                <td className="py-2 font-medium">licenciamento veicular</td>
-                <td className="text-center py-2">119</td>
-                <td className="text-center py-2">R$ 166,65</td>
-                <td className="text-center py-2 text-green-600">14.71%</td>
-                <td className="text-center py-2">R$ 5,95</td>
+                <td className="py-2 font-medium">despachante florianópolis</td>
+                <td className="text-center py-2">320</td>
+                <td className="text-center py-2">R$ 2.720,00</td>
+                <td className="text-center py-2 text-green-600">3.76%</td>
+                <td className="text-center py-2">R$ 8,50</td>
               </tr>
               <tr className="border-b border-border/50">
-                <td className="py-2 font-medium">despachante veicular</td>
-                <td className="text-center py-2">105</td>
-                <td className="text-center py-2">R$ 243,32</td>
-                <td className="text-center py-2 text-green-600">17.57%</td>
-                <td className="text-center py-2">R$ 7,37</td>
+                <td className="py-2 font-medium">despachante são josé</td>
+                <td className="text-center py-2">280</td>
+                <td className="text-center py-2">R$ 2.184,00</td>
+                <td className="text-center py-2 text-green-600">3.89%</td>
+                <td className="text-center py-2">R$ 7,80</td>
               </tr>
               <tr className="border-b border-border/50">
-                <td className="py-2 font-medium">licenciamento veicular</td>
-                <td className="text-center py-2">100</td>
-                <td className="text-center py-2">R$ 137,18</td>
-                <td className="text-center py-2 text-yellow-600">14.07%</td>
-                <td className="text-center py-2">R$ 6,10</td>
-              </tr>
-              <tr className="border-b border-border/50">
-                <td className="py-2 font-medium">licenciamento veicular</td>
-                <td className="text-center py-2">87</td>
-                <td className="text-center py-2">R$ 133,64</td>
-                <td className="text-center py-2 text-green-600">15.47%</td>
-                <td className="text-center py-2">R$ 6,22</td>
-              </tr>
-              <tr>
-                <td className="py-2 font-medium">despachante veicular</td>
-                <td className="text-center py-2">85</td>
-                <td className="text-center py-2">R$ 212,67</td>
-                <td className="text-center py-2 text-green-600">17.86%</td>
-                <td className="text-center py-2">R$ 5,62</td>
+                <td className="py-2 font-medium">despachante palhoça</td>
+                <td className="text-center py-2">259</td>
+                <td className="text-center py-2">R$ 1.605,86</td>
+                <td className="text-center py-2 text-yellow-600">2.54%</td>
+                <td className="text-center py-2">R$ 6,20</td>
               </tr>
             </tbody>
           </table>
@@ -1403,24 +1345,24 @@ const DashboardPage: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
               <div>
-                <p className="font-medium text-green-800">Licenciamento Veicular</p>
-                <p className="text-sm text-green-600">CTR: 14.75% | CPC: R$ 6.09</p>
+                <p className="font-medium text-green-800">Florianópolis</p>
+                <p className="text-sm text-green-600">CTR: 3.76% | CPC: R$ 8.50</p>
               </div>
-              <span className="text-green-600 font-bold">+12.8%</span>
+              <span className="text-green-600 font-bold">+15.2%</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
               <div>
-                <p className="font-medium text-blue-800">Despachante Veicular</p>
-                <p className="text-sm text-blue-600">CTR: 17.72% | CPC: R$ 6.50</p>
+                <p className="font-medium text-blue-800">São José</p>
+                <p className="text-sm text-blue-600">CTR: 3.89% | CPC: R$ 7.80</p>
               </div>
-              <span className="text-blue-600 font-bold">+18.5%</span>
+              <span className="text-blue-600 font-bold">+12.8%</span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
               <div>
-                <p className="font-medium text-purple-800">Setor Veicular</p>
-                <p className="text-sm text-purple-600">CTR: 15.54% | CPC: R$ 6.25</p>
+                <p className="font-medium text-yellow-800">Palhoça</p>
+                <p className="text-sm text-yellow-600">CTR: 2.54% | CPC: R$ 6.20</p>
               </div>
-              <span className="text-purple-600 font-bold">+15.2%</span>
+              <span className="text-yellow-600 font-bold">+8.5%</span>
             </div>
           </div>
         </div>
@@ -1432,27 +1374,27 @@ const DashboardPage: React.FC = () => {
           </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Licenciamento Principal</span>
+              <span className="text-sm text-muted-foreground">Florianópolis</span>
+              <span className="font-medium">R$ 8.000</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-green-500 h-2 rounded-full" style={{width: '90%'}}></div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">São José</span>
+              <span className="font-medium">R$ 6.000</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="bg-blue-500 h-2 rounded-full" style={{width: '75%'}}></div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Palhoça</span>
               <span className="font-medium">R$ 5.000</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-green-500 h-2 rounded-full" style={{width: '85%'}}></div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Despachante Principal</span>
-              <span className="font-medium">R$ 3.500</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-blue-500 h-2 rounded-full" style={{width: '70%'}}></div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Licenciamento Secundária</span>
-              <span className="font-medium">R$ 2.800</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-yellow-500 h-2 rounded-full" style={{width: '56%'}}></div>
+              <div className="bg-yellow-500 h-2 rounded-full" style={{width: '65%'}}></div>
             </div>
           </div>
         </div>
@@ -1504,8 +1446,8 @@ const DashboardPage: React.FC = () => {
                     <td>{campaign.clicks.toLocaleString('pt-BR')}</td>
                     <td>
                       <span className={`text-sm ${
-                        campaign.ctr >= 15.0 ? 'text-green-600' : 
-                        campaign.ctr >= 12.0 ? 'text-yellow-600' : 'text-red-600'
+                        campaign.ctr >= 4.0 ? 'text-green-600' : 
+                        campaign.ctr >= 3.0 ? 'text-yellow-600' : 'text-red-600'
                       }`}>
                         {campaign.ctr}%
                       </span>
@@ -1647,24 +1589,24 @@ const CampaignsPage: React.FC = () => {
     setComments([
       {
         id: 1,
-        author: 'Bruna Silva',
-        date: '2025-01-15 14:30',
-        text: 'CTR de 14.71% está excelente para licenciamento veicular. Considerar aumentar orçamento.',
-        type: 'suggestion'
+        author: 'Marcelino Silva',
+        date: '2025-06-30 14:30',
+        text: 'Campanha Florianópolis com 320 cliques e 85 conversões - excelente performance.',
+        type: 'success'
       },
       {
         id: 2,
         author: 'Carlos Mendes',
-        date: '2025-01-15 10:15',
-        text: 'Palavra-chave "licenciamento veicular" com CPC de R$ 5.95 - dentro do esperado.',
+        date: '2025-06-30 10:15',
+        text: 'São José com CTR de 3.89% - melhor performance entre as 3 cidades.',
         type: 'insight'
       },
       {
         id: 3,
         author: 'Roberto Lima',
-        date: '2025-01-14 16:45',
-        text: 'Conversões aumentaram 15% na última semana. Campanha está otimizada.',
-        type: 'success'
+        date: '2025-06-29 16:45',
+        text: 'Palhoça com CTR baixo (2.54%) - considerar otimização de keywords.',
+        type: 'warning'
       }
     ]);
     setShowCommentsModal(true);
