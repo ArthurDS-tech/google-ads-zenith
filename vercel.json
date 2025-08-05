@@ -1,0 +1,22 @@
+{
+  "functions": {
+    "api/webhook.js": {
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/webhook",
+      "dest": "/api/webhook.js",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+      }
+    }
+  ],
+  "env": {
+    "WEBHOOK_SECRET": "marcelino_webhook_secret_2025",
+    "WEBHOOK_RATE_LIMIT": "10000"
+  }
+}

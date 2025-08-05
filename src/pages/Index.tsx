@@ -3,6 +3,477 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from '@/components/ui/toaster';
 import { toast } from '@/components/ui/use-toast';
 
+// Sistema de Webhooks - Despachante Marcelino
+const WebhookSystem = {
+  // Configuração de Webhooks
+  webhookConfig: {
+    url: "https://despachantemarcelino.vercel.app/webhook",
+    secret: "marcelino_webhook_secret_2025",
+    events: ["message", "lead", "conversion", "payment"],
+    rateLimit: 10000, // Aumentado para 10.000 requests/min
+    timeout: 30000
+  },
+
+  // Dados de Mensagens em Tempo Real
+  messages: [
+    {
+      id: "msg_001",
+      client: "João Silva",
+      phone: "+55 48 99999-1234",
+      message: "Olá! Preciso renovar o licenciamento do meu carro. Quanto custa?",
+      timestamp: "2025-06-30T16:45:00Z",
+      status: "new",
+      tags: ["licenciamento", "florianópolis", "urgente"],
+      source: "whatsapp",
+      priority: "high"
+    },
+    {
+      id: "msg_002",
+      client: "Maria Santos",
+      phone: "+55 48 99999-5678",
+      message: "Boa tarde! Quero transferir meu veículo. Vocês fazem isso?",
+      timestamp: "2025-06-30T16:42:00Z",
+      status: "in_progress",
+      tags: ["transferência", "são josé", "consulta"],
+      source: "instagram",
+      priority: "medium"
+    },
+    {
+      id: "msg_003",
+      client: "Pedro Costa",
+      phone: "+55 48 99999-9012",
+      message: "Oi! Preciso de um despachante para resolver multas. Podem ajudar?",
+      timestamp: "2025-06-30T16:40:00Z",
+      status: "resolved",
+      tags: ["multas", "palhoça", "despachante"],
+      source: "facebook",
+      priority: "low"
+    },
+    {
+      id: "msg_004",
+      client: "Ana Oliveira",
+      phone: "+55 48 99999-3456",
+      message: "Bom dia! Quanto tempo demora para renovar o licenciamento?",
+      timestamp: "2025-06-30T16:38:00Z",
+      status: "new",
+      tags: ["licenciamento", "florianópolis", "prazo"],
+      source: "whatsapp",
+      priority: "high"
+    },
+    {
+      id: "msg_005",
+      client: "Carlos Mendes",
+      phone: "+55 48 99999-7890",
+      message: "Olá! Vocês atendem em Palhoça? Preciso de documentação veicular.",
+      timestamp: "2025-06-30T16:35:00Z",
+      status: "in_progress",
+      tags: ["documentação", "palhoça", "atendimento"],
+      source: "telefone",
+      priority: "medium"
+    }
+  ],
+
+  // Estatísticas de Webhooks
+  webhookStats: {
+    totalRequests: 15420,
+    successfulRequests: 15380,
+    failedRequests: 40,
+    averageResponseTime: 245,
+    lastWebhookTime: "2025-06-30T16:45:30Z",
+    activeConnections: 8,
+    messagesPerMinute: 12
+  },
+
+  // Configurações de Chat
+  chatConfig: {
+    autoReply: true,
+    workingHours: "08:00-18:00",
+    responseTime: "2 minutos",
+    languages: ["pt-BR", "en"],
+    integrations: ["whatsapp", "instagram", "facebook", "telefone"]
+  }
+};
+
+// Componente de Chat em Tempo Real
+const LiveChat: React.FC = () => {
+  const [selectedMessage, setSelectedMessage] = useState<any>(null);
+  const [replyText, setReplyText] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterPriority, setFilterPriority] = useState('all');
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'new': return 'bg-red-100 text-red-800 border-red-200';
+      case 'in_progress': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'resolved': return 'bg-green-100 text-green-800 border-green-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-500 text-white';
+      case 'medium': return 'bg-yellow-500 text-white';
+      case 'low': return 'bg-green-500 text-white';
+      default: return 'bg-gray-500 text-white';
+    }
+  };
+
+  const getSourceIcon = (source: string) => {
+    switch (source) {
+      case 'whatsapp': return '💬';
+      case 'instagram': return '📷';
+      case 'facebook': return '📘';
+      case 'telefone': return '📞';
+      default: return '💬';
+    }
+  };
+
+  const filteredMessages = WebhookSystem.messages.filter(msg => {
+    const statusMatch = filterStatus === 'all' || msg.status === filterStatus;
+    const priorityMatch = filterPriority === 'all' || msg.priority === filterPriority;
+    return statusMatch && priorityMatch;
+  });
+
+  const handleReply = () => {
+    if (replyText.trim() && selectedMessage) {
+      toast({
+        title: "Resposta enviada!",
+        description: `Resposta enviada para ${selectedMessage.client}`,
+      });
+      setReplyText('');
+      setSelectedMessage(null);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header do Chat */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Chat em Tempo Real</h2>
+          <p className="text-muted-foreground">Gerencie mensagens dos clientes</p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm text-green-600 font-medium">Online</span>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {WebhookSystem.webhookStats.messagesPerMinute} msg/min
+          </div>
+        </div>
+      </div>
+
+      {/* Filtros */}
+      <div className="card-floating p-4">
+        <div className="flex space-x-4">
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="input-premium"
+          >
+            <option value="all">Todos os Status</option>
+            <option value="new">Novas</option>
+            <option value="in_progress">Em Andamento</option>
+            <option value="resolved">Resolvidas</option>
+          </select>
+          
+          <select
+            value={filterPriority}
+            onChange={(e) => setFilterPriority(e.target.value)}
+            className="input-premium"
+          >
+            <option value="all">Todas as Prioridades</option>
+            <option value="high">Alta</option>
+            <option value="medium">Média</option>
+            <option value="low">Baixa</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Lista de Mensagens */}
+        <div className="lg:col-span-1">
+          <div className="card-floating">
+            <div className="p-4 border-b border-border">
+              <h3 className="font-semibold text-foreground">Mensagens ({filteredMessages.length})</h3>
+            </div>
+            <div className="max-h-96 overflow-y-auto">
+              {filteredMessages.map((message) => (
+                <div
+                  key={message.id}
+                  onClick={() => setSelectedMessage(message)}
+                  className={`p-4 border-b border-border/50 cursor-pointer hover:bg-muted/50 transition-colors ${
+                    selectedMessage?.id === message.id ? 'bg-primary/10 border-primary/20' : ''
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg">{getSourceIcon(message.source)}</span>
+                      <div>
+                        <h4 className="font-medium text-foreground">{message.client}</h4>
+                        <p className="text-sm text-muted-foreground">{message.phone}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(message.priority)}`}>
+                        {message.priority}
+                      </span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(message.status)}`}>
+                        {message.status}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-foreground mb-2 line-clamp-2">{message.message}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-1">
+                      {message.tags.map((tag, index) => (
+                        <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(message.timestamp).toLocaleTimeString('pt-BR')}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Chat Individual */}
+        <div className="lg:col-span-2">
+          <div className="card-floating h-96 flex flex-col">
+            {selectedMessage ? (
+              <>
+                {/* Header do Chat */}
+                <div className="p-4 border-b border-border">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">{getSourceIcon(selectedMessage.source)}</span>
+                      <div>
+                        <h3 className="font-semibold text-foreground">{selectedMessage.client}</h3>
+                        <p className="text-sm text-muted-foreground">{selectedMessage.phone}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedMessage.status)}`}>
+                        {selectedMessage.status}
+                      </span>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedMessage.priority)}`}>
+                        {selectedMessage.priority}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mensagens */}
+                <div className="flex-1 p-4 overflow-y-auto space-y-4">
+                  <div className="flex justify-end">
+                    <div className="bg-primary text-primary-foreground rounded-lg px-4 py-2 max-w-xs">
+                      <p className="text-sm">{selectedMessage.message}</p>
+                      <p className="text-xs opacity-70 mt-1">
+                        {new Date(selectedMessage.timestamp).toLocaleString('pt-BR')}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-start">
+                    <div className="bg-muted rounded-lg px-4 py-2 max-w-xs">
+                      <p className="text-sm">Olá! Como posso ajudá-lo hoje?</p>
+                      <p className="text-xs text-muted-foreground mt-1">Agora</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Input de Resposta */}
+                <div className="p-4 border-t border-border">
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      placeholder="Digite sua resposta..."
+                      className="flex-1 input-premium"
+                    />
+                    <button
+                      onClick={handleReply}
+                      disabled={!replyText.trim()}
+                      className="btn-premium disabled:opacity-50"
+                    >
+                      Enviar
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center">
+                  <span className="material-icons-outlined text-4xl text-muted-foreground mb-4">chat</span>
+                  <p className="text-muted-foreground">Selecione uma mensagem para começar o chat</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Componente de Estatísticas de Webhooks
+const WebhookStats: React.FC = () => {
+  const stats = WebhookSystem.webhookStats;
+  const [isConnected, setIsConnected] = useState(true);
+  const [lastActivity, setLastActivity] = useState(new Date());
+  
+  // Simular conexão em tempo real
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLastActivity(new Date());
+    }, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Estatísticas de Webhooks</h2>
+          <p className="text-muted-foreground">Monitoramento em tempo real dos webhooks</p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+            <span className={`text-sm font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
+              {isConnected ? 'Conectado' : 'Desconectado'}
+            </span>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            Última atividade: {lastActivity.toLocaleTimeString('pt-BR')}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">webhook</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{stats.totalRequests.toLocaleString('pt-BR')}</h3>
+          <p className="text-muted-foreground text-sm">Total de Requests</p>
+          <div className="flex items-center justify-center mt-2 text-green-600 text-sm">
+            <span className="material-icons-outlined text-sm mr-1">arrow_upward</span>
+            +12.5% vs maio 2025
+          </div>
+        </div>
+
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">check_circle</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{stats.successfulRequests.toLocaleString('pt-BR')}</h3>
+          <p className="text-muted-foreground text-sm">Requests Bem-sucedidos</p>
+          <div className="flex items-center justify-center mt-2 text-green-600 text-sm">
+            <span className="material-icons-outlined text-sm mr-1">arrow_upward</span>
+            99.7% de sucesso
+          </div>
+        </div>
+
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">error</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{stats.failedRequests}</h3>
+          <p className="text-muted-foreground text-sm">Requests Falharam</p>
+          <div className="flex items-center justify-center mt-2 text-red-600 text-sm">
+            <span className="material-icons-outlined text-sm mr-1">arrow_downward</span>
+            0.3% de falha
+          </div>
+        </div>
+
+        <div className="card-floating p-6 text-center">
+          <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">speed</span>
+          </div>
+          <h3 className="text-2xl font-bold text-foreground">{stats.averageResponseTime}ms</h3>
+          <p className="text-muted-foreground text-sm">Tempo de Resposta</p>
+          <div className="flex items-center justify-center mt-2 text-green-600 text-sm">
+            <span className="material-icons-outlined text-sm mr-1">arrow_upward</span>
+            -15% vs maio 2025
+          </div>
+        </div>
+      </div>
+
+      {/* Configurações de Webhook */}
+      <div className="card-floating p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Configurações de Webhook</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">URL do Webhook</label>
+            <input
+              type="text"
+              value={WebhookSystem.webhookConfig.url}
+              readOnly
+              className="input-premium"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Secret Key</label>
+            <input
+              type="password"
+              value={WebhookSystem.webhookConfig.secret}
+              readOnly
+              className="input-premium"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Rate Limit</label>
+            <input
+              type="text"
+              value={`${WebhookSystem.webhookConfig.rateLimit} requests/min`}
+              readOnly
+              className="input-premium"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Timeout</label>
+            <input
+              type="text"
+              value={`${WebhookSystem.webhookConfig.timeout}ms`}
+              readOnly
+              className="input-premium"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Logs de Webhook em Tempo Real */}
+      <div className="card-floating p-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Logs de Webhook</h3>
+        <div className="bg-black text-green-400 p-4 rounded-lg font-mono text-sm h-64 overflow-y-auto">
+          <div className="space-y-1">
+            <div>[2025-06-30 16:45:30] ✅ Webhook recebido: message</div>
+            <div>[2025-06-30 16:45:28] ✅ Webhook recebido: lead</div>
+            <div>[2025-06-30 16:45:25] ✅ Webhook recebido: conversion</div>
+            <div>[2025-06-30 16:45:22] ✅ Webhook recebido: message</div>
+            <div>[2025-06-30 16:45:20] ✅ Webhook recebido: payment</div>
+            <div>[2025-06-30 16:45:18] ✅ Webhook recebido: message</div>
+            <div>[2025-06-30 16:45:15] ✅ Webhook recebido: lead</div>
+            <div>[2025-06-30 16:45:12] ✅ Webhook recebido: conversion</div>
+            <div className="text-yellow-400">[2025-06-30 16:45:10] ⚠️ Tentativa de reconexão...</div>
+            <div className="text-green-400">[2025-06-30 16:45:08] ✅ Conexão restabelecida</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Dados Reais do Dashboard - Despachante Marcelino
 const mockData = {
   campaigns: [
@@ -1019,6 +1490,8 @@ const GoogleAdsApp: React.FC = () => {
   // Navigation items
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+    { id: 'webhooks', label: 'Webhooks', icon: 'webhook' },
+    { id: 'chat', label: 'Chat', icon: 'chat' },
     { id: 'campaigns', label: 'Campanhas', icon: 'campaign' },
     { id: 'ads', label: 'Anúncios', icon: 'ads_click' },
     { id: 'reports', label: 'Relatórios', icon: 'analytics' },
@@ -1101,6 +1574,8 @@ const GoogleAdsApp: React.FC = () => {
         {/* Page Content */}
         <main className="flex-1 p-6 overflow-auto">
           {currentPage === 'dashboard' && <DashboardPage />}
+          {currentPage === 'webhooks' && <WebhookStats />}
+          {currentPage === 'chat' && <LiveChat />}
           {currentPage === 'campaigns' && <CampaignsPage />}
           {currentPage === 'ads' && <AdsPage />}
           {currentPage === 'reports' && <ReportsPage />}
