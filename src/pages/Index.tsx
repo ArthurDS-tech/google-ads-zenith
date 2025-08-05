@@ -1855,9 +1855,8 @@ const DashboardPage: React.FC = () => {
   );
 };
 
-// Campaigns Page Component - LAYOUT MELHORADO GOOGLE ADS
+// Campaigns Page Component - CÓDIGO LIMPO
 const CampaignsPage: React.FC = () => {
-  // Dados estáticos do relatório
   const campanhas = [
     {
       nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
@@ -1932,8 +1931,7 @@ const CampaignsPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header com Ações */}
+    <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Campanhas</h2>
@@ -1951,7 +1949,6 @@ const CampaignsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Cards de Estatísticas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="card-floating p-6 text-center">
           <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-3">
@@ -1986,7 +1983,6 @@ const CampaignsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Tabela de Campanhas */}
       <div className="card-floating overflow-hidden">
         <div className="p-6 border-b border-border">
           <div className="flex items-center justify-between">
