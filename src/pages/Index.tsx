@@ -17,28 +17,46 @@ const WebhookSystem = {
   // Dados de Mensagens em Tempo Real
   messages: [
     {
-      id: "msg_001",
-      client: "Maria Silva",
-      phone: "+55 48 99999-1234",
-      message: "Olá! Preciso renovar o licenciamento do meu carro. Quanto custa?",
-      timestamp: "2025-06-30T16:45:00Z",
+      id: "aIfKD-wfPw5dlZ2r",
+      client: "ANDERSON FERRARI",
+      phone: "+5547999955497",
+      message: "Ok",
+      timestamp: "2025-07-28T19:05:50.927Z",
       status: "new",
-      tags: ["CLIENTE SITE", "Pendente"],
+      tags: ["Troca"],
       source: "whatsapp",
-      priority: "high",
-      attendant: "Ester"
+      priority: "medium",
+      attendant: "Ester",
+      channel: "AUTO FACIL DESPACHANTE - DVA",
+      sector: "DVA"
     },
     {
       id: "msg_002",
-      client: "João Santos",
-      phone: "+55 48 99999-5678",
-      message: "Boa tarde! Quero transferir meu veículo. Vocês fazem isso?",
-      timestamp: "2025-06-30T16:42:00Z",
+      client: "CARLOS SANTOS",
+      phone: "+5548998765432",
+      message: "Preciso renovar o licenciamento do meu carro. Quanto custa?",
+      timestamp: "2025-07-28T18:30:15.123Z",
       status: "in_progress",
-      tags: ["Transferência", "Qualificação"],
-      source: "instagram",
+      tags: ["CLIENTE SITE", "Pendente"],
+      source: "whatsapp",
+      priority: "high",
+      attendant: "Sarah",
+      channel: "AUTO FACIL DESPACHANTE - DVA",
+      sector: "DVA"
+    },
+    {
+      id: "msg_003",
+      client: "MARIA OLIVEIRA",
+      phone: "+5547998877665",
+      message: "Quero transferir meu veículo. Vocês fazem isso?",
+      timestamp: "2025-07-28T17:45:22.456Z",
+      status: "resolved",
+      tags: ["Transferência", "Realizado"],
+      source: "whatsapp",
       priority: "medium",
-      attendant: "Sarah"
+      attendant: "Kênia",
+      channel: "AUTO FACIL DESPACHANTE - DVA",
+      sector: "DVA"
     }
   ],
 
