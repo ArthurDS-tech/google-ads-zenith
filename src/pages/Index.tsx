@@ -23,7 +23,7 @@ const WebhookSystem = {
       message: "Olá! Preciso renovar o licenciamento do meu carro. Quanto custa?",
       timestamp: "2025-06-30T16:45:00Z",
       status: "new",
-      tags: ["licenciamento", "florianópolis", "urgente"],
+      tags: ["CLIENTE SITE", "Pendente"],
       source: "whatsapp",
       priority: "high"
     },
@@ -34,7 +34,7 @@ const WebhookSystem = {
       message: "Boa tarde! Quero transferir meu veículo. Vocês fazem isso?",
       timestamp: "2025-06-30T16:42:00Z",
       status: "in_progress",
-      tags: ["transferência", "são josé", "consulta"],
+      tags: ["Transferência", "Qualificação"],
       source: "instagram",
       priority: "medium"
     },
@@ -45,7 +45,7 @@ const WebhookSystem = {
       message: "Oi! Preciso de um despachante para resolver multas. Podem ajudar?",
       timestamp: "2025-06-30T16:40:00Z",
       status: "resolved",
-      tags: ["multas", "palhoça", "despachante"],
+      tags: ["Realizado", "PGTO"],
       source: "facebook",
       priority: "low"
     },
@@ -56,7 +56,7 @@ const WebhookSystem = {
       message: "Bom dia! Quanto tempo demora para renovar o licenciamento?",
       timestamp: "2025-06-30T16:38:00Z",
       status: "new",
-      tags: ["licenciamento", "florianópolis", "prazo"],
+      tags: ["CLIENTE SITE", "Aguardando Verificação"],
       source: "whatsapp",
       priority: "high"
     },
@@ -67,7 +67,7 @@ const WebhookSystem = {
       message: "Olá! Vocês atendem em Palhoça? Preciso de documentação veicular.",
       timestamp: "2025-06-30T16:35:00Z",
       status: "in_progress",
-      tags: ["documentação", "palhoça", "atendimento"],
+      tags: ["Doc VD", "Blumenau"],
       source: "telefone",
       priority: "medium"
     },
@@ -78,7 +78,7 @@ const WebhookSystem = {
       message: "Gostaria de saber sobre os serviços de despachante. Vocês fazem transferência de veículos?",
       timestamp: "2025-06-30T16:30:00Z",
       status: "new",
-      tags: ["transferência", "consulta", "serviços"],
+      tags: ["CLIENTE SITE", "Orçamento Enviado"],
       source: "site",
       priority: "high"
     },
@@ -89,7 +89,7 @@ const WebhookSystem = {
       message: "Preciso de ajuda com multas. Qual o processo para resolver?",
       timestamp: "2025-06-30T16:25:00Z",
       status: "in_progress",
-      tags: ["multas", "processo", "ajuda"],
+      tags: ["Negociando", "Parceiro"],
       source: "site",
       priority: "medium"
     },
@@ -100,7 +100,7 @@ const WebhookSystem = {
       message: "Quanto custa o licenciamento anual? E qual a documentação necessária?",
       timestamp: "2025-06-30T16:20:00Z",
       status: "new",
-      tags: ["licenciamento", "custo", "documentação"],
+      tags: ["CLIENTE SITE", "Pendente"],
       source: "site",
       priority: "high"
     }
@@ -133,7 +133,7 @@ const LiveChat: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
   const [filterTag, setFilterTag] = useState('all');
-  const [showTagFilter, setShowTagFilter] = useState(false);
+  const [showTagModal, setShowTagModal] = useState(false);
 
   // Tags verdadeiras fornecidas
   const allTags = [
@@ -243,46 +243,60 @@ const LiveChat: React.FC = () => {
             <option value="low">Baixa</option>
           </select>
 
-          <div className="relative">
-            <button
-              onClick={() => setShowTagFilter(!showTagFilter)}
-              className="input-premium flex items-center space-x-2"
-            >
-              <span>Tags: {filterTag === 'all' ? 'Todas' : filterTag}</span>
-              <span className="material-icons-outlined text-sm">expand_more</span>
-            </button>
-            
-            {showTagFilter && (
-              <div className="absolute top-full left-0 mt-1 w-64 max-h-60 overflow-y-auto bg-card border border-border rounded-lg shadow-lg z-50">
-                <div className="p-2">
+          <button
+            onClick={() => setShowTagModal(true)}
+            className="btn-glass flex items-center space-x-2"
+          >
+            <span className="material-icons-outlined">label</span>
+            <span>Filtrar por Tag: {filterTag === 'all' ? 'Todas' : filterTag}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Modal de Filtro de Tags */}
+      {showTagModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-card border border-border rounded-lg shadow-lg w-96 max-h-96 overflow-hidden">
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-foreground">Selecionar Tag</h3>
+                <button
+                  onClick={() => setShowTagModal(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <span className="material-icons-outlined">close</span>
+                </button>
+              </div>
+            </div>
+            <div className="p-4 max-h-64 overflow-y-auto">
+              <button
+                onClick={() => {
+                  setFilterTag('all');
+                  setShowTagModal(false);
+                }}
+                className="w-full text-left px-3 py-2 hover:bg-muted/50 rounded text-sm font-medium"
+              >
+                Todas as Tags
+              </button>
+              <div className="border-t border-border my-2"></div>
+              <div className="grid grid-cols-1 gap-1">
+                {allTags.map((tag) => (
                   <button
+                    key={tag}
                     onClick={() => {
-                      setFilterTag('all');
-                      setShowTagFilter(false);
+                      setFilterTag(tag);
+                      setShowTagModal(false);
                     }}
                     className="w-full text-left px-3 py-2 hover:bg-muted/50 rounded text-sm"
                   >
-                    Todas as Tags
+                    {tag}
                   </button>
-                  <div className="border-t border-border my-2"></div>
-                  {allTags.map((tag) => (
-                    <button
-                      key={tag}
-                      onClick={() => {
-                        setFilterTag(tag);
-                        setShowTagFilter(false);
-                      }}
-                      className="w-full text-left px-3 py-2 hover:bg-muted/50 rounded text-sm"
-                    >
-                      {tag}
-                    </button>
-                  ))}
-                </div>
+                ))}
               </div>
-            )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Lista de Mensagens */}
