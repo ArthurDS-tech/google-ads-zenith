@@ -2575,13 +2575,7 @@ const AdsPage: React.FC = () => {
           <h2 className="text-2xl font-bold text-foreground">Gerenciamento de Anúncios</h2>
           <p className="text-muted-foreground">Crie e gerencie anúncios para suas campanhas</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="btn-premium"
-        >
-          <span className="material-icons-outlined">add</span>
-          Novo Anúncio
-        </button>
+        {/* Botão 'Novo Anúncio' removido */}
       </div>
 
       {/* Filters */}
