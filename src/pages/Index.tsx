@@ -572,33 +572,77 @@ const mockData = {
       ctr: 2.54,
       cpc: 6.20,
       costPerConversion: 1605.86
+    },
+    {
+      id: "CAMP_004",
+      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Região Sul - 01/07/25",
+      type: "SEARCH",
+      status: "ACTIVE",
+      budget: 12000.00,
+      clicks: 456,
+      impressions: 8023,
+      conversions: 79,
+      ctr: 5.68,
+      cpc: 0.69,
+      costPerConversion: 313.02
+    },
+    {
+      id: "CAMP_005",
+      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Certificado Digital - 09/07/25",
+      type: "SEARCH",
+      status: "ACTIVE",
+      budget: 3000.00,
+      clicks: 73,
+      impressions: 1814,
+      conversions: 17,
+      ctr: 4.02,
+      cpc: 3.36,
+      costPerConversion: 244.94
     }
   ],
   ads: [
     {
       id: "AD_001",
       campaignId: "CAMP_001",
-      headline: "Despachante Bruna - Florianópolis",
+      headline: "Despachante Marcelino - Florianópolis",
       description: "Despachante veicular em Florianópolis. Licenciamento, transferência e documentação veicular.",
-      url: "https://despachantebruna.com.br/florianopolis",
+      url: "https://blog.autofacilpagamentos.com.br/marcelino-florianopolis/",
       type: "RESPONSIVE_SEARCH",
       status: "ACTIVE"
     },
     {
       id: "AD_002", 
       campaignId: "CAMP_002",
-      headline: "Despachante Bruna - São José",
+      headline: "Despachante Marcelino - São José",
       description: "Despachante veicular em São José. Agilidade e confiança para sua documentação.",
-      url: "https://despachantebruna.com.br/sao-jose",
+      url: "https://blog.autofacilpagamentos.com.br/",
       type: "SEARCH",
       status: "ACTIVE"
     },
     {
       id: "AD_003",
       campaignId: "CAMP_003",
-      headline: "Despachante Bruna - Palhoça",
+      headline: "Despachante Marcelino - Palhoça",
       description: "Despachante veicular em Palhoça. Licenciamento e transferência com qualidade.",
-      url: "https://despachantebruna.com.br/palhoca",
+      url: "https://blog.autofacilpagamentos.com.br/auto-facil-palhoca/",
+      type: "SEARCH",
+      status: "ACTIVE"
+    },
+    {
+      id: "AD_004",
+      campaignId: "CAMP_004",
+      headline: "Despachante Marcelino - Região Sul",
+      description: "Despachante veicular na Região Sul. Atendimento completo para documentação veicular.",
+      url: "https://blog.grandeflorianopolis.autofacilpagamentos.com.br/",
+      type: "SEARCH",
+      status: "ACTIVE"
+    },
+    {
+      id: "AD_005",
+      campaignId: "CAMP_005",
+      headline: "Certificado Digital - Auto Fácil",
+      description: "Certificado digital para despachante. Documentação digital segura e confiável.",
+      url: "https://autofacilcertificados.com.br/",
       type: "SEARCH",
       status: "ACTIVE"
     }
