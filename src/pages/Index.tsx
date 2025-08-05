@@ -43,7 +43,7 @@ const LiveChat: React.FC = () => {
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
-  const [filterTag, setFilterTag] = useState('all');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showTagModal, setShowTagModal] = useState(false);
 
   // Tags verdadeiras fornecidas
@@ -100,9 +100,32 @@ const LiveChat: React.FC = () => {
   const filteredMessages = WebhookSystem.messages.filter(msg => {
     const statusMatch = filterStatus === 'all' || msg.status === filterStatus;
     const priorityMatch = filterPriority === 'all' || msg.priority === filterPriority;
-    const tagMatch = filterTag === 'all' || msg.tags.includes(filterTag);
+    const tagMatch = selectedTags.length === 0 || selectedTags.some(tag => msg.tags.includes(tag));
     return statusMatch && priorityMatch && tagMatch;
   });
+
+  const handleTagToggle = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+
+  const handleClearTags = () => {
+    setSelectedTags([]);
+  };
+
+  const handleConfirmTags = () => {
+    setShowTagModal(false);
+  };
+
+  const getTagDisplayText = () => {
+    if (selectedTags.length === 0) return 'Todas';
+    if (selectedTags.length === 1) return selectedTags[0];
+    if (selectedTags.length <= 3) return selectedTags.join(', ');
+    return `${selectedTags.length} tags selecionadas`;
+  };
 
   return (
     <div className="space-y-6">
@@ -135,7 +158,7 @@ const LiveChat: React.FC = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="input-premium"
+            className="input-premium text-sm"
           >
             <option value="all">Todos os Status</option>
             <option value="new">Novas</option>
@@ -146,7 +169,7 @@ const LiveChat: React.FC = () => {
           <select
             value={filterPriority}
             onChange={(e) => setFilterPriority(e.target.value)}
-            className="input-premium"
+            className="input-premium text-sm"
           >
             <option value="all">Todas as Prioridades</option>
             <option value="high">Alta</option>
@@ -156,10 +179,10 @@ const LiveChat: React.FC = () => {
 
           <button
             onClick={() => setShowTagModal(true)}
-            className="btn-glass flex items-center space-x-2"
+            className="btn-glass text-sm px-3 py-2 flex items-center space-x-2"
           >
-            <span className="material-icons-outlined">label</span>
-            <span>Filtrar por Tag: {filterTag === 'all' ? 'Todas' : filterTag}</span>
+            <span className="material-icons-outlined text-sm">label</span>
+            <span>Tags: {getTagDisplayText()}</span>
           </button>
         </div>
       </div>
@@ -167,10 +190,10 @@ const LiveChat: React.FC = () => {
       {/* Modal de Filtro de Tags */}
       {showTagModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-card border border-border rounded-lg shadow-lg w-96 max-h-96 overflow-hidden">
+          <div className="bg-card border border-border rounded-lg shadow-lg w-80 max-h-96 overflow-hidden">
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-foreground">Selecionar Tag</h3>
+                <h3 className="text-lg font-semibold text-foreground">Selecionar Tags</h3>
                 <button
                   onClick={() => setShowTagModal(false)}
                   className="text-muted-foreground hover:text-foreground"
@@ -178,32 +201,49 @@ const LiveChat: React.FC = () => {
                   <span className="material-icons-outlined">close</span>
                 </button>
               </div>
+              {selectedTags.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {selectedTags.map((tag) => (
+                    <span key={tag} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="p-4 max-h-64 overflow-y-auto">
-              <button
-                onClick={() => {
-                  setFilterTag('all');
-                  setShowTagModal(false);
-                }}
-                className="w-full text-left px-3 py-2 hover:bg-muted/50 rounded text-sm font-medium"
-              >
-                Todas as Tags
-              </button>
-              <div className="border-t border-border my-2"></div>
+            <div className="p-4 max-h-48 overflow-y-auto">
               <div className="grid grid-cols-1 gap-1">
                 {allTags.map((tag) => (
                   <button
                     key={tag}
-                    onClick={() => {
-                      setFilterTag(tag);
-                      setShowTagModal(false);
-                    }}
-                    className="w-full text-left px-3 py-2 hover:bg-muted/50 rounded text-sm"
+                    onClick={() => handleTagToggle(tag)}
+                    className={`w-full text-left px-2 py-1.5 rounded text-sm transition-colors ${
+                      selectedTags.includes(tag) 
+                        ? 'bg-blue-100 text-blue-800 font-medium' 
+                        : 'hover:bg-muted/50'
+                    }`}
                   >
+                    {selectedTags.includes(tag) && (
+                      <span className="material-icons-outlined text-sm mr-1">check</span>
+                    )}
                     {tag}
                   </button>
                 ))}
               </div>
+            </div>
+            <div className="p-4 border-t border-border flex justify-between">
+              <button
+                onClick={handleClearTags}
+                className="btn-glass text-sm px-3 py-1.5"
+              >
+                Limpar Todas
+              </button>
+              <button
+                onClick={handleConfirmTags}
+                className="btn-premium text-sm px-3 py-1.5"
+              >
+                Confirmar
+              </button>
             </div>
           </div>
         </div>
