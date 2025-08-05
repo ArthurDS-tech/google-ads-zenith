@@ -44,7 +44,14 @@ const LiveChat: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
   const [selectedTags, setSelectedTags] = useState<string[]>(["CLIENTE SITE"]);
+  const [selectedAttendant, setSelectedAttendant] = useState('all');
   const [showTagModal, setShowTagModal] = useState(false);
+  const [showFiltersModal, setShowFiltersModal] = useState(false);
+
+  // Atendentes disponíveis
+  const attendants = [
+    "Ester", "Sarah", "Kênia", "Julia", "Isa Principal", "Oficial", "Paola"
+  ];
 
   // Tags verdadeiras fornecidas
   const allTags = [
@@ -129,6 +136,43 @@ const LiveChat: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Card de Conversões Umbler */}
+      <div className="card-floating p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-icons-outlined">trending_up</span>
+            </div>
+            <h3 className="text-2xl font-bold text-foreground">0</h3>
+            <p className="text-muted-foreground text-sm">Conversões Umbler Total</p>
+          </div>
+          
+          <div className="text-center">
+            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-icons-outlined">support_agent</span>
+            </div>
+            <h3 className="text-2xl font-bold text-foreground">{attendants.length}</h3>
+            <p className="text-muted-foreground text-sm">Atendentes Ativos</p>
+          </div>
+          
+          <div className="text-center">
+            <div className="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-icons-outlined">schedule</span>
+            </div>
+            <h3 className="text-2xl font-bold text-foreground">2.5 min</h3>
+            <p className="text-muted-foreground text-sm">Tempo Médio de Resposta</p>
+          </div>
+          
+          <div className="text-center">
+            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-icons-outlined">message</span>
+            </div>
+            <h3 className="text-2xl font-bold text-foreground">0</h3>
+            <p className="text-muted-foreground text-sm">Mensagens por Atendente</p>
+          </div>
+        </div>
+      </div>
+
       {/* Header do Chat */}
       <div className="flex items-center justify-between">
         <div>
@@ -183,6 +227,14 @@ const LiveChat: React.FC = () => {
           >
             <span className="material-icons-outlined text-sm">label</span>
             <span>Tags: {getTagDisplayText()}</span>
+          </button>
+
+          <button
+            onClick={() => setShowFiltersModal(true)}
+            className="btn-premium text-sm px-3 py-2 flex items-center space-x-2"
+          >
+            <span className="material-icons-outlined text-sm">filter_list</span>
+            <span>Filtros Avançados</span>
           </button>
         </div>
       </div>
@@ -243,6 +295,149 @@ const LiveChat: React.FC = () => {
                 className="btn-premium text-sm px-3 py-1.5"
               >
                 Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Filtros Avançados */}
+      {showFiltersModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-card border border-border rounded-lg shadow-lg w-96 max-h-96 overflow-hidden">
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-foreground">Filtros Avançados</h3>
+                <button
+                  onClick={() => setShowFiltersModal(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <span className="material-icons-outlined">close</span>
+                </button>
+              </div>
+            </div>
+            <div className="p-4 max-h-64 overflow-y-auto">
+              {/* Filtro por Atendente */}
+              <div className="mb-6">
+                <h4 className="font-medium text-foreground mb-3">Atendente</h4>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setSelectedAttendant('all')}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                      selectedAttendant === 'all' 
+                        ? 'bg-blue-100 text-blue-800 font-medium' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    Todos os Atendentes
+                  </button>
+                  {attendants.map((attendant) => (
+                    <button
+                      key={attendant}
+                      onClick={() => setSelectedAttendant(attendant)}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                        selectedAttendant === attendant 
+                          ? 'bg-blue-100 text-blue-800 font-medium' 
+                          : 'hover:bg-muted/50'
+                      }`}
+                    >
+                      {attendant}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filtro por Status */}
+              <div className="mb-6">
+                <h4 className="font-medium text-foreground mb-3">Status</h4>
+                <div className="space-y-2">
+                  {['all', 'new', 'in_progress', 'resolved'].map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setFilterStatus(status)}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                        filterStatus === status 
+                          ? 'bg-blue-100 text-blue-800 font-medium' 
+                          : 'hover:bg-muted/50'
+                      }`}
+                    >
+                      {status === 'all' ? 'Todos os Status' : 
+                       status === 'new' ? 'Novas' :
+                       status === 'in_progress' ? 'Em Andamento' : 'Resolvidas'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filtro por Prioridade */}
+              <div className="mb-6">
+                <h4 className="font-medium text-foreground mb-3">Prioridade</h4>
+                <div className="space-y-2">
+                  {['all', 'high', 'medium', 'low'].map((priority) => (
+                    <button
+                      key={priority}
+                      onClick={() => setFilterPriority(priority)}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                        filterPriority === priority 
+                          ? 'bg-blue-100 text-blue-800 font-medium' 
+                          : 'hover:bg-muted/50'
+                      }`}
+                    >
+                      {priority === 'all' ? 'Todas as Prioridades' : 
+                       priority === 'high' ? 'Alta' :
+                       priority === 'medium' ? 'Média' : 'Baixa'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filtro por Tags */}
+              <div className="mb-6">
+                <h4 className="font-medium text-foreground mb-3">Tags</h4>
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  <button
+                    onClick={() => setSelectedTags([])}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                      selectedTags.length === 0 
+                        ? 'bg-blue-100 text-blue-800 font-medium' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    Todas as Tags
+                  </button>
+                  {allTags.slice(0, 10).map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => setSelectedTags([tag])}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                        selectedTags.includes(tag) 
+                          ? 'bg-blue-100 text-blue-800 font-medium' 
+                          : 'hover:bg-muted/50'
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="p-4 border-t border-border flex justify-between">
+              <button
+                onClick={() => {
+                  setSelectedAttendant('all');
+                  setFilterStatus('all');
+                  setFilterPriority('all');
+                  setSelectedTags([]);
+                }}
+                className="btn-glass text-sm px-3 py-1.5"
+              >
+                Limpar Todos
+              </button>
+              <button
+                onClick={() => setShowFiltersModal(false)}
+                className="btn-premium text-sm px-3 py-1.5"
+              >
+                Aplicar Filtros
               </button>
             </div>
           </div>
@@ -2114,6 +2309,7 @@ const CampaignsPage: React.FC = () => {
                 <th>CTR</th>
                 <th>CPC</th>
                 <th>Conversões</th>
+                <th>Conversões Umbler</th>
                 <th>Custo/Conv.</th>
                 <th>Custo</th>
                 <th>Ações</th>
@@ -2146,6 +2342,7 @@ const CampaignsPage: React.FC = () => {
                   </td>
                   <td className="font-medium">{c.cpc}</td>
                   <td>{c.conversoes}</td>
+                  <td className="font-medium text-muted-foreground">0</td>
                   <td className="font-medium">{c.custoPorConversao}</td>
                   <td className="font-medium">{c.custo}</td>
                   <td>
