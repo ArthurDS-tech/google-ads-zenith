@@ -15,7 +15,32 @@ const WebhookSystem = {
   },
 
   // Dados de Mensagens em Tempo Real
-  messages: [],
+  messages: [
+    {
+      id: "msg_001",
+      client: "Maria Silva",
+      phone: "+55 48 99999-1234",
+      message: "Olá! Preciso renovar o licenciamento do meu carro. Quanto custa?",
+      timestamp: "2025-06-30T16:45:00Z",
+      status: "new",
+      tags: ["CLIENTE SITE", "Pendente"],
+      source: "whatsapp",
+      priority: "high",
+      attendant: "Ester"
+    },
+    {
+      id: "msg_002",
+      client: "João Santos",
+      phone: "+55 48 99999-5678",
+      message: "Boa tarde! Quero transferir meu veículo. Vocês fazem isso?",
+      timestamp: "2025-06-30T16:42:00Z",
+      status: "in_progress",
+      tags: ["Transferência", "Qualificação"],
+      source: "instagram",
+      priority: "medium",
+      attendant: "Sarah"
+    }
+  ],
 
   // Estatísticas de Webhooks
   webhookStats: {
@@ -159,8 +184,12 @@ const LiveChat: React.FC = () => {
             <div className="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mx-auto mb-3">
               <span className="material-icons-outlined">schedule</span>
             </div>
-            <h3 className="text-2xl font-bold text-foreground">2.5 min</h3>
-            <p className="text-muted-foreground text-sm">Tempo Médio de Resposta</p>
+            <h3 className="text-2xl font-bold text-foreground">
+              {selectedAttendant === 'all' ? '--' : '2.5 min'}
+            </h3>
+            <p className="text-muted-foreground text-sm">
+              {selectedAttendant === 'all' ? 'Selecione um atendente' : 'Tempo médio por mensagem'}
+            </p>
           </div>
           
           <div className="text-center">
@@ -180,13 +209,6 @@ const LiveChat: React.FC = () => {
           <p className="text-muted-foreground">Visualize mensagens dos clientes</p>
         </div>
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-green-600 font-medium">Online</span>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {WebhookSystem.webhookStats.messagesPerMinute} msg/min
-          </div>
           {/* Tag de Cliente de Site */}
           <div className="flex items-center space-x-2">
             <span className="px-3 py-1 bg-orange-100 text-orange-800 text-sm font-medium rounded-full border border-orange-200">
@@ -304,7 +326,7 @@ const LiveChat: React.FC = () => {
       {/* Modal de Filtros Avançados */}
       {showFiltersModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-card border border-border rounded-lg shadow-lg w-96 max-h-96 overflow-hidden">
+          <div className="bg-card border border-border rounded-lg shadow-lg w-[500px] max-h-[600px] overflow-hidden">
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-foreground">Filtros Avançados</h3>
@@ -369,27 +391,7 @@ const LiveChat: React.FC = () => {
                 </div>
               </div>
 
-              {/* Filtro por Prioridade */}
-              <div className="mb-6">
-                <h4 className="font-medium text-foreground mb-3">Prioridade</h4>
-                <div className="space-y-2">
-                  {['all', 'high', 'medium', 'low'].map((priority) => (
-                    <button
-                      key={priority}
-                      onClick={() => setFilterPriority(priority)}
-                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-                        filterPriority === priority 
-                          ? 'bg-blue-100 text-blue-800 font-medium' 
-                          : 'hover:bg-muted/50'
-                      }`}
-                    >
-                      {priority === 'all' ? 'Todas as Prioridades' : 
-                       priority === 'high' ? 'Alta' :
-                       priority === 'medium' ? 'Média' : 'Baixa'}
-                    </button>
-                  ))}
-                </div>
-              </div>
+
 
               {/* Filtro por Tags */}
               <div className="mb-6">
@@ -933,8 +935,11 @@ const AdModal: React.FC<{
   });
 
   const [preview, setPreview] = useState(true);
+  const isViewMode = title === "Detalhes do Anúncio";
 
   const handleSubmit = () => {
+    if (isViewMode) return;
+    
     if (!formData.headline.trim() || !formData.description.trim() || !formData.url.trim()) {
       toast({
         title: "Campos obrigatórios",
@@ -974,12 +979,13 @@ const AdModal: React.FC<{
             
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Campanha *
+                Campanha {!isViewMode && '*'}
               </label>
               <select
                 value={formData.campaignId}
-                onChange={(e) => setFormData({...formData, campaignId: e.target.value})}
-                className="input-premium"
+                onChange={(e) => !isViewMode && setFormData({...formData, campaignId: e.target.value})}
+                className={`input-premium ${isViewMode ? 'bg-muted/30 cursor-not-allowed' : ''}`}
+                disabled={isViewMode}
               >
                 {campaigns.map(campaign => (
                   <option key={campaign.id} value={campaign.id}>
@@ -991,31 +997,35 @@ const AdModal: React.FC<{
 
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Título do Anúncio *
+                Título do Anúncio {!isViewMode && '*'}
               </label>
               <input
                 type="text"
                 value={formData.headline}
-                onChange={(e) => setFormData({...formData, headline: e.target.value})}
-                className="input-premium"
+                onChange={(e) => !isViewMode && setFormData({...formData, headline: e.target.value})}
+                className={`input-premium ${isViewMode ? 'bg-muted/30 cursor-not-allowed' : ''}`}
                 placeholder="Ex: Oferta Exclusiva Premium!"
                 maxLength={30}
+                readOnly={isViewMode}
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                {formData.headline.length}/30 caracteres
-              </p>
+              {!isViewMode && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {formData.headline.length}/30 caracteres
+                </p>
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Descrição *
+                Descrição {!isViewMode && '*'}
               </label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="input-premium h-24 resize-none"
+                onChange={(e) => !isViewMode && setFormData({...formData, description: e.target.value})}
+                className={`input-premium h-24 resize-none ${isViewMode ? 'bg-muted/30 cursor-not-allowed' : ''}`}
                 placeholder="Aproveite descontos incríveis agora mesmo. Produtos de alta qualidade com entrega rápida."
                 maxLength={90}
+                readOnly={isViewMode}
               />
               <p className="text-xs text-muted-foreground mt-1">
                 {formData.description.length}/90 caracteres
@@ -1124,18 +1134,22 @@ const AdModal: React.FC<{
         
         <div className="p-6 border-t border-border">
           <div className="flex justify-end space-x-3">
+            {!isViewMode && (
+              <button
+                onClick={onClose}
+                className="btn-glass"
+              >
+                Cancelar
+              </button>
+            )}
             <button
-              onClick={onClose}
-              className="btn-glass"
+              onClick={isViewMode ? onClose : handleSubmit}
+              className={isViewMode ? "btn-glass" : "btn-premium"}
             >
-              Cancelar
-            </button>
-            <button
-              onClick={handleSubmit}
-              className="btn-premium"
-            >
-              <span className="material-icons-outlined mr-2">save</span>
-              {ad ? 'Atualizar' : 'Criar'} Anúncio
+              <span className="material-icons-outlined mr-2">
+                {isViewMode ? 'close' : 'save'}
+              </span>
+              {isViewMode ? 'Fechar' : (ad ? 'Atualizar' : 'Criar') + ' Anúncio'}
             </button>
           </div>
         </div>
@@ -1977,6 +1991,15 @@ const DashboardPage: React.FC = () => {
       changeType: 'neutral',
     },
     {
+      title: 'Conversões Umbler',
+      value: 0,
+      icon: 'trending_up',
+      color: 'text-purple-600',
+      format: (val: number) => val.toLocaleString('pt-BR'),
+      change: '',
+      changeType: 'neutral',
+    },
+    {
       title: '% de impressões (1ª posição)',
       value: 15.98,
       icon: 'looks_one',
@@ -2745,28 +2768,9 @@ const AdsPage: React.FC = () => {
                             setShowEditModal(true);
                           }}
                           className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
-                          title="Editar"
+                          title="Ver detalhes"
                         >
-                          <span className="material-icons-outlined text-sm">edit</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            toast({
-                              title: "Preview do Anúncio",
-                              description: `Título: ${ad.headline}\nDescrição: ${ad.description}`,
-                            });
-                          }}
-                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
-                          title="Preview"
-                        >
-                          <span className="material-icons-outlined text-sm">preview</span>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteAd(ad.id)}
-                          className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-destructive"
-                          title="Excluir"
-                        >
-                          <span className="material-icons-outlined text-sm">delete</span>
+                          <span className="material-icons-outlined text-sm">visibility</span>
                         </button>
                       </div>
                     </td>
@@ -2788,13 +2792,13 @@ const AdsPage: React.FC = () => {
         />
       )}
 
-      {/* Edit Ad Modal */}
+      {/* View Ad Modal */}
       {showEditModal && selectedAd && (
         <AdModal
-          title="Editar Anúncio"
+          title="Detalhes do Anúncio"
           ad={selectedAd}
           campaigns={campaigns}
-          onSave={handleUpdateAd}
+          onSave={() => {}}
           onClose={() => {
             setShowEditModal(false);
             setSelectedAd(null);
