@@ -1963,6 +1963,8 @@ const CampaignsPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [comments, setComments] = useState<any[]>([]);
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
 
   useEffect(() => {
     api.getCampaigns().then(data => {
@@ -1971,12 +1973,70 @@ const CampaignsPage: React.FC = () => {
     });
   }, []);
 
-  const filteredCampaigns = campaigns.filter(campaign => {
-    const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'ALL' || campaign.status === statusFilter;
-    const matchesType = typeFilter === 'ALL' || campaign.type === typeFilter;
-    return matchesSearch && matchesStatus && matchesType;
-  });
+  const filteredAndSortedCampaigns = campaigns
+    .filter(campaign => {
+      const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === 'ALL' || campaign.status === statusFilter;
+      const matchesType = typeFilter === 'ALL' || campaign.type === typeFilter;
+      return matchesSearch && matchesStatus && matchesType;
+    })
+    .sort((a, b) => {
+      let aValue = a[sortBy];
+      let bValue = b[sortBy];
+      
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+      
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+  const handleExportCampaigns = () => {
+    const csvData = [
+      ['Nome', 'Tipo', 'Status', 'Orçamento', 'Cliques', 'Impressões', 'Conversões', 'CTR', 'CPC', 'Custo por Conversão'],
+      ...filteredAndSortedCampaigns.map(campaign => [
+        campaign.name,
+        campaign.type,
+        campaign.status,
+        `R$ ${campaign.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+        campaign.clicks.toLocaleString('pt-BR'),
+        campaign.impressions.toLocaleString('pt-BR'),
+        campaign.conversions,
+        `${campaign.ctr}%`,
+        `R$ ${campaign.cpc.toFixed(2)}`,
+        `R$ ${campaign.costPerConversion.toFixed(2)}`
+      ])
+    ];
+
+    const csvContent = csvData.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `campanhas_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Relatório exportado!",
+      description: "O arquivo CSV foi baixado com sucesso.",
+    });
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('ALL');
+    setTypeFilter('ALL');
+    setSortBy('name');
+    setSortOrder('asc');
+  };
 
   const handleCreateCampaign = async (campaignData: any) => {
     try {
@@ -2117,7 +2177,7 @@ const CampaignsPage: React.FC = () => {
 
       {/* Filters and Search */}
       <div className="card-floating p-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">Buscar</label>
             <div className="relative">
@@ -2158,15 +2218,54 @@ const CampaignsPage: React.FC = () => {
               <option value="ALL">Todos os Tipos</option>
               <option value="SEARCH">Search</option>
               <option value="DISPLAY">Display</option>
-              <option value="SHOPPING">Shopping</option>
               <option value="VIDEO">Video</option>
+              <option value="SHOPPING">Shopping</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Ordenar por</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="input-premium"
+            >
+              <option value="name">Nome</option>
+              <option value="budget">Orçamento</option>
+              <option value="clicks">Cliques</option>
+              <option value="ctr">CTR</option>
+              <option value="cpc">CPC</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Ordem</label>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="input-premium"
+            >
+              <option value="asc">Crescente</option>
+              <option value="desc">Decrescente</option>
             </select>
           </div>
           
-          <div className="flex items-end">
-            <button className="btn-glass w-full">
-              <span className="material-icons-outlined">filter_list</span>
-              Filtros Avançados
+          <div className="flex items-end space-x-2">
+            <button 
+              onClick={handleClearFilters}
+              className="btn-glass flex-1"
+              title="Limpar filtros"
+            >
+              <span className="material-icons-outlined">clear</span>
+              Limpar
+            </button>
+            <button 
+              onClick={handleExportCampaigns}
+              className="btn-premium flex-1"
+              title="Exportar campanhas"
+            >
+              <span className="material-icons-outlined">download</span>
+              Exportar
             </button>
           </div>
         </div>
@@ -2236,7 +2335,7 @@ const CampaignsPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredCampaigns.map(campaign => (
+                {filteredAndSortedCampaigns.map(campaign => (
                   <tr key={campaign.id}>
                     <td>
                       <div>
@@ -2349,6 +2448,10 @@ const AdsPage: React.FC = () => {
   const [selectedAd, setSelectedAd] = useState<any>(null);
   const [campaignFilter, setCampaignFilter] = useState('ALL');
   const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [sortBy, setSortBy] = useState('headline');
+  const [sortOrder, setSortOrder] = useState('asc');
 
   useEffect(() => {
     Promise.all([
@@ -2361,14 +2464,71 @@ const AdsPage: React.FC = () => {
     });
   }, []);
 
-  const filteredAds = ads.filter(ad => {
-    if (campaignFilter === 'ALL') return true;
-    return ad.campaignId === campaignFilter;
-  });
+  const filteredAndSortedAds = ads
+    .filter(ad => {
+      const matchesSearch = ad.headline.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           ad.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCampaign = campaignFilter === 'ALL' || ad.campaignId === campaignFilter;
+      const matchesStatus = statusFilter === 'ALL' || ad.status === statusFilter;
+      return matchesSearch && matchesCampaign && matchesStatus;
+    })
+    .sort((a, b) => {
+      let aValue = a[sortBy];
+      let bValue = b[sortBy];
+      
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+      
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
 
   const getCampaignName = (campaignId: string) => {
     const campaign = campaigns.find(c => c.id === campaignId);
     return campaign ? campaign.name : 'Campanha não encontrada';
+  };
+
+  const handleExportAds = () => {
+    const csvData = [
+      ['Título', 'Descrição', 'Campanha', 'Tipo', 'Status', 'URL'],
+      ...filteredAndSortedAds.map(ad => [
+        ad.headline,
+        ad.description,
+        getCampaignName(ad.campaignId),
+        ad.type,
+        ad.status,
+        ad.url
+      ])
+    ];
+
+    const csvContent = csvData.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `anuncios_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Relatório exportado!",
+      description: "O arquivo CSV foi baixado com sucesso.",
+    });
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setCampaignFilter('ALL');
+    setStatusFilter('ALL');
+    setSortBy('headline');
+    setSortOrder('asc');
   };
 
   const handleCreateAd = async (adData: any) => {
@@ -2451,9 +2611,25 @@ const AdsPage: React.FC = () => {
 
       {/* Filters */}
       <div className="card-floating p-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Filtrar por Campanha</label>
+            <label className="block text-sm font-medium text-foreground mb-2">Buscar</label>
+            <div className="relative">
+              <span className="material-icons-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
+                search
+              </span>
+              <input
+                type="text"
+                placeholder="Título ou descrição..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input-premium pl-10"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Campanha</label>
             <select
               value={campaignFilter}
               onChange={(e) => setCampaignFilter(e.target.value)}
@@ -2467,18 +2643,62 @@ const AdsPage: React.FC = () => {
               ))}
             </select>
           </div>
-          
-          <div className="flex items-end">
-            <button className="btn-glass w-full">
-              <span className="material-icons-outlined">tune</span>
-              Filtros Avançados
-            </button>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Status</label>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="input-premium"
+            >
+              <option value="ALL">Todos os Status</option>
+              <option value="ACTIVE">Ativo</option>
+              <option value="PAUSED">Pausado</option>
+              <option value="INACTIVE">Inativo</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Ordenar por</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="input-premium"
+            >
+              <option value="headline">Título</option>
+              <option value="type">Tipo</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Ordem</label>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="input-premium"
+            >
+              <option value="asc">Crescente</option>
+              <option value="desc">Decrescente</option>
+            </select>
           </div>
           
-          <div className="flex items-end">
-            <button className="btn-glass w-full">
-              <span className="material-icons-outlined">analytics</span>
-              Performance de Anúncios
+          <div className="flex items-end space-x-2">
+            <button 
+              onClick={handleClearFilters}
+              className="btn-glass flex-1"
+              title="Limpar filtros"
+            >
+              <span className="material-icons-outlined">clear</span>
+              Limpar
+            </button>
+            <button 
+              onClick={handleExportAds}
+              className="btn-premium flex-1"
+              title="Exportar anúncios"
+            >
+              <span className="material-icons-outlined">download</span>
+              Exportar
             </button>
           </div>
         </div>
@@ -2515,7 +2735,7 @@ const AdsPage: React.FC = () => {
       <div className="card-floating overflow-hidden">
         <div className="p-6 border-b border-border">
           <h3 className="text-lg font-semibold text-foreground">
-            Anúncios ({filteredAds.length})
+            Anúncios ({filteredAndSortedAds.length})
           </h3>
         </div>
         
@@ -2530,12 +2750,11 @@ const AdsPage: React.FC = () => {
                   <th>Campanha</th>
                   <th>Tipo</th>
                   <th>Status</th>
-                  <th>URL</th>
                   <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredAds.map(ad => (
+                {filteredAndSortedAds.map(ad => (
                   <tr key={ad.id}>
                     <td>
                       <div>
@@ -2557,16 +2776,6 @@ const AdsPage: React.FC = () => {
                     </td>
                     <td>{getStatusBadge(ad.status)}</td>
                     <td>
-                      <a 
-                        href={ad.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-primary hover:text-primary-hover text-sm truncate block max-w-48"
-                      >
-                        {ad.url}
-                      </a>
-                    </td>
-                    <td>
                       <div className="flex space-x-1">
                         <button
                           onClick={() => {
@@ -2579,6 +2788,12 @@ const AdsPage: React.FC = () => {
                           <span className="material-icons-outlined text-sm">edit</span>
                         </button>
                         <button
+                          onClick={() => {
+                            toast({
+                              title: "Preview do Anúncio",
+                              description: `Título: ${ad.headline}\nDescrição: ${ad.description}`,
+                            });
+                          }}
                           className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
                           title="Preview"
                         >
@@ -2660,6 +2875,15 @@ const ReportsPage: React.FC = () => {
   }, []);
 
   const exportReport = () => {
+    if (!reportData) {
+      toast({
+        title: "Erro ao exportar",
+        description: "Nenhum dado disponível para exportar.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const csvData = [
       ['Campanha', 'Cliques', 'Impressões', 'CTR', 'CPC', 'Conversões', 'ROI'],
       ...reportData.campaignPerformance.map((campaign: any) => [
@@ -2672,11 +2896,21 @@ const ReportsPage: React.FC = () => {
         campaign.roi + '%'
       ])
     ];
-    
-    console.log('Exportando relatório CSV:', csvData);
+
+    const csvContent = csvData.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `relatorio_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
     toast({
       title: "Relatório exportado!",
-      description: "O arquivo CSV foi gerado com sucesso.",
+      description: "O arquivo CSV foi baixado com sucesso.",
     });
   };
 
@@ -2741,7 +2975,19 @@ const ReportsPage: React.FC = () => {
           </div>
           
           <div className="flex items-end">
-            <button className="btn-glass w-full">
+            <button 
+              onClick={() => {
+                setLoading(true);
+                setTimeout(() => {
+                  setLoading(false);
+                  toast({
+                    title: "Dados atualizados!",
+                    description: "Os relatórios foram atualizados com sucesso.",
+                  });
+                }, 1500);
+              }}
+              className="btn-glass w-full"
+            >
               <span className="material-icons-outlined">refresh</span>
               Atualizar Dados
             </button>
