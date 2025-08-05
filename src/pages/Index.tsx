@@ -8,7 +8,7 @@ const mockData = {
   campaigns: [
     {
       id: "CAMP_001",
-      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Florianópolis - 05/11/24",
+      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Florianópolis - 05/11/25",
       type: "SEARCH",
       status: "ACTIVE",
       budget: 8000.00,
@@ -21,7 +21,7 @@ const mockData = {
     },
     {
       id: "CAMP_002",
-      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] São José - 02/10/24",
+      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] São José - 02/10/25",
       type: "SEARCH",
       status: "ACTIVE",
       budget: 6000.00,
@@ -34,7 +34,7 @@ const mockData = {
     },
     {
       id: "CAMP_003", 
-      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Palhoça - 05/11/2024",
+      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Palhoça - 05/11/25",
       type: "SEARCH",
       status: "ACTIVE",
       budget: 5000.00,
@@ -115,7 +115,7 @@ const mockData = {
     },
     {
       id: "notif5",
-      message: "Relatório mensal de maio/junho disponível para download",
+      message: "Relatório mensal de junho 2025 disponível para download",
       type: "INFO",
       date: "2025-06-30",
       time: "12:00"
@@ -920,7 +920,7 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     await new Promise(resolve => setTimeout(resolve, 2000));
     toast({
       title: "Login realizado com sucesso!",
-      description: "Bem-vindo ao Google Ads Dashboard Premium",
+      description: "Bem-vindo ao Dashboard do Despachante Marcelino",
     });
     onLogin();
   };
@@ -946,8 +946,8 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Google Ads</h1>
-            <p className="text-white/80">Dashboard Premium</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Despachante Marcelino</h1>
+            <p className="text-white/80">Dashboard de Marketing Digital</p>
           </div>
           
           {/* Login Form */}
@@ -1040,7 +1040,7 @@ const GoogleAdsApp: React.FC = () => {
             </div>
             <div>
               <h2 className="font-bold text-foreground">Google Ads</h2>
-              <p className="text-xs text-muted-foreground">Dashboard Premium</p>
+              <p className="text-xs text-muted-foreground">Dashboard Despachante Marcelino</p>
             </div>
           </div>
         </div>
@@ -2284,7 +2284,7 @@ const ReportsPage: React.FC = () => {
           <p className="text-muted-foreground text-sm">CTR Médio</p>
           <div className="flex items-center justify-center mt-2 text-accent text-sm">
             <span className="material-icons-outlined text-sm mr-1">arrow_upward</span>
-            +0.3% vs período anterior
+            +0.3% vs maio 2025
           </div>
         </div>
         
@@ -2296,7 +2296,7 @@ const ReportsPage: React.FC = () => {
           <p className="text-muted-foreground text-sm">CPC Médio</p>
           <div className="flex items-center justify-center mt-2 text-destructive text-sm">
             <span className="material-icons-outlined text-sm mr-1">arrow_downward</span>
-            -R$ 0.15 vs período anterior
+            -R$ 0.15 vs maio 2025
           </div>
         </div>
         
@@ -2308,7 +2308,7 @@ const ReportsPage: React.FC = () => {
           <p className="text-muted-foreground text-sm">Taxa de Conversão</p>
           <div className="flex items-center justify-center mt-2 text-accent text-sm">
             <span className="material-icons-outlined text-sm mr-1">arrow_upward</span>
-            +1.2% vs período anterior
+            +1.2% vs maio 2025
           </div>
         </div>
         
@@ -2320,7 +2320,7 @@ const ReportsPage: React.FC = () => {
           <p className="text-muted-foreground text-sm">ROI Médio</p>
           <div className="flex items-center justify-center mt-2 text-accent text-sm">
             <span className="material-icons-outlined text-sm mr-1">arrow_upward</span>
-            +45% vs período anterior
+            +45% vs maio 2025
           </div>
         </div>
       </div>
@@ -2699,7 +2699,7 @@ const ProfilePage: React.FC = () => {
     department: mockData.user.department,
     phone: '+55 11 99999-9999',
     location: 'São Paulo, Brasil',
-    joinDate: '2023-01-15'
+            joinDate: '2025-01-15'
   });
 
   const [isEditing, setIsEditing] = useState(false);
