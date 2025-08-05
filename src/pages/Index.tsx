@@ -15,96 +15,7 @@ const WebhookSystem = {
   },
 
   // Dados de Mensagens em Tempo Real
-  messages: [
-    {
-      id: "msg_001",
-      client: "João Silva",
-      phone: "+55 48 99999-1234",
-      message: "Olá! Preciso renovar o licenciamento do meu carro. Quanto custa?",
-      timestamp: "2025-06-30T16:45:00Z",
-      status: "new",
-      tags: ["CLIENTE SITE", "Pendente"],
-      source: "whatsapp",
-      priority: "high"
-    },
-    {
-      id: "msg_002",
-      client: "Maria Santos",
-      phone: "+55 48 99999-5678",
-      message: "Boa tarde! Quero transferir meu veículo. Vocês fazem isso?",
-      timestamp: "2025-06-30T16:42:00Z",
-      status: "in_progress",
-      tags: ["Transferência", "Qualificação"],
-      source: "instagram",
-      priority: "medium"
-    },
-    {
-      id: "msg_003",
-      client: "Pedro Costa",
-      phone: "+55 48 99999-9012",
-      message: "Oi! Preciso de um despachante para resolver multas. Podem ajudar?",
-      timestamp: "2025-06-30T16:40:00Z",
-      status: "resolved",
-      tags: ["Realizado", "PGTO"],
-      source: "facebook",
-      priority: "low"
-    },
-    {
-      id: "msg_004",
-      client: "Ana Oliveira",
-      phone: "+55 48 99999-3456",
-      message: "Bom dia! Quanto tempo demora para renovar o licenciamento?",
-      timestamp: "2025-06-30T16:38:00Z",
-      status: "new",
-      tags: ["CLIENTE SITE", "Aguardando Verificação"],
-      source: "whatsapp",
-      priority: "high"
-    },
-    {
-      id: "msg_005",
-      client: "Carlos Mendes",
-      phone: "+55 48 99999-7890",
-      message: "Olá! Vocês atendem em Palhoça? Preciso de documentação veicular.",
-      timestamp: "2025-06-30T16:35:00Z",
-      status: "in_progress",
-      tags: ["Doc VD", "Blumenau"],
-      source: "telefone",
-      priority: "medium"
-    },
-    {
-      id: "msg_006",
-      client: "Fernanda Lima",
-      phone: "+55 48 99999-1111",
-      message: "Gostaria de saber sobre os serviços de despachante. Vocês fazem transferência de veículos?",
-      timestamp: "2025-06-30T16:30:00Z",
-      status: "new",
-      tags: ["CLIENTE SITE", "Orçamento Enviado"],
-      source: "site",
-      priority: "high"
-    },
-    {
-      id: "msg_007",
-      client: "Roberto Alves",
-      phone: "+55 48 99999-2222",
-      message: "Preciso de ajuda com multas. Qual o processo para resolver?",
-      timestamp: "2025-06-30T16:25:00Z",
-      status: "in_progress",
-      tags: ["Negociando", "Parceiro"],
-      source: "site",
-      priority: "medium"
-    },
-    {
-      id: "msg_008",
-      client: "Lucia Pereira",
-      phone: "+55 48 99999-3333",
-      message: "Quanto custa o licenciamento anual? E qual a documentação necessária?",
-      timestamp: "2025-06-30T16:20:00Z",
-      status: "new",
-      tags: ["CLIENTE SITE", "Pendente"],
-      source: "site",
-      priority: "high"
-    }
-  ],
+  messages: [],
 
   // Estatísticas de Webhooks
   webhookStats: {
@@ -926,16 +837,7 @@ const AdModal: React.FC<{
                   </div>
                 </div>
 
-                {/* Tips */}
-                <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
-                  <h4 className="font-medium text-primary mb-2">💡 Dicas para Setor Veicular</h4>
-                  <ul className="text-sm text-foreground space-y-1">
-                    <li>• Use "licenciamento veicular" e "despachante veicular" no título</li>
-                    <li>• Destaque "processo 100% digital" e "sem sair de casa"</li>
-                    <li>• Inclua "agilidade" e "confiança" como diferenciais</li>
-                    <li>• Teste variações com "rápido", "online" e "digital"</li>
-                  </ul>
-                </div>
+
               </div>
             )}
           </div>
