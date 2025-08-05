@@ -1523,7 +1523,10 @@ const GoogleAdsApp: React.FC = () => {
             {navigationItems.map(item => (
               <li key={item.id}>
                 <button
-                  onClick={() => setCurrentPage(item.id)}
+                  onClick={() => {
+                    console.log('Clicou em:', item.id); // Debug
+                    setCurrentPage(item.id);
+                  }}
                   className={`nav-item w-full ${currentPage === item.id ? 'active' : ''}`}
                 >
                   <span className="material-icons-outlined text-xl">{item.icon}</span>
@@ -1857,6 +1860,8 @@ const DashboardPage: React.FC = () => {
 
 // Campaigns Page Component - CORRIGIDO PARA DADOS ESTÁTICOS
 const CampaignsPage: React.FC = () => {
+  console.log('CampaignsPage está sendo renderizado'); // Debug
+
   // Dados estáticos do relatório
   const campanhas = [
     {
@@ -1927,7 +1932,12 @@ const CampaignsPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in" style={{ minHeight: '400px' }}>
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+        <h2 className="text-2xl font-bold text-foreground mb-2">✅ Página de Campanhas Funcionando</h2>
+        <p className="text-blue-800">Esta é a página de campanhas com os dados do relatório.</p>
+      </div>
+      
       <h2 className="text-2xl font-bold text-foreground mb-4">Todas as Campanhas</h2>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-card border border-border rounded-lg">
