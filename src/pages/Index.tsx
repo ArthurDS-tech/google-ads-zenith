@@ -1855,495 +1855,116 @@ const DashboardPage: React.FC = () => {
   );
 };
 
-// Campaigns Page Component - COMPLETE
+// Campaigns Page Component - CORRIGIDO PARA DADOS ESTÁTICOS
 const CampaignsPage: React.FC = () => {
-  const [campaigns, setCampaigns] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showCommentsModal, setShowCommentsModal] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  const [typeFilter, setTypeFilter] = useState('ALL');
-  const [comments, setComments] = useState<any[]>([]);
-  const [sortBy, setSortBy] = useState('name');
-  const [sortOrder, setSortOrder] = useState('asc');
-
-  useEffect(() => {
-    api.getCampaigns().then(data => {
-      setCampaigns(data);
-      setLoading(false);
-    });
-  }, []);
-
-  const filteredAndSortedCampaigns = campaigns
-    .filter(campaign => {
-      const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'ALL' || campaign.status === statusFilter;
-      const matchesType = typeFilter === 'ALL' || campaign.type === typeFilter;
-      return matchesSearch && matchesStatus && matchesType;
-    })
-    .sort((a, b) => {
-      let aValue = a[sortBy];
-      let bValue = b[sortBy];
-      
-      if (typeof aValue === 'string') {
-        aValue = aValue.toLowerCase();
-        bValue = bValue.toLowerCase();
-      }
-      
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-
-  const handleExportCampaigns = () => {
-    const csvData = [
-      ['Nome', 'Tipo', 'Status', 'Orçamento', 'Cliques', 'Impressões', 'Conversões', 'CTR', 'CPC', 'Custo por Conversão'],
-      ...filteredAndSortedCampaigns.map(campaign => [
-        campaign.name,
-        campaign.type,
-        campaign.status,
-        `R$ ${campaign.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-        campaign.clicks.toLocaleString('pt-BR'),
-        campaign.impressions.toLocaleString('pt-BR'),
-        campaign.conversions,
-        `${campaign.ctr}%`,
-        `R$ ${campaign.cpc.toFixed(2)}`,
-        `R$ ${campaign.costPerConversion.toFixed(2)}`
-      ])
-    ];
-
-    const csvContent = csvData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `campanhas_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    toast({
-      title: "Relatório exportado!",
-      description: "O arquivo CSV foi baixado com sucesso.",
-    });
-  };
-
-  const handleClearFilters = () => {
-    setSearchTerm('');
-    setStatusFilter('ALL');
-    setTypeFilter('ALL');
-    setSortBy('name');
-    setSortOrder('asc');
-  };
-
-  const handleCreateCampaign = async (campaignData: any) => {
-    try {
-      const newCampaign = await api.createCampaign(campaignData);
-      setCampaigns([...campaigns, newCampaign]);
-      setShowCreateModal(false);
-      toast({
-        title: "Campanha criada com sucesso!",
-        description: `A campanha "${newCampaign.name}" foi criada e está ativa.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Erro ao criar campanha",
-        description: "Tente novamente em alguns instantes.",
-        variant: "destructive",
-      });
+  // Dados estáticos do relatório
+  const campanhas = [
+    {
+      nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
+      impressoes: "8.023",
+      cliques: "456",
+      ctr: "5,68%",
+      cpc: "R$0,69",
+      conversoes: "79",
+      custoPorConversao: "R$3,96",
+      taxaConversao: "17,32%",
+      taxaCliques: "12,23%",
+      taxaTopo: "67,68%",
+      custo: "R$313,02"
+    },
+    {
+      nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: "3.477",
+      cliques: "186",
+      ctr: "5,35%",
+      cpc: "R$1,62",
+      conversoes: "26,5",
+      custoPorConversao: "R$11,39",
+      taxaConversao: "14,25%",
+      taxaCliques: "18,99%",
+      taxaTopo: "76,01%",
+      custo: "R$301,88"
+    },
+    {
+      nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: "4.441",
+      cliques: "173",
+      ctr: "3,9%",
+      cpc: "R$1,71",
+      conversoes: "29,5",
+      custoPorConversao: "R$10,01",
+      taxaConversao: "17,05%",
+      taxaCliques: "17,39%",
+      taxaTopo: "72,1%",
+      custo: "R$295,34"
+    },
+    {
+      nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25",
+      impressoes: "3.268",
+      cliques: "164",
+      ctr: "5,02%",
+      cpc: "R$1,87",
+      conversoes: "28,5",
+      custoPorConversao: "R$10,78",
+      taxaConversao: "17,38%",
+      taxaCliques: "15,1%",
+      taxaTopo: "70,3%",
+      custo: "R$307,26"
+    },
+    {
+      nome: "Leads-Search-Autofacilcertificados-09-07-25",
+      impressoes: "1.814",
+      cliques: "73",
+      ctr: "4,02%",
+      cpc: "R$3,36",
+      conversoes: "17",
+      custoPorConversao: "R$14,41",
+      taxaConversao: "23,29%",
+      taxaCliques: "12,99%",
+      taxaTopo: "66,77%",
+      custo: "R$244,94"
     }
-  };
-
-  const handleUpdateCampaign = async (campaignData: any) => {
-    try {
-      const updatedCampaign = await api.updateCampaign(selectedCampaign.id, campaignData);
-      setCampaigns(campaigns.map(c => c.id === selectedCampaign.id ? updatedCampaign : c));
-      setShowEditModal(false);
-      setSelectedCampaign(null);
-      toast({
-        title: "Campanha atualizada!",
-        description: "As alterações foram salvas com sucesso.",
-      });
-    } catch (error) {
-      toast({
-        title: "Erro ao atualizar campanha",
-        description: "Tente novamente em alguns instantes.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDeleteCampaign = async (campaignId: string) => {
-    if (window.confirm('Tem certeza que deseja excluir esta campanha?')) {
-      try {
-        await api.deleteCampaign(campaignId);
-        setCampaigns(campaigns.filter(c => c.id !== campaignId));
-        toast({
-          title: "Campanha excluída",
-          description: "A campanha foi removida permanentemente.",
-        });
-      } catch (error) {
-        toast({
-          title: "Erro ao excluir campanha",
-          description: "Tente novamente em alguns instantes.",
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
-  const handleToggleStatus = async (campaign: any) => {
-    const newStatus = campaign.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE';
-    try {
-      await handleUpdateCampaign({ ...campaign, status: newStatus });
-    } catch (error) {
-      toast({
-        title: "Erro ao alterar status",
-        description: "Tente novamente em alguns instantes.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return <span className="badge-success">Ativo</span>;
-      case 'PAUSED':
-        return <span className="badge-warning">Pausado</span>;
-      default:
-        return <span className="badge-error">Inativo</span>;
-    }
-  };
-
-  const openComments = (campaign: any) => {
-    setSelectedCampaign(campaign);
-    // Comentários reais da campanha
-    setComments([
-      {
-        id: 1,
-        author: 'Marcelino Silva',
-        date: '2025-06-30 14:30',
-        text: 'Campanha Florianópolis com 320 cliques e 85 conversões - excelente performance.',
-        type: 'success'
-      },
-      {
-        id: 2,
-        author: 'Carlos Mendes',
-        date: '2025-06-30 10:15',
-        text: 'São José com CTR de 3.89% - melhor performance entre as 3 cidades.',
-        type: 'insight'
-      },
-      {
-        id: 3,
-        author: 'Roberto Lima',
-        date: '2025-06-29 16:45',
-        text: 'Palhoça com CTR baixo (2.54%) - considerar otimização de keywords.',
-        type: 'warning'
-      }
-    ]);
-    setShowCommentsModal(true);
-  };
-
-  const addComment = (commentText: string) => {
-    const newComment = {
-      id: Date.now(),
-      author: mockData.user.name,
-      date: new Date().toLocaleString('pt-BR'),
-      text: commentText,
-      type: 'comment'
-    };
-    setComments([newComment, ...comments]);
-  };
+  ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header with Actions */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Gerenciamento de Campanhas</h2>
-          <p className="text-muted-foreground">Crie, edite e monitore suas campanhas do Google Ads</p>
-        </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="btn-premium"
-        >
-          <span className="material-icons-outlined">add</span>
-          Nova Campanha
-        </button>
+    <div className="space-y-8 animate-fade-in">
+      <h2 className="text-2xl font-bold text-foreground mb-4">Todas as Campanhas</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-card border border-border rounded-lg">
+          <thead>
+            <tr>
+              <th className="px-4 py-2">Campanha</th>
+              <th className="px-4 py-2">Impressões</th>
+              <th className="px-4 py-2">Cliques</th>
+              <th className="px-4 py-2">CTR</th>
+              <th className="px-4 py-2">CPC</th>
+              <th className="px-4 py-2">Conversões</th>
+              <th className="px-4 py-2">Custo/Conv.</th>
+              <th className="px-4 py-2">Taxa Conv.</th>
+              <th className="px-4 py-2">Taxa Cliques</th>
+              <th className="px-4 py-2">Taxa Topo</th>
+              <th className="px-4 py-2">Custo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {campanhas.map((c, i) => (
+              <tr key={i} className="border-t border-border">
+                <td className="px-4 py-2 font-medium">{c.nome}</td>
+                <td className="px-4 py-2">{c.impressoes}</td>
+                <td className="px-4 py-2">{c.cliques}</td>
+                <td className="px-4 py-2">{c.ctr}</td>
+                <td className="px-4 py-2">{c.cpc}</td>
+                <td className="px-4 py-2">{c.conversoes}</td>
+                <td className="px-4 py-2">{c.custoPorConversao}</td>
+                <td className="px-4 py-2">{c.taxaConversao}</td>
+                <td className="px-4 py-2">{c.taxaCliques}</td>
+                <td className="px-4 py-2">{c.taxaTopo}</td>
+                <td className="px-4 py-2">{c.custo}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-
-      {/* Filters and Search */}
-      <div className="card-floating p-6">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Buscar</label>
-            <div className="relative">
-              <span className="material-icons-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                search
-              </span>
-              <input
-                type="text"
-                placeholder="Nome da campanha..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-premium pl-10"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Status</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="input-premium"
-            >
-              <option value="ALL">Todos os Status</option>
-              <option value="ACTIVE">Ativo</option>
-              <option value="PAUSED">Pausado</option>
-              <option value="INACTIVE">Inativo</option>
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Tipo</label>
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="input-premium"
-            >
-              <option value="ALL">Todos os Tipos</option>
-              <option value="SEARCH">Search</option>
-              <option value="DISPLAY">Display</option>
-              <option value="VIDEO">Video</option>
-              <option value="SHOPPING">Shopping</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Ordenar por</label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="input-premium"
-            >
-              <option value="name">Nome</option>
-              <option value="budget">Orçamento</option>
-              <option value="clicks">Cliques</option>
-              <option value="ctr">CTR</option>
-              <option value="cpc">CPC</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Ordem</label>
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="input-premium"
-            >
-              <option value="asc">Crescente</option>
-              <option value="desc">Decrescente</option>
-            </select>
-          </div>
-          
-          <div className="flex items-end space-x-2">
-            <button 
-              onClick={handleClearFilters}
-              className="btn-glass flex-1"
-              title="Limpar filtros"
-            >
-              <span className="material-icons-outlined">clear</span>
-              Limpar
-            </button>
-            <button 
-              onClick={handleExportCampaigns}
-              className="btn-premium flex-1"
-              title="Exportar campanhas"
-            >
-              <span className="material-icons-outlined">download</span>
-              Exportar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Campaigns Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="card-floating p-6 text-center">
-          <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-3">
-            <span className="material-icons-outlined">campaign</span>
-          </div>
-          <h3 className="text-2xl font-bold text-foreground">{campaigns.length}</h3>
-          <p className="text-muted-foreground text-sm">Total de Campanhas</p>
-        </div>
-        
-        <div className="card-floating p-6 text-center">
-          <div className="w-12 h-12 bg-accent/10 text-accent rounded-xl flex items-center justify-center mx-auto mb-3">
-            <span className="material-icons-outlined">trending_up</span>
-          </div>
-          <h3 className="text-2xl font-bold text-foreground">{campaigns.filter(c => c.status === 'ACTIVE').length}</h3>
-          <p className="text-muted-foreground text-sm">Campanhas Ativas</p>
-        </div>
-        
-        <div className="card-floating p-6 text-center">
-          <div className="w-12 h-12 bg-warning/10 text-warning rounded-xl flex items-center justify-center mx-auto mb-3">
-            <span className="material-icons-outlined">pause</span>
-          </div>
-          <h3 className="text-2xl font-bold text-foreground">{campaigns.filter(c => c.status === 'PAUSED').length}</h3>
-          <p className="text-muted-foreground text-sm">Campanhas Pausadas</p>
-        </div>
-        
-        <div className="card-floating p-6 text-center">
-          <div className="w-12 h-12 bg-google-red/10 text-google-red rounded-xl flex items-center justify-center mx-auto mb-3">
-            <span className="material-icons-outlined">attach_money</span>
-          </div>
-          <h3 className="text-2xl font-bold text-foreground">
-            R$ {campaigns.reduce((sum, c) => sum + c.budget, 0).toLocaleString('pt-BR')}
-          </h3>
-          <p className="text-muted-foreground text-sm">Orçamento Total</p>
-        </div>
-      </div>
-
-      {/* Campaigns Table */}
-      <div className="card-floating overflow-hidden">
-        <div className="p-6 border-b border-border">
-          <h3 className="text-lg font-semibold text-foreground">
-            Campanhas ({filteredCampaigns.length})
-          </h3>
-        </div>
-        
-        {loading ? (
-          <SkeletonTable />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="table-premium">
-              <thead>
-                <tr>
-                  <th>Campanha</th>
-                  <th>Tipo</th>
-                  <th>Status</th>
-                  <th>Orçamento</th>
-                  <th>Cliques</th>
-                  <th>CTR</th>
-                  <th>CPC</th>
-                  <th>Conversões</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredAndSortedCampaigns.map(campaign => (
-                  <tr key={campaign.id}>
-                    <td>
-                      <div className="font-medium text-foreground">{campaign.name}</div>
-                      <div className="text-sm text-muted-foreground">ID: {campaign.id}</div>
-                    </td>
-                    <td>
-                      <span className="px-2 py-1 bg-muted/50 rounded-lg text-xs font-medium">
-                        {campaign.type}
-                      </span>
-                    </td>
-                    <td>{getStatusBadge(campaign.status)}</td>
-                    <td className="font-medium">
-                      R$ {campaign.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td>{campaign.clicks.toLocaleString('pt-BR')}</td>
-                    <td>
-                      <span className={`text-sm ${
-                        campaign.ctr >= 4.0 ? 'text-green-600' : 
-                        campaign.ctr >= 3.0 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {campaign.ctr}%
-                      </span>
-                    </td>
-                    <td>R$ {campaign.cpc.toFixed(2)}</td>
-                    <td>{campaign.conversions}</td>
-                    <td>
-                      <div className="flex space-x-1">
-                        <button
-                          onClick={() => {
-                            setSelectedCampaign(campaign);
-                            setShowEditModal(true);
-                          }}
-                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
-                          title="Editar"
-                        >
-                          <span className="material-icons-outlined text-sm">edit</span>
-                        </button>
-                        <button
-                          onClick={() => openComments(campaign)}
-                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
-                          title="Comentários"
-                        >
-                          <span className="material-icons-outlined text-sm">comment</span>
-                        </button>
-                        <button
-                          onClick={() => handleToggleStatus(campaign)}
-                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
-                          title={campaign.status === 'ACTIVE' ? 'Pausar' : 'Ativar'}
-                        >
-                          <span className="material-icons-outlined text-sm">
-                            {campaign.status === 'ACTIVE' ? 'pause' : 'play_arrow'}
-                          </span>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteCampaign(campaign.id)}
-                          className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-destructive"
-                          title="Excluir"
-                        >
-                          <span className="material-icons-outlined text-sm">delete</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* Create Campaign Modal */}
-      {showCreateModal && (
-        <CampaignModal
-          title="Criar Nova Campanha"
-          onSave={handleCreateCampaign}
-          onClose={() => setShowCreateModal(false)}
-        />
-      )}
-
-      {/* Edit Campaign Modal */}
-      {showEditModal && selectedCampaign && (
-        <CampaignModal
-          title="Editar Campanha"
-          campaign={selectedCampaign}
-          onSave={handleUpdateCampaign}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedCampaign(null);
-          }}
-        />
-      )}
-
-      {/* Comments Modal */}
-      {showCommentsModal && selectedCampaign && (
-        <CommentsModal
-          campaign={selectedCampaign}
-          comments={comments}
-          onAddComment={addComment}
-          onClose={() => {
-            setShowCommentsModal(false);
-            setSelectedCampaign(null);
-          }}
-        />
-      )}
     </div>
   );
 };
