@@ -85,7 +85,6 @@ const WebhookSystem = {
 const LiveChat: React.FC = () => {
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
   const [filterStatus, setFilterStatus] = useState('all');
-  const [filterPriority, setFilterPriority] = useState('all');
   const [selectedTags, setSelectedTags] = useState<string[]>(["CLIENTE SITE"]);
   const [selectedAttendant, setSelectedAttendant] = useState('all');
   const [showTagModal, setShowTagModal] = useState(false);
@@ -116,14 +115,7 @@ const LiveChat: React.FC = () => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-500 text-white';
-      case 'medium': return 'bg-yellow-500 text-white';
-      case 'low': return 'bg-green-500 text-white';
-      default: return 'bg-gray-500 text-white';
-    }
-  };
+
 
   const getSourceIcon = (source: string) => {
     switch (source) {
@@ -149,9 +141,8 @@ const LiveChat: React.FC = () => {
 
   const filteredMessages = WebhookSystem.messages.filter(msg => {
     const statusMatch = filterStatus === 'all' || msg.status === filterStatus;
-    const priorityMatch = filterPriority === 'all' || msg.priority === filterPriority;
     const tagMatch = selectedTags.length === 0 || selectedTags.some(tag => msg.tags.includes(tag));
-    return statusMatch && priorityMatch && tagMatch;
+    return statusMatch && tagMatch;
   });
 
   const handleTagToggle = (tag: string) => {
@@ -250,16 +241,7 @@ const LiveChat: React.FC = () => {
             <option value="resolved">Resolvidas</option>
           </select>
           
-          <select
-            value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value)}
-            className="input-premium text-sm"
-          >
-            <option value="all">Todas as Prioridades</option>
-            <option value="high">Alta</option>
-            <option value="medium">Média</option>
-            <option value="low">Baixa</option>
-          </select>
+
 
           <button
             onClick={() => setShowTagModal(true)}
@@ -2182,72 +2164,62 @@ const CampaignsPage: React.FC = () => {
   const campanhas = [
     {
       nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
-      impressoes: "8.023",
-      cliques: "456",
+      impressoes: 8023,
+      cliques: 456,
       ctr: "5,68%",
       cpc: "R$0,69",
-      conversoes: "79",
+      conversoes: 79,
       custoPorConversao: "R$3,96",
       taxaConversao: "17,32%",
-      taxaCliques: "12,23%",
-      taxaTopo: "67,68%",
-      custo: "R$313,02",
+      custo: 313.02,
       status: "Ativo"
     },
     {
       nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
-      impressoes: "3.477",
-      cliques: "186",
+      impressoes: 3477,
+      cliques: 186,
       ctr: "5,35%",
       cpc: "R$1,62",
-      conversoes: "26,5",
+      conversoes: 26.5,
       custoPorConversao: "R$11,39",
       taxaConversao: "14,25%",
-      taxaCliques: "18,99%",
-      taxaTopo: "76,01%",
-      custo: "R$301,88",
+      custo: 301.88,
       status: "Ativo"
     },
     {
       nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
-      impressoes: "4.441",
-      cliques: "173",
+      impressoes: 4441,
+      cliques: 173,
       ctr: "3,9%",
       cpc: "R$1,71",
-      conversoes: "29,5",
+      conversoes: 29.5,
       custoPorConversao: "R$10,01",
       taxaConversao: "17,05%",
-      taxaCliques: "17,39%",
-      taxaTopo: "72,1%",
-      custo: "R$295,34",
+      custo: 295.34,
       status: "Ativo"
     },
     {
       nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25",
-      impressoes: "3.268",
-      cliques: "164",
+      impressoes: 3268,
+      cliques: 164,
       ctr: "5,02%",
       cpc: "R$1,87",
-      conversoes: "28,5",
+      conversoes: 28.5,
       custoPorConversao: "R$10,78",
       taxaConversao: "17,38%",
-      taxaCliques: "15,1%",
-      taxaTopo: "70,3%",
-      custo: "R$307,26",
+      custo: 307.26,
       status: "Ativo"
     },
     {
       nome: "Leads-Search-Autofacilcertificados-09-07-25",
-      impressoes: "1.814",
-      cliques: "73",
+      impressoes: 1814,
+      cliques: 73,
       ctr: "4,02%",
       cpc: "R$3,36",
-      conversoes: "17",
+      conversoes: 17,
       custoPorConversao: "R$14,41",
       taxaConversao: "23,29%",
-      taxaCliques: "12,99%",
-      taxaTopo: "66,77%",
-      custo: "R$244,94",
+      custo: 244.94,
       status: "Ativo"
     }
   ];
@@ -2343,8 +2315,8 @@ const CampaignsPage: React.FC = () => {
                   <td>
                     <span className="badge-success">{c.status}</span>
                   </td>
-                  <td className="font-medium">{c.impressoes}</td>
-                  <td className="font-medium">{c.cliques}</td>
+                  <td className="font-medium">{c.impressoes.toLocaleString('pt-BR')}</td>
+                  <td className="font-medium">{c.cliques.toLocaleString('pt-BR')}</td>
                   <td>
                     <span className={`text-sm ${
                       parseFloat(c.ctr.replace(',', '.')) >= 4.0 ? 'text-green-600' : 
@@ -2354,10 +2326,10 @@ const CampaignsPage: React.FC = () => {
                     </span>
                   </td>
                   <td className="font-medium">{c.cpc}</td>
-                  <td>{c.conversoes}</td>
+                  <td>{c.conversoes.toLocaleString('pt-BR')}</td>
                   <td className="font-medium text-muted-foreground">0</td>
                   <td className="font-medium">{c.custoPorConversao}</td>
-                  <td className="font-medium">{c.custo}</td>
+                  <td className="font-medium">R$ {c.custo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                   <td>
                     <div className="flex space-x-1">
                       <button 
