@@ -1076,37 +1076,7 @@ const AdModal: React.FC<{
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Tipo de Anúncio
-                </label>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({...formData, type: e.target.value})}
-                  className="input-premium"
-                >
-                  <option value="RESPONSIVE_SEARCH">Responsivo de Pesquisa</option>
-                  <option value="DISPLAY">Display</option>
-                  <option value="SHOPPING">Shopping</option>
-                  <option value="VIDEO">Vídeo</option>
-                </select>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="input-premium"
-                >
-                  <option value="ACTIVE">Ativo</option>
-                  <option value="PAUSED">Pausado</option>
-                </select>
-              </div>
-            </div>
           </div>
 
           {/* Preview Section */}
@@ -1152,8 +1122,6 @@ const AdModal: React.FC<{
                   <h4 className="font-medium text-foreground mb-2">Informações da Campanha</h4>
                   <div className="text-sm text-muted-foreground space-y-1">
                     <div>Campanha: {getCampaignName(formData.campaignId)}</div>
-                    <div>Tipo: {formData.type}</div>
-                    <div>Status: {formData.status}</div>
                   </div>
                 </div>
 
