@@ -81,6 +81,148 @@ const WebhookSystem = {
   }
 };
 
+// Função para converter o webhook para o modelo interno do chat
+function parseWebhookMessage(webhook: any) {
+  const content = webhook.Payload?.Content;
+  const contact = content?.Contact || {};
+  const channel = content?.Channel || {};
+  const sector = content?.Sector || {};
+  const orgMember = content?.OrganizationMember || {};
+  const lastMsg = content?.LastMessage || {};
+  const tags = (contact.Tags || []).map((t: any) => t.Name);
+  return {
+    id: content?.Id || lastMsg?.Id || webhook.EventId,
+    client: contact.Name || contact.PhoneNumber || 'Desconhecido',
+    phone: contact.PhoneNumber || '',
+    message: lastMsg.Content || '',
+    timestamp: lastMsg.EventAtUTC || webhook.EventDate,
+    status: content.Open ? 'new' : 'closed',
+    tags,
+    source: channel.ChannelType?.toLowerCase() || 'whatsapp',
+    attendant: channel.Name || '',
+    channel: channel.Name || '',
+    sector: sector.Name || '',
+    organizationMemberId: orgMember.Id || '',
+    profilePicture: contact.ProfilePictureUrl,
+    contactId: contact.Id,
+    createdAt: content.CreatedAtUTC,
+    lastActive: contact.LastActiveUTC,
+  };
+}
+
+// Exemplo de mensagem convertida do webhook
+const webhookExample = {
+  "Type": "Message",
+  "EventDate": "2025-08-06T14:22:46.4809927Z",
+  "Payload": {
+    "Type": "Chat",
+    "Content": {
+      "_t": "BasicChatModel",
+      "Organization": { "Id": "ZQG4wFMHGHuTs59F" },
+      "Contact": {
+        "LastActiveUTC": "2025-08-06T14:21:58.302Z",
+        "PhoneNumber": "+5548999795542",
+        "ProfilePictureUrl": null,
+        "IsBlocked": false,
+        "ScheduledMessages": [],
+        "GroupIdentifier": null,
+        "ContactType": "DirectMessage",
+        "Tags": [ { "Name": "AVISO", "Id": "Zk42pytpfRzuG-y1" } ],
+        "Preferences": [],
+        "Name": "Mauricio",
+        "Id": "ZWoyIFxo043YqnXU"
+      },
+      "Channel": {
+        "_t": "ChatBrokerWhatsappChannelReferenceModel",
+        "ChannelType": "WhatsappBroker",
+        "PhoneNumber": "+5548991917564",
+        "Name": "Fpolis -  Ester",
+        "Id": "ZQxHphkRFwc7FJ2W"
+      },
+      "Sector": {
+        "Default": true,
+        "Order": 0,
+        "GroupIds": [],
+        "Name": "Geral",
+        "Id": "ZQG4wFMHGHuTs59H"
+      },
+      "OrganizationMember": { "Muted": false, "TotalUnread": null, "Id": "ZoWIY_xoe7uoAAFQ" },
+      "OrganizationMembers": [
+        { "Muted": false, "TotalUnread": null, "Id": "ZyJUBxlZDTR81qdF" },
+        { "Muted": false, "TotalUnread": null, "Id": "ZoWIY_xoe7uoAAFQ" }
+      ],
+      "Tags": [],
+      "LastMessage": {
+        "Prefix": null,
+        "HeaderContent": null,
+        "Content": "Despachante Marcelino agradece a sua confiança e está à disposição 💙",
+        "Footer": null,
+        "File": null,
+        "Thumbnail": null,
+        "QuotedStatusUpdate": null,
+        "Contacts": [],
+        "MessageType": "Text",
+        "SentByOrganizationMember": { "Id": "ZoWIY_xoe7uoAAFQ" },
+        "IsPrivate": false,
+        "Location": null,
+        "Question": null,
+        "Source": "Member",
+        "InReplyTo": null,
+        "MessageState": "Sent",
+        "EventAtUTC": "2025-08-06T14:22:44.454Z",
+        "Chat": { "Id": "aJHuEVUKzVp4ENpO" },
+        "FromContact": null,
+        "TemplateId": null,
+        "Buttons": [],
+        "LatestEdit": null,
+        "BotInstance": null,
+        "ForwardedFrom": null,
+        "ScheduledMessage": null,
+        "BulkSendSession": null,
+        "Elements": null,
+        "Mentions": [],
+        "Ad": null,
+        "FileId": null,
+        "Reactions": [],
+        "DeductedAiCredits": null,
+        "Carousel": [],
+        "Billable": null,
+        "Id": "aJNlNF4daaS-ydex",
+        "CreatedAtUTC": "2025-08-06T14:22:44.454Z"
+      },
+      "LastMessageReaction": null,
+      "RedactReason": null,
+      "UsingInactivityFlow": false,
+      "UsingWaitingFlow": false,
+      "InactivityFlowAt": null,
+      "WaitingFlowAt": null,
+      "Open": true,
+      "Private": false,
+      "Waiting": false,
+      "WaitingSinceUTC": null,
+      "TotalUnread": 0,
+      "TotalAIResponses": null,
+      "ClosedAtUTC": null,
+      "EventAtUTC": "2025-08-06T14:22:44.454Z",
+      "FirstMemberReplyMessage": { "EventAtUTC": "2025-08-06T14:18:15.932Z", "Id": "aJNkJ14daaS-x4ZM" },
+      "FirstContactMessage": { "EventAtUTC": "2025-08-06T13:54:56.924Z", "Id": "aJNespMScebas1Pq" },
+      "Bots": [],
+      "LastOrganizationMember": { "Id": "ZoWIY_xoe7uoAAFQ" },
+      "Message": null,
+      "Visibility": null,
+      "Id": "aJHuEVUKzVp4ENpO",
+      "CreatedAtUTC": "2025-08-05T11:42:09.942Z"
+    }
+  },
+  "EventId": "aJNlNtYPSoaBCV_r"
+};
+
+// Mensagens do chat: exemplo real + antigas
+const chatMessages = [
+  parseWebhookMessage(webhookExample),
+  ...WebhookSystem.messages
+];
+
 // Componente de Chat em Tempo Real
 const LiveChat: React.FC = () => {
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
@@ -139,7 +281,7 @@ const LiveChat: React.FC = () => {
     }
   };
 
-  const filteredMessages = WebhookSystem.messages.filter(msg => {
+  const filteredMessages = chatMessages.filter(msg => {
     const statusMatch = filterStatus === 'all' || msg.status === filterStatus;
     const tagMatch = selectedTags.length === 0 || selectedTags.some(tag => msg.tags.includes(tag));
     return statusMatch && tagMatch;
