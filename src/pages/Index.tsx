@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from '@/components/ui/toaster';
 import { toast } from '@/components/ui/use-toast';
 
-// Sistema de Webhooks - Despachante Marcelino
+// Sistema de Webhooks - Despachante Bruna
 const WebhookSystem = {
   // Configuração de Webhooks
   webhookConfig: {
-    url: "https://despachantemarcelino.vercel.app/webhook",
-    secret: "marcelino_webhook_secret_2025",
+    url: "https://despachantebruna.vercel.app/webhook",
+    secret: "bruna_webhook_secret_2025",
     events: ["message", "lead", "conversion", "payment"],
     rateLimit: 10000, // Aumentado para 10.000 requests/min
     timeout: 30000
@@ -17,59 +17,46 @@ const WebhookSystem = {
   // Dados de Mensagens em Tempo Real
   messages: [
     {
-      id: "msg_001",
-      client: "João Silva",
-      phone: "+55 48 99999-1234",
-      message: "Olá! Preciso renovar o licenciamento do meu carro. Quanto custa?",
-      timestamp: "2025-06-30T16:45:00Z",
+      id: "aIfKD-wfPw5dlZ2r",
+      client: "ANDERSON FERRARI",
+      phone: "+5547999955497",
+      message: "Ok",
+      timestamp: "2025-07-28T19:05:50.927Z",
       status: "new",
-      tags: ["licenciamento", "florianópolis", "urgente"],
+      tags: ["Troca"],
       source: "whatsapp",
-      priority: "high"
+      attendant: "Ester",
+      channel: "AUTO FACIL DESPACHANTE - DVA",
+      sector: "DVA",
+      organizationMemberId: "ZW-E1ydfRz6GV84t"
     },
     {
       id: "msg_002",
-      client: "Maria Santos",
-      phone: "+55 48 99999-5678",
-      message: "Boa tarde! Quero transferir meu veículo. Vocês fazem isso?",
-      timestamp: "2025-06-30T16:42:00Z",
+      client: "CARLOS SANTOS",
+      phone: "+5548998765432",
+      message: "Preciso renovar o licenciamento do meu carro. Quanto custa?",
+      timestamp: "2025-07-28T18:30:15.123Z",
       status: "in_progress",
-      tags: ["transferência", "são josé", "consulta"],
-      source: "instagram",
-      priority: "medium"
+      tags: ["CLIENTE SITE", "Pendente"],
+      source: "whatsapp",
+      attendant: "Sarah",
+      channel: "AUTO FACIL DESPACHANTE - DVA",
+      sector: "DVA",
+      organizationMemberId: "ZW-E1ydfRz6GV84t"
     },
     {
       id: "msg_003",
-      client: "Pedro Costa",
-      phone: "+55 48 99999-9012",
-      message: "Oi! Preciso de um despachante para resolver multas. Podem ajudar?",
-      timestamp: "2025-06-30T16:40:00Z",
+      client: "MARIA OLIVEIRA",
+      phone: "+5547998877665",
+      message: "Quero transferir meu veículo. Vocês fazem isso?",
+      timestamp: "2025-07-28T17:45:22.456Z",
       status: "resolved",
-      tags: ["multas", "palhoça", "despachante"],
-      source: "facebook",
-      priority: "low"
-    },
-    {
-      id: "msg_004",
-      client: "Ana Oliveira",
-      phone: "+55 48 99999-3456",
-      message: "Bom dia! Quanto tempo demora para renovar o licenciamento?",
-      timestamp: "2025-06-30T16:38:00Z",
-      status: "new",
-      tags: ["licenciamento", "florianópolis", "prazo"],
+      tags: ["Transferência", "Realizado"],
       source: "whatsapp",
-      priority: "high"
-    },
-    {
-      id: "msg_005",
-      client: "Carlos Mendes",
-      phone: "+55 48 99999-7890",
-      message: "Olá! Vocês atendem em Palhoça? Preciso de documentação veicular.",
-      timestamp: "2025-06-30T16:35:00Z",
-      status: "in_progress",
-      tags: ["documentação", "palhoça", "atendimento"],
-      source: "telefone",
-      priority: "medium"
+      attendant: "Kênia",
+      channel: "AUTO FACIL DESPACHANTE - DVA",
+      sector: "DVA",
+      organizationMemberId: "ZW-E1ydfRz6GV84t"
     }
   ],
 
@@ -94,12 +81,172 @@ const WebhookSystem = {
   }
 };
 
+// Função para converter o webhook para o modelo interno do chat
+function parseWebhookMessage(webhook: any) {
+  const content = webhook.Payload?.Content;
+  const contact = content?.Contact || {};
+  const channel = content?.Channel || {};
+  const sector = content?.Sector || {};
+  const orgMember = content?.OrganizationMember || {};
+  const lastMsg = content?.LastMessage || {};
+  const tags = (contact.Tags || []).map((t: any) => t.Name);
+  return {
+    id: content?.Id || lastMsg?.Id || webhook.EventId,
+    client: contact.Name || contact.PhoneNumber || 'Desconhecido',
+    phone: contact.PhoneNumber || '',
+    message: lastMsg.Content || '',
+    timestamp: lastMsg.EventAtUTC || webhook.EventDate,
+    status: content.Open ? 'new' : 'closed',
+    tags,
+    source: channel.ChannelType?.toLowerCase() || 'whatsapp',
+    attendant: channel.Name || '',
+    channel: channel.Name || '',
+    sector: sector.Name || '',
+    organizationMemberId: orgMember.Id || '',
+    profilePicture: contact.ProfilePictureUrl,
+    contactId: contact.Id,
+    createdAt: content.CreatedAtUTC,
+    lastActive: contact.LastActiveUTC,
+  };
+}
+
+// Exemplo de mensagem convertida do webhook
+const webhookExample = {
+  "Type": "Message",
+  "EventDate": "2025-08-06T14:22:46.4809927Z",
+  "Payload": {
+    "Type": "Chat",
+    "Content": {
+      "_t": "BasicChatModel",
+      "Organization": { "Id": "ZQG4wFMHGHuTs59F" },
+      "Contact": {
+        "LastActiveUTC": "2025-08-06T14:21:58.302Z",
+        "PhoneNumber": "+5548999795542",
+        "ProfilePictureUrl": null,
+        "IsBlocked": false,
+        "ScheduledMessages": [],
+        "GroupIdentifier": null,
+        "ContactType": "DirectMessage",
+        "Tags": [ { "Name": "AVISO", "Id": "Zk42pytpfRzuG-y1" } ],
+        "Preferences": [],
+        "Name": "Mauricio",
+        "Id": "ZWoyIFxo043YqnXU"
+      },
+      "Channel": {
+        "_t": "ChatBrokerWhatsappChannelReferenceModel",
+        "ChannelType": "WhatsappBroker",
+        "PhoneNumber": "+5548991917564",
+        "Name": "Fpolis -  Ester",
+        "Id": "ZQxHphkRFwc7FJ2W"
+      },
+      "Sector": {
+        "Default": true,
+        "Order": 0,
+        "GroupIds": [],
+        "Name": "Geral",
+        "Id": "ZQG4wFMHGHuTs59H"
+      },
+      "OrganizationMember": { "Muted": false, "TotalUnread": null, "Id": "ZoWIY_xoe7uoAAFQ" },
+      "OrganizationMembers": [
+        { "Muted": false, "TotalUnread": null, "Id": "ZyJUBxlZDTR81qdF" },
+        { "Muted": false, "TotalUnread": null, "Id": "ZoWIY_xoe7uoAAFQ" }
+      ],
+      "Tags": [],
+      "LastMessage": {
+        "Prefix": null,
+        "HeaderContent": null,
+        "Content": "Despachante Marcelino agradece a sua confiança e está à disposição 💙",
+        "Footer": null,
+        "File": null,
+        "Thumbnail": null,
+        "QuotedStatusUpdate": null,
+        "Contacts": [],
+        "MessageType": "Text",
+        "SentByOrganizationMember": { "Id": "ZoWIY_xoe7uoAAFQ" },
+        "IsPrivate": false,
+        "Location": null,
+        "Question": null,
+        "Source": "Member",
+        "InReplyTo": null,
+        "MessageState": "Sent",
+        "EventAtUTC": "2025-08-06T14:22:44.454Z",
+        "Chat": { "Id": "aJHuEVUKzVp4ENpO" },
+        "FromContact": null,
+        "TemplateId": null,
+        "Buttons": [],
+        "LatestEdit": null,
+        "BotInstance": null,
+        "ForwardedFrom": null,
+        "ScheduledMessage": null,
+        "BulkSendSession": null,
+        "Elements": null,
+        "Mentions": [],
+        "Ad": null,
+        "FileId": null,
+        "Reactions": [],
+        "DeductedAiCredits": null,
+        "Carousel": [],
+        "Billable": null,
+        "Id": "aJNlNF4daaS-ydex",
+        "CreatedAtUTC": "2025-08-06T14:22:44.454Z"
+      },
+      "LastMessageReaction": null,
+      "RedactReason": null,
+      "UsingInactivityFlow": false,
+      "UsingWaitingFlow": false,
+      "InactivityFlowAt": null,
+      "WaitingFlowAt": null,
+      "Open": true,
+      "Private": false,
+      "Waiting": false,
+      "WaitingSinceUTC": null,
+      "TotalUnread": 0,
+      "TotalAIResponses": null,
+      "ClosedAtUTC": null,
+      "EventAtUTC": "2025-08-06T14:22:44.454Z",
+      "FirstMemberReplyMessage": { "EventAtUTC": "2025-08-06T14:18:15.932Z", "Id": "aJNkJ14daaS-x4ZM" },
+      "FirstContactMessage": { "EventAtUTC": "2025-08-06T13:54:56.924Z", "Id": "aJNespMScebas1Pq" },
+      "Bots": [],
+      "LastOrganizationMember": { "Id": "ZoWIY_xoe7uoAAFQ" },
+      "Message": null,
+      "Visibility": null,
+      "Id": "aJHuEVUKzVp4ENpO",
+      "CreatedAtUTC": "2025-08-05T11:42:09.942Z"
+    }
+  },
+  "EventId": "aJNlNtYPSoaBCV_r"
+};
+
+// Mensagens do chat: exemplo real + antigas
+const chatMessages = [
+  parseWebhookMessage(webhookExample),
+  ...WebhookSystem.messages
+];
+
 // Componente de Chat em Tempo Real
 const LiveChat: React.FC = () => {
   const [selectedMessage, setSelectedMessage] = useState<any>(null);
-  const [replyText, setReplyText] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [filterPriority, setFilterPriority] = useState('all');
+  const [selectedTags, setSelectedTags] = useState<string[]>(["CLIENTE SITE"]);
+  const [selectedAttendant, setSelectedAttendant] = useState('all');
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [showFiltersModal, setShowFiltersModal] = useState(false);
+
+  // Atendentes disponíveis
+  const attendants = [
+    "Ester", "Sarah", "Kênia", "Julia", "Isa Principal", "Oficial", "Paola"
+  ];
+
+  // Tags verdadeiras fornecidas
+  const allTags = [
+    "Maju", "BMW VEICULOS", "BMW MOTOS", "BMW MINI COOPER", "REPECON FIAT", "AUTOMEGA", 
+    "LOJISTA", "DICAS", "PIX VISTORIA", "CLIENTE BALCAO", "PV", "Troca", "Zero", 
+    "zero fora", "seminovo", "Site AF PH", "Realizado", "Não realizado", "Qualificação", 
+    "Pendente", "Orçamento Enviado", "PGTO", "Grupos", "AVISO", "Particular SJ", 
+    "ZERO TUDO", "ZERO ESCOLHA", "TROCA ESCOLHA", "TROCA TUDO", "Ana", 
+    "Aguardando Verificação", "Blumenau", "RECALL", "Resolvendo com COO", "BLUMENAU", 
+    "Negociando", "Parceiro", "Doc VD", "CLIENTE SITE"
+  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -110,14 +257,7 @@ const LiveChat: React.FC = () => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-500 text-white';
-      case 'medium': return 'bg-yellow-500 text-white';
-      case 'low': return 'bg-green-500 text-white';
-      default: return 'bg-gray-500 text-white';
-    }
-  };
+
 
   const getSourceIcon = (source: string) => {
     switch (source) {
@@ -125,42 +265,106 @@ const LiveChat: React.FC = () => {
       case 'instagram': return '📷';
       case 'facebook': return '📘';
       case 'telefone': return '📞';
+      case 'site': return '🌐';
       default: return '💬';
     }
   };
 
-  const filteredMessages = WebhookSystem.messages.filter(msg => {
+  const getClientTag = (source: string) => {
+    switch (source) {
+      case 'whatsapp': return { text: 'WhatsApp', color: 'bg-green-100 text-green-800' };
+      case 'instagram': return { text: 'Instagram', color: 'bg-pink-100 text-pink-800' };
+      case 'facebook': return { text: 'Facebook', color: 'bg-blue-100 text-blue-800' };
+      case 'telefone': return { text: 'Telefone', color: 'bg-purple-100 text-purple-800' };
+      case 'site': return { text: 'Site', color: 'bg-orange-100 text-orange-800' };
+      default: return { text: 'Chat', color: 'bg-gray-100 text-gray-800' };
+    }
+  };
+
+  const filteredMessages = chatMessages.filter(msg => {
     const statusMatch = filterStatus === 'all' || msg.status === filterStatus;
-    const priorityMatch = filterPriority === 'all' || msg.priority === filterPriority;
-    return statusMatch && priorityMatch;
+    const tagMatch = selectedTags.length === 0 || selectedTags.some(tag => msg.tags.includes(tag));
+    return statusMatch && tagMatch;
   });
 
-  const handleReply = () => {
-    if (replyText.trim() && selectedMessage) {
-      toast({
-        title: "Resposta enviada!",
-        description: `Resposta enviada para ${selectedMessage.client}`,
-      });
-      setReplyText('');
-      setSelectedMessage(null);
-    }
+  const handleTagToggle = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+
+  const handleClearTags = () => {
+    setSelectedTags([]);
+  };
+
+  const handleConfirmTags = () => {
+    setShowTagModal(false);
+  };
+
+  const getTagDisplayText = () => {
+    if (selectedTags.length === 0) return 'Todas';
+    if (selectedTags.length === 1) return selectedTags[0];
+    if (selectedTags.length <= 3) return selectedTags.join(', ');
+    return `${selectedTags.length} tags selecionadas`;
   };
 
   return (
     <div className="space-y-6">
+      {/* Card de Conversões Umbler */}
+      <div className="card-floating p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-icons-outlined">trending_up</span>
+            </div>
+            <h3 className="text-2xl font-bold text-foreground">0</h3>
+            <p className="text-muted-foreground text-sm">Conversões Umbler Total</p>
+          </div>
+          
+          <div className="text-center">
+            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-icons-outlined">support_agent</span>
+            </div>
+            <h3 className="text-2xl font-bold text-foreground">{attendants.length}</h3>
+            <p className="text-muted-foreground text-sm">Atendentes Ativos</p>
+          </div>
+          
+          <div className="text-center">
+            <div className="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-icons-outlined">schedule</span>
+            </div>
+            <h3 className="text-2xl font-bold text-foreground">
+              {selectedAttendant === 'all' ? '--' : '2.5 min'}
+            </h3>
+            <p className="text-muted-foreground text-sm">
+              {selectedAttendant === 'all' ? 'Selecione um atendente' : 'Tempo médio por mensagem'}
+            </p>
+          </div>
+          
+          <div className="text-center">
+            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-icons-outlined">message</span>
+            </div>
+            <h3 className="text-2xl font-bold text-foreground">0</h3>
+            <p className="text-muted-foreground text-sm">Mensagens por Atendente</p>
+          </div>
+        </div>
+      </div>
+
       {/* Header do Chat */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Chat em Tempo Real</h2>
-          <p className="text-muted-foreground">Gerencie mensagens dos clientes</p>
+          <p className="text-muted-foreground">Visualize mensagens dos clientes</p>
         </div>
         <div className="flex items-center space-x-4">
+          {/* Tag de Cliente de Site */}
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-green-600 font-medium">Online</span>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {WebhookSystem.webhookStats.messagesPerMinute} msg/min
+            <span className="px-3 py-1 bg-orange-100 text-orange-800 text-sm font-medium rounded-full border border-orange-200">
+              🌐 Cliente Site
+            </span>
           </div>
         </div>
       </div>
@@ -171,7 +375,7 @@ const LiveChat: React.FC = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="input-premium"
+            className="input-premium text-sm"
           >
             <option value="all">Todos os Status</option>
             <option value="new">Novas</option>
@@ -179,18 +383,219 @@ const LiveChat: React.FC = () => {
             <option value="resolved">Resolvidas</option>
           </select>
           
-          <select
-            value={filterPriority}
-            onChange={(e) => setFilterPriority(e.target.value)}
-            className="input-premium"
+
+
+          <button
+            onClick={() => setShowTagModal(true)}
+            className="btn-glass text-sm px-3 py-2 flex items-center space-x-2"
           >
-            <option value="all">Todas as Prioridades</option>
-            <option value="high">Alta</option>
-            <option value="medium">Média</option>
-            <option value="low">Baixa</option>
-          </select>
+            <span className="material-icons-outlined text-sm">label</span>
+            <span>Tags: {getTagDisplayText()}</span>
+          </button>
+
+          <button
+            onClick={() => setShowFiltersModal(true)}
+            className="btn-premium text-sm px-3 py-2 flex items-center space-x-2"
+          >
+            <span className="material-icons-outlined text-sm">filter_list</span>
+            <span>Filtros Avançados</span>
+          </button>
         </div>
       </div>
+
+      {/* Modal de Filtro de Tags */}
+      {showTagModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-card border border-border rounded-lg shadow-lg w-80 max-h-96 overflow-hidden">
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-foreground">Selecionar Tags</h3>
+                <button
+                  onClick={() => setShowTagModal(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <span className="material-icons-outlined">close</span>
+                </button>
+              </div>
+              {selectedTags.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {selectedTags.map((tag) => (
+                    <span key={tag} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="p-4 max-h-48 overflow-y-auto">
+              <div className="grid grid-cols-1 gap-1">
+                {allTags.map((tag) => (
+                  <button
+                    key={tag}
+                    onClick={() => handleTagToggle(tag)}
+                    className={`w-full text-left px-2 py-1.5 rounded text-sm transition-colors ${
+                      selectedTags.includes(tag) 
+                        ? 'bg-blue-100 text-blue-800 font-medium' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    {selectedTags.includes(tag) && (
+                      <span className="material-icons-outlined text-sm mr-1">check</span>
+                    )}
+                    {tag}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="p-4 border-t border-border flex justify-between">
+              <button
+                onClick={handleClearTags}
+                className="btn-glass text-sm px-3 py-1.5"
+              >
+                Limpar Todas
+              </button>
+              <button
+                onClick={handleConfirmTags}
+                className="btn-premium text-sm px-3 py-1.5"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Filtros Avançados */}
+      {showFiltersModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-card border border-border rounded-lg shadow-lg w-[500px] max-h-[600px] overflow-hidden">
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-foreground">Filtros Avançados</h3>
+                <button
+                  onClick={() => setShowFiltersModal(false)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <span className="material-icons-outlined">close</span>
+                </button>
+              </div>
+            </div>
+            <div className="p-4 max-h-64 overflow-y-auto">
+              {/* Filtro por Atendente */}
+              <div className="mb-6">
+                <h4 className="font-medium text-foreground mb-3">Atendente</h4>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setSelectedAttendant('all')}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                      selectedAttendant === 'all' 
+                        ? 'bg-blue-100 text-blue-800 font-medium' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    Todos os Atendentes
+                  </button>
+                  {attendants.map((attendant) => (
+                    <button
+                      key={attendant}
+                      onClick={() => setSelectedAttendant(attendant)}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                        selectedAttendant === attendant 
+                          ? 'bg-blue-100 text-blue-800 font-medium' 
+                          : 'hover:bg-muted/50'
+                      }`}
+                    >
+                      {attendant}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filtro por Status */}
+              <div className="mb-6">
+                <h4 className="font-medium text-foreground mb-3">Status</h4>
+                <div className="space-y-2">
+                  {['all', 'new', 'in_progress', 'resolved'].map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setFilterStatus(status)}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                        filterStatus === status 
+                          ? 'bg-blue-100 text-blue-800 font-medium' 
+                          : 'hover:bg-muted/50'
+                      }`}
+                    >
+                      {status === 'all' ? 'Todos os Status' : 
+                       status === 'new' ? 'Novas' :
+                       status === 'in_progress' ? 'Em Andamento' : 'Resolvidas'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+
+
+              {/* Filtro por Tags */}
+              <div className="mb-6">
+                <h4 className="font-medium text-foreground mb-3">Tags</h4>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  <button
+                    onClick={() => setSelectedTags([])}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                      selectedTags.length === 0 
+                        ? 'bg-blue-100 text-blue-800 font-medium' 
+                        : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    Todas as Tags
+                  </button>
+                  {allTags.map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => {
+                        if (selectedTags.includes(tag)) {
+                          setSelectedTags(selectedTags.filter(t => t !== tag));
+                        } else {
+                          setSelectedTags([...selectedTags, tag]);
+                        }
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                        selectedTags.includes(tag) 
+                          ? 'bg-blue-100 text-blue-800 font-medium' 
+                          : 'hover:bg-muted/50'
+                      }`}
+                    >
+                      {selectedTags.includes(tag) && (
+                        <span className="material-icons-outlined text-sm mr-1">check</span>
+                      )}
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="p-4 border-t border-border flex justify-between">
+              <button
+                onClick={() => {
+                  setSelectedAttendant('all');
+                  setFilterStatus('all');
+                  setFilterPriority('all');
+                  setSelectedTags([]);
+                }}
+                className="btn-glass text-sm px-3 py-1.5"
+              >
+                Limpar Todos
+              </button>
+              <button
+                onClick={() => setShowFiltersModal(false)}
+                className="btn-premium text-sm px-3 py-1.5"
+              >
+                Aplicar Filtros
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Lista de Mensagens */}
@@ -200,51 +605,59 @@ const LiveChat: React.FC = () => {
               <h3 className="font-semibold text-foreground">Mensagens ({filteredMessages.length})</h3>
             </div>
             <div className="max-h-96 overflow-y-auto">
-              {filteredMessages.map((message) => (
-                <div
-                  key={message.id}
-                  onClick={() => setSelectedMessage(message)}
-                  className={`p-4 border-b border-border/50 cursor-pointer hover:bg-muted/50 transition-colors ${
-                    selectedMessage?.id === message.id ? 'bg-primary/10 border-primary/20' : ''
-                  }`}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">{getSourceIcon(message.source)}</span>
-                      <div>
-                        <h4 className="font-medium text-foreground">{message.client}</h4>
-                        <p className="text-sm text-muted-foreground">{message.phone}</p>
+              {filteredMessages.map((message) => {
+                const clientTag = getClientTag(message.source);
+                return (
+                  <div
+                    key={message.id}
+                    onClick={() => setSelectedMessage(message)}
+                    className={`p-4 border-b border-border/50 cursor-pointer hover:bg-muted/50 transition-colors ${
+                      selectedMessage?.id === message.id ? 'bg-primary/10 border-primary/20' : ''
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">💬</span>
+                        <div>
+                          <h4 className="font-medium text-foreground">{message.client}</h4>
+                          <p className="text-sm text-muted-foreground">{message.phone}</p>
+                          {message.attendant && (
+                            <p className="text-xs text-blue-600 font-medium">
+                              Atendente: {message.attendant}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${clientTag.color}`}>
+                          {clientTag.text}
+                        </span>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(message.status)}`}>
+                          {message.status}
+                        </span>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(message.priority)}`}>
-                        {message.priority}
-                      </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(message.status)}`}>
-                        {message.status}
+                    <p className="text-sm text-foreground mb-2 line-clamp-2">{message.message}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap gap-1">
+                        {message.tags.map((tag, index) => (
+                          <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(message.timestamp).toLocaleTimeString('pt-BR')}
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm text-foreground mb-2 line-clamp-2">{message.message}</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-wrap gap-1">
-                      {message.tags.map((tag, index) => (
-                        <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(message.timestamp).toLocaleTimeString('pt-BR')}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Chat Individual */}
+        {/* Chat Individual - Apenas Visualização */}
         <div className="lg:col-span-2">
           <div className="card-floating h-96 flex flex-col">
             {selectedMessage ? (
@@ -253,24 +666,29 @@ const LiveChat: React.FC = () => {
                 <div className="p-4 border-b border-border">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <span className="text-2xl">{getSourceIcon(selectedMessage.source)}</span>
+                      <span className="text-2xl">💬</span>
                       <div>
                         <h3 className="font-semibold text-foreground">{selectedMessage.client}</h3>
                         <p className="text-sm text-muted-foreground">{selectedMessage.phone}</p>
+                        {selectedMessage.attendant && (
+                          <p className="text-xs text-blue-600 font-medium">
+                            Atendente: {selectedMessage.attendant}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getClientTag(selectedMessage.source).color}`}>
+                        {getClientTag(selectedMessage.source).text}
+                      </span>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedMessage.status)}`}>
                         {selectedMessage.status}
-                      </span>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedMessage.priority)}`}>
-                        {selectedMessage.priority}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Mensagens */}
+                {/* Mensagens - Apenas Visualização */}
                 <div className="flex-1 p-4 overflow-y-auto space-y-4">
                   <div className="flex justify-end">
                     <div className="bg-primary text-primary-foreground rounded-lg px-4 py-2 max-w-xs">
@@ -289,23 +707,14 @@ const LiveChat: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Input de Resposta */}
+                {/* Área de Tags */}
                 <div className="p-4 border-t border-border">
-                  <div className="flex space-x-2">
-                    <input
-                      type="text"
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      placeholder="Digite sua resposta..."
-                      className="flex-1 input-premium"
-                    />
-                    <button
-                      onClick={handleReply}
-                      disabled={!replyText.trim()}
-                      className="btn-premium disabled:opacity-50"
-                    >
-                      Enviar
-                    </button>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedMessage.tags.map((tag, index) => (
+                      <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </>
@@ -313,7 +722,7 @@ const LiveChat: React.FC = () => {
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center">
                   <span className="material-icons-outlined text-4xl text-muted-foreground mb-4">chat</span>
-                  <p className="text-muted-foreground">Selecione uma mensagem para começar o chat</p>
+                  <p className="text-muted-foreground">Selecione uma mensagem para visualizar o chat</p>
                 </div>
               </div>
             )}
@@ -474,7 +883,7 @@ const WebhookStats: React.FC = () => {
   );
 };
 
-// Dados Reais do Dashboard - Despachante Marcelino
+// Dados Reais do Dashboard - Despachante Bruna
 const mockData = {
   campaigns: [
     {
@@ -515,6 +924,32 @@ const mockData = {
       ctr: 2.54,
       cpc: 6.20,
       costPerConversion: 1605.86
+    },
+    {
+      id: "CAMP_004",
+      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Região Sul - 01/07/25",
+      type: "SEARCH",
+      status: "ACTIVE",
+      budget: 12000.00,
+      clicks: 456,
+      impressions: 8023,
+      conversions: 79,
+      ctr: 5.68,
+      cpc: 0.69,
+      costPerConversion: 313.02
+    },
+    {
+      id: "CAMP_005",
+      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Certificado Digital - 09/07/25",
+      type: "SEARCH",
+      status: "ACTIVE",
+      budget: 3000.00,
+      clicks: 73,
+      impressions: 1814,
+      conversions: 17,
+      ctr: 4.02,
+      cpc: 3.36,
+      costPerConversion: 244.94
     }
   ],
   ads: [
@@ -523,7 +958,7 @@ const mockData = {
       campaignId: "CAMP_001",
       headline: "Despachante Marcelino - Florianópolis",
       description: "Despachante veicular em Florianópolis. Licenciamento, transferência e documentação veicular.",
-      url: "https://despachantemarcelino.com.br/florianopolis",
+      url: "https://blog.autofacilpagamentos.com.br/marcelino-florianopolis/",
       type: "RESPONSIVE_SEARCH",
       status: "ACTIVE"
     },
@@ -532,7 +967,7 @@ const mockData = {
       campaignId: "CAMP_002",
       headline: "Despachante Marcelino - São José",
       description: "Despachante veicular em São José. Agilidade e confiança para sua documentação.",
-      url: "https://despachantemarcelino.com.br/sao-jose",
+      url: "https://blog.autofacilpagamentos.com.br/",
       type: "SEARCH",
       status: "ACTIVE"
     },
@@ -541,7 +976,25 @@ const mockData = {
       campaignId: "CAMP_003",
       headline: "Despachante Marcelino - Palhoça",
       description: "Despachante veicular em Palhoça. Licenciamento e transferência com qualidade.",
-      url: "https://despachantemarcelino.com.br/palhoca",
+      url: "https://blog.autofacilpagamentos.com.br/auto-facil-palhoca/",
+      type: "SEARCH",
+      status: "ACTIVE"
+    },
+    {
+      id: "AD_004",
+      campaignId: "CAMP_004",
+      headline: "Despachante Marcelino - Região Sul",
+      description: "Despachante veicular na Região Sul. Atendimento completo para documentação veicular.",
+      url: "https://blog.grandeflorianopolis.autofacilpagamentos.com.br/",
+      type: "SEARCH",
+      status: "ACTIVE"
+    },
+    {
+      id: "AD_005",
+      campaignId: "CAMP_005",
+      headline: "Certificado Digital - Auto Fácil",
+      description: "Certificado digital para despachante. Documentação digital segura e confiável.",
+      url: "https://autofacilcertificados.com.br/",
       type: "SEARCH",
       status: "ACTIVE"
     }
@@ -555,56 +1008,13 @@ const mockData = {
     avgCpc: 7.58,
     avgCostPerConversion: 33.67
   },
-  notifications: [
-    {
-      id: "notif1",
-      message: "Campanha Florianópolis atingiu 90% do orçamento diário",
-      type: "WARNING",
-      date: "2025-06-30",
-      time: "16:45"
-    },
-    {
-      id: "notif2",
-      message: "Nova conversão registrada na campanha São José",
-      type: "SUCCESS", 
-      date: "2025-06-30",
-      time: "15:30"
-    },
-    {
-      id: "notif3",
-      message: "Campanha São José com CTR de 3.89% - acima da média",
-      type: "SUCCESS",
-      date: "2025-06-30", 
-      time: "14:15"
-    },
-    {
-      id: "notif4",
-      message: "Campanha Palhoça com CTR de 2.54% - considerar otimização",
-      type: "INFO",
-      date: "2025-06-30",
-      time: "13:20"
-    },
-    {
-      id: "notif5",
-      message: "Relatório mensal de junho 2025 disponível para download",
-      type: "INFO",
-      date: "2025-06-30",
-      time: "12:00"
-    },
-    {
-      id: "notif6",
-      message: "CPC médio de R$ 7.58 - dentro do esperado para o setor",
-      type: "INFO",
-      date: "2025-06-30",
-      time: "11:30"
-    }
-  ],
+  notifications: [],
   user: {
-    name: "Marcelino Silva",
-    email: "marcelino@despachantemarcelino.com.br",
-    avatar: "MS",
-    role: "Google Ads Manager",
-    department: "Marketing Digital"
+    name: "bruna@autofacildespachante.com.br",
+    email: "bruna@autofacildespachante.com.br",
+    role: "Despachante",
+    department: "Documentação Veicular",
+    avatar: "👩‍💼"
   }
 };
 
@@ -680,8 +1090,11 @@ const AdModal: React.FC<{
   });
 
   const [preview, setPreview] = useState(true);
+  const isViewMode = title === "Detalhes do Anúncio";
 
   const handleSubmit = () => {
+    if (isViewMode) return;
+    
     if (!formData.headline.trim() || !formData.description.trim() || !formData.url.trim()) {
       toast({
         title: "Campos obrigatórios",
@@ -721,12 +1134,13 @@ const AdModal: React.FC<{
             
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Campanha *
+                Campanha {!isViewMode && '*'}
               </label>
               <select
                 value={formData.campaignId}
-                onChange={(e) => setFormData({...formData, campaignId: e.target.value})}
-                className="input-premium"
+                onChange={(e) => !isViewMode && setFormData({...formData, campaignId: e.target.value})}
+                className={`input-premium ${isViewMode ? 'bg-muted/30 cursor-not-allowed' : ''}`}
+                disabled={isViewMode}
               >
                 {campaigns.map(campaign => (
                   <option key={campaign.id} value={campaign.id}>
@@ -738,31 +1152,35 @@ const AdModal: React.FC<{
 
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Título do Anúncio *
+                Título do Anúncio {!isViewMode && '*'}
               </label>
               <input
                 type="text"
                 value={formData.headline}
-                onChange={(e) => setFormData({...formData, headline: e.target.value})}
-                className="input-premium"
+                onChange={(e) => !isViewMode && setFormData({...formData, headline: e.target.value})}
+                className={`input-premium ${isViewMode ? 'bg-muted/30 cursor-not-allowed' : ''}`}
                 placeholder="Ex: Oferta Exclusiva Premium!"
                 maxLength={30}
+                readOnly={isViewMode}
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                {formData.headline.length}/30 caracteres
-              </p>
+              {!isViewMode && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {formData.headline.length}/30 caracteres
+                </p>
+              )}
             </div>
 
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Descrição *
+                Descrição {!isViewMode && '*'}
               </label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="input-premium h-24 resize-none"
+                onChange={(e) => !isViewMode && setFormData({...formData, description: e.target.value})}
+                className={`input-premium h-24 resize-none ${isViewMode ? 'bg-muted/30 cursor-not-allowed' : ''}`}
                 placeholder="Aproveite descontos incríveis agora mesmo. Produtos de alta qualidade com entrega rápida."
                 maxLength={90}
+                readOnly={isViewMode}
               />
               <p className="text-xs text-muted-foreground mt-1">
                 {formData.description.length}/90 caracteres
@@ -782,37 +1200,7 @@ const AdModal: React.FC<{
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Tipo de Anúncio
-                </label>
-                <select
-                  value={formData.type}
-                  onChange={(e) => setFormData({...formData, type: e.target.value})}
-                  className="input-premium"
-                >
-                  <option value="RESPONSIVE_SEARCH">Responsivo de Pesquisa</option>
-                  <option value="DISPLAY">Display</option>
-                  <option value="SHOPPING">Shopping</option>
-                  <option value="VIDEO">Vídeo</option>
-                </select>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="input-premium"
-                >
-                  <option value="ACTIVE">Ativo</option>
-                  <option value="PAUSED">Pausado</option>
-                </select>
-              </div>
-            </div>
           </div>
 
           {/* Preview Section */}
@@ -858,21 +1246,10 @@ const AdModal: React.FC<{
                   <h4 className="font-medium text-foreground mb-2">Informações da Campanha</h4>
                   <div className="text-sm text-muted-foreground space-y-1">
                     <div>Campanha: {getCampaignName(formData.campaignId)}</div>
-                    <div>Tipo: {formData.type}</div>
-                    <div>Status: {formData.status}</div>
                   </div>
                 </div>
 
-                {/* Tips */}
-                <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
-                  <h4 className="font-medium text-primary mb-2">💡 Dicas para Setor Veicular</h4>
-                  <ul className="text-sm text-foreground space-y-1">
-                    <li>• Use "licenciamento veicular" e "despachante veicular" no título</li>
-                    <li>• Destaque "processo 100% digital" e "sem sair de casa"</li>
-                    <li>• Inclua "agilidade" e "confiança" como diferenciais</li>
-                    <li>• Teste variações com "rápido", "online" e "digital"</li>
-                  </ul>
-                </div>
+
               </div>
             )}
           </div>
@@ -880,18 +1257,22 @@ const AdModal: React.FC<{
         
         <div className="p-6 border-t border-border">
           <div className="flex justify-end space-x-3">
+            {!isViewMode && (
+              <button
+                onClick={onClose}
+                className="btn-glass"
+              >
+                Cancelar
+              </button>
+            )}
             <button
-              onClick={onClose}
-              className="btn-glass"
+              onClick={isViewMode ? onClose : handleSubmit}
+              className={isViewMode ? "btn-glass" : "btn-premium"}
             >
-              Cancelar
-            </button>
-            <button
-              onClick={handleSubmit}
-              className="btn-premium"
-            >
-              <span className="material-icons-outlined mr-2">save</span>
-              {ad ? 'Atualizar' : 'Criar'} Anúncio
+              <span className="material-icons-outlined mr-2">
+                {isViewMode ? 'close' : 'save'}
+              </span>
+              {isViewMode ? 'Fechar' : (ad ? 'Atualizar' : 'Criar') + ' Anúncio'}
             </button>
           </div>
         </div>
@@ -1409,16 +1790,11 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
         <div className="glass-strong p-8 rounded-3xl animate-scale-in">
           {/* Google Ads Logo */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-2xl mb-4 shadow-card">
-              <svg viewBox="0 0 24 24" className="w-8 h-8">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
+            <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="material-icons-outlined text-3xl text-white">account_circle</span>
             </div>
             <h1 className="text-3xl font-bold text-white mb-2">Despachante Marcelino</h1>
-            <p className="text-white/80">Dashboard de Marketing Digital</p>
+            <p className="text-white/80">Dashboard de Gestão de Campanhas</p>
           </div>
           
           {/* Login Form */}
@@ -1427,9 +1803,9 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
               <label className="block text-sm font-medium text-white/90 mb-2">E-mail corporativo</label>
               <input
                 type="email"
-                className="input-premium text-foreground"
-                placeholder="nome@google.com"
-                defaultValue="marcelino@despachantemarcelino.com.br"
+                className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+                placeholder="Seu email"
+                defaultValue="bruna@autofacildespachante.com.br"
               />
             </div>
             
@@ -1437,9 +1813,9 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
               <label className="block text-sm font-medium text-white/90 mb-2">Senha</label>
               <input
                 type="password"
-                className="input-premium text-foreground"
-                placeholder="••••••••"
-                defaultValue="MARCELINO2025"
+                className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+                placeholder="Sua senha"
+                defaultValue="BRUNA2025"
               />
             </div>
             
@@ -1490,13 +1866,9 @@ const GoogleAdsApp: React.FC = () => {
   // Navigation items
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'webhooks', label: 'Webhooks', icon: 'webhook' },
     { id: 'chat', label: 'Chat', icon: 'chat' },
     { id: 'campaigns', label: 'Campanhas', icon: 'campaign' },
     { id: 'ads', label: 'Anúncios', icon: 'ads_click' },
-    { id: 'reports', label: 'Relatórios', icon: 'analytics' },
-    { id: 'settings', label: 'Configurações', icon: 'settings' },
-    { id: 'profile', label: 'Perfil', icon: 'person' },
   ];
   
   return (
@@ -1574,13 +1946,9 @@ const GoogleAdsApp: React.FC = () => {
         {/* Page Content */}
         <main className="flex-1 p-6 overflow-auto">
           {currentPage === 'dashboard' && <DashboardPage />}
-          {currentPage === 'webhooks' && <WebhookStats />}
           {currentPage === 'chat' && <LiveChat />}
           {currentPage === 'campaigns' && <CampaignsPage />}
           {currentPage === 'ads' && <AdsPage />}
-          {currentPage === 'reports' && <ReportsPage />}
-          {currentPage === 'settings' && <SettingsPage />}
-          {currentPage === 'profile' && <ProfilePage />}
         </main>
       </div>
     </div>
@@ -1589,852 +1957,551 @@ const GoogleAdsApp: React.FC = () => {
 
 // Dashboard Page Component
 const DashboardPage: React.FC = () => {
-  const [metrics, setMetrics] = useState<any>(null);
-  const [campaigns, setCampaigns] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    Promise.all([
-      api.getMetrics(),
-      api.getCampaigns()
-    ]).then(([metricsData, campaignsData]) => {
-      setMetrics(metricsData);
-      setCampaigns(campaignsData.slice(0, 5));
-      setLoading(false);
-    });
-  }, []);
-  
-  const metricCards = [
-    { 
-      title: 'Total de Cliques', 
-      value: metrics?.totalClicks || 0, 
-      icon: 'mouse', 
-      color: 'text-google-blue',
-      format: (val: number) => val.toLocaleString('pt-BR'),
-      change: '+12.5%',
-      changeType: 'positive'
+  // Dados estáticos conforme fornecido
+  const periodoAnalise = "01/07/2025 a 01/08/2025";
+  const periodoComparacao = "Sem período de comparação";
+
+  const campanhas = [
+    {
+      nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
+      impressoes: 8023,
+      cliques: 456,
+      ctr: 5.68,
+      cpc: 0.69,
+      conversoes: 79,
+      custoPorConversao: 3.96,
+      taxaConversao: 17.32,
+      taxaCliques: 12.23,
+      taxaTopo: 67.68,
+      custo: 313.02
     },
-    { 
-      title: 'Impressões', 
-      value: metrics?.totalImpressions || 0, 
-      icon: 'visibility', 
-      color: 'text-google-green',
-      format: (val: number) => val.toLocaleString('pt-BR'),
-      change: '+8.7%',
-      changeType: 'positive'
+    {
+      nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: 3477,
+      cliques: 186,
+      ctr: 5.35,
+      cpc: 1.62,
+      conversoes: 26.5,
+      custoPorConversao: 11.39,
+      taxaConversao: 14.25,
+      taxaCliques: 18.99,
+      taxaTopo: 76.01,
+      custo: 301.88
     },
-    { 
-      title: 'Conversões', 
-      value: metrics?.totalConversions || 0, 
-      icon: 'trending_up', 
-      color: 'text-google-yellow',
-      format: (val: number) => val.toFixed(1),
-      change: '+22.5%',
-      changeType: 'positive'
+    {
+      nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: 4441,
+      cliques: 173,
+      ctr: 3.9,
+      cpc: 1.71,
+      conversoes: 29.5,
+      custoPorConversao: 10.01,
+      taxaConversao: 17.05,
+      taxaCliques: 17.39,
+      taxaTopo: 72.1,
+      custo: 295.34
     },
-    { 
-      title: 'Custo Total', 
-      value: metrics?.totalCost || 0, 
-      icon: 'payments', 
-      color: 'text-google-red',
-      format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-      change: '+15.2%',
-      changeType: 'neutral'
+    {
+      nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25",
+      impressoes: 3268,
+      cliques: 164,
+      ctr: 5.02,
+      cpc: 1.87,
+      conversoes: 28.5,
+      custoPorConversao: 10.78,
+      taxaConversao: 17.38,
+      taxaCliques: 15.1,
+      taxaTopo: 70.3,
+      custo: 307.26
+    },
+    {
+      nome: "Leads-Search-Autofacilcertificados-09-07-25",
+      impressoes: 1814,
+      cliques: 73,
+      ctr: 4.02,
+      cpc: 3.36,
+      conversoes: 17,
+      custoPorConversao: 14.41,
+      taxaConversao: 23.29,
+      taxaCliques: 12.99,
+      taxaTopo: 66.77,
+      custo: 244.94
     }
   ];
-  
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return <span className="badge-success">Ativo</span>;
-      case 'PAUSED':
-        return <span className="badge-warning">Pausado</span>;
-      default:
-        return <span className="badge-error">Inativo</span>;
+
+  // Cálculos dinâmicos das métricas
+  const totalImpressoes = campanhas.reduce((sum, c) => sum + c.impressoes, 0);
+  const totalCliques = campanhas.reduce((sum, c) => sum + c.cliques, 0);
+  const totalCusto = campanhas.reduce((sum, c) => sum + c.custo, 0);
+  const totalConversoes = campanhas.reduce((sum, c) => sum + c.conversoes, 0);
+  const ctrMedio = totalImpressoes > 0 ? (totalCliques / totalImpressoes) * 100 : 0;
+  const cpcMedio = totalCliques > 0 ? totalCusto / totalCliques : 0;
+  const custoPorConversao = totalConversoes > 0 ? totalCusto / totalConversoes : 0;
+  const taxaConversao = totalCliques > 0 ? (totalConversoes / totalCliques) * 100 : 0;
+
+  // Cards de métricas com design antigo
+  const metricCards = [
+    {
+      title: 'Custo',
+      value: totalCusto,
+      icon: 'payments',
+      color: 'text-google-red',
+      format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Impressões',
+      value: totalImpressoes,
+      icon: 'visibility',
+      color: 'text-google-green',
+      format: (val: number) => val.toLocaleString('pt-BR'),
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Cliques',
+      value: totalCliques,
+      icon: 'mouse',
+      color: 'text-google-blue',
+      format: (val: number) => val.toLocaleString('pt-BR'),
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'CTR',
+      value: ctrMedio,
+      icon: 'trending_up',
+      color: 'text-google-yellow',
+      format: (val: number) => `${val.toFixed(2)}%`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'CPC médio',
+      value: cpcMedio,
+      icon: 'attach_money',
+      color: 'text-google-blue',
+      format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Taxa de Conversão',
+      value: taxaConversao,
+      icon: 'percent',
+      color: 'text-google-green',
+      format: (val: number) => `${val.toFixed(2)}%`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Custo por Conversão',
+      value: custoPorConversao,
+      icon: 'calculate',
+      color: 'text-google-red',
+      format: (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Conversões',
+      value: totalConversoes,
+      icon: 'check_circle',
+      color: 'text-google-yellow',
+      format: (val: number) => val.toLocaleString('pt-BR'),
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: 'Conversões Umbler',
+      value: 0,
+      icon: 'trending_up',
+      color: 'text-purple-600',
+      format: (val: number) => val.toLocaleString('pt-BR'),
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: '% de impressões (1ª posição)',
+      value: 15.98,
+      icon: 'looks_one',
+      color: 'text-google-blue',
+      format: (val: number) => `${val.toFixed(2)}%`,
+      change: '',
+      changeType: 'neutral',
+    },
+    {
+      title: '% de impressões (parte superior)',
+      value: 70.24,
+      icon: 'vertical_align_top',
+      color: 'text-google-green',
+      format: (val: number) => `${val.toFixed(2)}%`,
+      change: '',
+      changeType: 'neutral',
+    },
+  ];
+
+  const campanhasDisplay = [
+    {
+      nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
+      impressoes: "8.023",
+      cliques: "456",
+      ctr: "5,68%",
+      cpc: "R$0,69",
+      conversoes: "79",
+      custoPorConversao: "R$3,96",
+      taxaConversao: "17,32%",
+      taxaCliques: "12,23%",
+      taxaTopo: "67,68%",
+      custo: "R$313,02"
+    },
+    {
+      nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: "3.477",
+      cliques: "186",
+      ctr: "5,35%",
+      cpc: "R$1,62",
+      conversoes: "26,5",
+      custoPorConversao: "R$11,39",
+      taxaConversao: "14,25%",
+      taxaCliques: "18,99%",
+      taxaTopo: "76,01%",
+      custo: "R$301,88"
+    },
+    {
+      nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: "4.441",
+      cliques: "173",
+      ctr: "3,9%",
+      cpc: "R$1,71",
+      conversoes: "29,5",
+      custoPorConversao: "R$10,01",
+      taxaConversao: "17,05%",
+      taxaCliques: "17,39%",
+      taxaTopo: "72,1%",
+      custo: "R$295,34"
+    },
+    {
+      nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25",
+      impressoes: "3.268",
+      cliques: "164",
+      ctr: "5,02%",
+      cpc: "R$1,87",
+      conversoes: "28,5",
+      custoPorConversao: "R$10,78",
+      taxaConversao: "17,38%",
+      taxaCliques: "15,1%",
+      taxaTopo: "70,3%",
+      custo: "R$307,26"
+    },
+    {
+      nome: "Leads-Search-Autofacilcertificados-09-07-25",
+      impressoes: "1.814",
+      cliques: "73",
+      ctr: "4,02%",
+      cpc: "R$3,36",
+      conversoes: "17",
+      custoPorConversao: "R$14,41",
+      taxaConversao: "23,29%",
+      taxaCliques: "12,99%",
+      taxaTopo: "66,77%",
+      custo: "R$244,94"
     }
-  };
-  
+  ];
+
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Dashboard de Despachante Marcelino</h2>
+          <div className="text-muted-foreground text-sm mt-1">Período de análise: <b>{periodoAnalise}</b></div>
+          <div className="text-muted-foreground text-sm">Período de comparação: <b>{periodoComparacao}</b></div>
+        </div>
+        <button className="btn btn-primary">Atualizar período</button>
+      </div>
+
+      {/* Cards de métricas com design antigo */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {metricCards.map((metric, index) => (
           <div key={metric.title} className="metric-card group" style={{ animationDelay: `${index * 0.1}s` }}>
-            {loading ? (
-              <SkeletonCard />
-            ) : (
-              <>
-                <div className={`metric-icon ${metric.color}`}>
-                  <span className="material-icons-outlined">{metric.icon}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-bold text-foreground mb-1">
-                    {metric.format(metric.value)}
-                  </h3>
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    metric.changeType === 'positive' 
-                      ? 'bg-green-100 text-green-700' 
-                      : metric.changeType === 'negative'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-gray-100 text-gray-700'
-                  }`}>
-                    {metric.change}
-                  </span>
-                </div>
-                <p className="text-muted-foreground text-sm">{metric.title}</p>
-              </>
-            )}
+            <div className={`metric-icon ${metric.color}`}>
+              <span className="material-icons-outlined">{metric.icon}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-bold text-foreground mb-1">
+                {metric.format(metric.value)}
+              </h3>
+              {metric.change && (
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  metric.changeType === 'positive'
+                    ? 'bg-green-100 text-green-700'
+                    : metric.changeType === 'negative'
+                    ? 'bg-red-100 text-red-700'
+                    : 'bg-gray-100 text-gray-700'
+                }`}>
+                  {metric.change}
+                </span>
+              )}
+            </div>
+            <p className="text-muted-foreground text-sm">{metric.title}</p>
           </div>
         ))}
       </div>
-      
-      {/* Quick Actions & ROI Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="card-floating p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Ações Rápidas</h3>
-            <span className="material-icons-outlined text-primary">bolt</span>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <button className="btn-premium">
-              <span className="material-icons-outlined">add</span>
-              Nova Campanha
-            </button>
-            <button className="btn-glass">
-              <span className="material-icons-outlined">analytics</span>
-              Ver Relatórios
-            </button>
-            <button className="btn-glass">
-              <span className="material-icons-outlined">tune</span>
-              Otimizar
-            </button>
-            <button className="btn-glass">
-              <span className="material-icons-outlined">download</span>
-              Exportar Dados
-            </button>
-          </div>
-        </div>
-        
-        <div className="card-floating p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Métricas de ROI</h3>
-            <span className="material-icons-outlined text-accent">trending_up</span>
-          </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">ROAS Médio</span>
-              <span className="font-bold text-green-600">4.2x</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Custo por Conversão</span>
-              <span className="font-bold text-blue-600">R$ 33,67</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Taxa de Conversão</span>
-              <span className="font-bold text-purple-600">22.5%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">CPC Médio</span>
-              <span className="font-bold text-orange-600">R$ 7,58</span>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Insights Premium */}
-      <div className="card-floating p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">Insights Premium</h3>
-          <span className="material-icons-outlined text-accent">lightbulb</span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-3 rounded-lg bg-green-50 border border-green-200">
-            <p className="text-sm text-green-800 font-medium">
-              📈 Campanha "São José" com CTR de 3.89% - melhor performance regional
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-blue-50 border border-blue-200">
-            <p className="text-sm text-blue-800 font-medium">
-              🎯 "Florianópolis" com 320 cliques e 85 conversões - excelente ROI
-            </p>
-          </div>
-          <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-200">
-            <p className="text-sm text-yellow-800 font-medium">
-              ⚡ "Palhoça" com CTR baixo (2.54%) - considerar otimização de keywords
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Análise de Palavras-Chave */}
-      <div className="card-floating p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">Análise de Palavras-Chave</h3>
-          <span className="material-icons-outlined text-primary">search</span>
-        </div>
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Todas as Campanhas</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="min-w-full bg-card border border-border rounded-lg">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-2 font-medium">Palavra-Chave</th>
-                <th className="text-center py-2 font-medium">Cliques</th>
-                <th className="text-center py-2 font-medium">Custo</th>
-                <th className="text-center py-2 font-medium">CTR</th>
-                <th className="text-center py-2 font-medium">CPC</th>
+              <tr>
+                <th className="px-4 py-2">Campanha</th>
+                <th className="px-4 py-2">Impressões</th>
+                <th className="px-4 py-2">Cliques</th>
+                <th className="px-4 py-2">CTR</th>
+                <th className="px-4 py-2">CPC</th>
+                <th className="px-4 py-2">Conversões</th>
+                <th className="px-4 py-2">Custo/Conv.</th>
+                <th className="px-4 py-2">Taxa Conv.</th>
+                <th className="px-4 py-2">Taxa Cliques</th>
+                <th className="px-4 py-2">Taxa Topo</th>
+                <th className="px-4 py-2">Custo</th>
               </tr>
             </thead>
-            <tbody className="space-y-2">
-              <tr className="border-b border-border/50">
-                <td className="py-2 font-medium">despachante florianópolis</td>
-                <td className="text-center py-2">320</td>
-                <td className="text-center py-2">R$ 2.720,00</td>
-                <td className="text-center py-2 text-green-600">3.76%</td>
-                <td className="text-center py-2">R$ 8,50</td>
-              </tr>
-              <tr className="border-b border-border/50">
-                <td className="py-2 font-medium">despachante são josé</td>
-                <td className="text-center py-2">280</td>
-                <td className="text-center py-2">R$ 2.184,00</td>
-                <td className="text-center py-2 text-green-600">3.89%</td>
-                <td className="text-center py-2">R$ 7,80</td>
-              </tr>
-              <tr className="border-b border-border/50">
-                <td className="py-2 font-medium">despachante palhoça</td>
-                <td className="text-center py-2">259</td>
-                <td className="text-center py-2">R$ 1.605,86</td>
-                <td className="text-center py-2 text-yellow-600">2.54%</td>
-                <td className="text-center py-2">R$ 6,20</td>
-              </tr>
+            <tbody>
+              {campanhas.map((c, i) => (
+                <tr key={i} className="border-t border-border">
+                  <td className="px-4 py-2 font-medium">{c.nome}</td>
+                  <td className="px-4 py-2">{c.impressoes}</td>
+                  <td className="px-4 py-2">{c.cliques}</td>
+                  <td className="px-4 py-2">{c.ctr}</td>
+                  <td className="px-4 py-2">{c.cpc}</td>
+                  <td className="px-4 py-2">{c.conversoes}</td>
+                  <td className="px-4 py-2">{c.custoPorConversao}</td>
+                  <td className="px-4 py-2">{c.taxaConversao}</td>
+                  <td className="px-4 py-2">{c.taxaCliques}</td>
+                  <td className="px-4 py-2">{c.taxaTopo}</td>
+                  <td className="px-4 py-2">{c.custo}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Performance por Setor */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="card-floating p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Performance por Setor</h3>
-            <span className="material-icons-outlined text-primary">trending_up</span>
-          </div>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-              <div>
-                <p className="font-medium text-green-800">Florianópolis</p>
-                <p className="text-sm text-green-600">CTR: 3.76% | CPC: R$ 8.50</p>
-              </div>
-              <span className="text-green-600 font-bold">+15.2%</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-              <div>
-                <p className="font-medium text-blue-800">São José</p>
-                <p className="text-sm text-blue-600">CTR: 3.89% | CPC: R$ 7.80</p>
-              </div>
-              <span className="text-blue-600 font-bold">+12.8%</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-              <div>
-                <p className="font-medium text-yellow-800">Palhoça</p>
-                <p className="text-sm text-yellow-600">CTR: 2.54% | CPC: R$ 6.20</p>
-              </div>
-              <span className="text-yellow-600 font-bold">+8.5%</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="card-floating p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Orçamento por Campanha</h3>
-            <span className="material-icons-outlined text-primary">account_balance_wallet</span>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Florianópolis</span>
-              <span className="font-medium">R$ 8.000</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-green-500 h-2 rounded-full" style={{width: '90%'}}></div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">São José</span>
-              <span className="font-medium">R$ 6.000</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-blue-500 h-2 rounded-full" style={{width: '75%'}}></div>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Palhoça</span>
-              <span className="font-medium">R$ 5.000</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-yellow-500 h-2 rounded-full" style={{width: '65%'}}></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Campaigns */}
-      <div className="card-floating">
-        <div className="p-6 border-b border-border">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-foreground">Campanhas Recentes</h3>
-            <button className="text-primary hover:text-primary-hover transition-colors">
-              Ver todas
-            </button>
-          </div>
-        </div>
-        
-        {loading ? (
-          <SkeletonTable />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="table-premium">
-              <thead>
-                <tr>
-                  <th>Nome da Campanha</th>
-                  <th>Tipo</th>
-                  <th>Status</th>
-                  <th>Orçamento</th>
-                  <th>Cliques</th>
-                  <th>CTR</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {campaigns.map(campaign => (
-                  <tr key={campaign.id}>
-                    <td>
-                      <div className="font-medium text-foreground">{campaign.name}</div>
-                      <div className="text-sm text-muted-foreground">ID: {campaign.id}</div>
-                    </td>
-                    <td>
-                      <span className="px-2 py-1 bg-muted/50 rounded-lg text-xs font-medium">
-                        {campaign.type}
-                      </span>
-                    </td>
-                    <td>{getStatusBadge(campaign.status)}</td>
-                    <td className="font-medium">
-                      R$ {campaign.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td>{campaign.clicks.toLocaleString('pt-BR')}</td>
-                    <td>
-                      <span className={`text-sm ${
-                        campaign.ctr >= 4.0 ? 'text-green-600' : 
-                        campaign.ctr >= 3.0 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {campaign.ctr}%
-                      </span>
-                    </td>
-                    <td>
-                      <div className="flex space-x-2">
-                        <button className="p-1 hover:bg-muted/50 rounded transition-colors" title="Editar">
-                          <span className="material-icons-outlined text-sm">edit</span>
-                        </button>
-                        <button className="p-1 hover:bg-muted/50 rounded transition-colors" title="Ver detalhes">
-                          <span className="material-icons-outlined text-sm">visibility</span>
-                        </button>
-                        <button className="p-1 hover:bg-muted/50 rounded transition-colors" title="Relatórios">
-                          <span className="material-icons-outlined text-sm">analytics</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+      <div>
+        <h3 className="text-lg font-semibold mb-2">Campanhas</h3>
+        <ul className="list-disc pl-6 space-y-1">
+          {campanhasDisplay.map((nome, i) => (
+            <li key={i}>{nome.nome}</li>
+          ))}
+        </ul>
       </div>
     </div>
   );
 };
 
-// Campaigns Page Component - COMPLETE
+// Campaigns Page Component - CÓDIGO LIMPO
 const CampaignsPage: React.FC = () => {
-  const [campaigns, setCampaigns] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showCommentsModal, setShowCommentsModal] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  const [typeFilter, setTypeFilter] = useState('ALL');
-  const [comments, setComments] = useState<any[]>([]);
-  const [sortBy, setSortBy] = useState('name');
-  const [sortOrder, setSortOrder] = useState('asc');
-
-  useEffect(() => {
-    api.getCampaigns().then(data => {
-      setCampaigns(data);
-      setLoading(false);
-    });
-  }, []);
-
-  const filteredAndSortedCampaigns = campaigns
-    .filter(campaign => {
-      const matchesSearch = campaign.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesStatus = statusFilter === 'ALL' || campaign.status === statusFilter;
-      const matchesType = typeFilter === 'ALL' || campaign.type === typeFilter;
-      return matchesSearch && matchesStatus && matchesType;
-    })
-    .sort((a, b) => {
-      let aValue = a[sortBy];
-      let bValue = b[sortBy];
-      
-      if (typeof aValue === 'string') {
-        aValue = aValue.toLowerCase();
-        bValue = bValue.toLowerCase();
-      }
-      
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-
-  const handleExportCampaigns = () => {
-    const csvData = [
-      ['Nome', 'Tipo', 'Status', 'Orçamento', 'Cliques', 'Impressões', 'Conversões', 'CTR', 'CPC', 'Custo por Conversão'],
-      ...filteredAndSortedCampaigns.map(campaign => [
-        campaign.name,
-        campaign.type,
-        campaign.status,
-        `R$ ${campaign.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
-        campaign.clicks.toLocaleString('pt-BR'),
-        campaign.impressions.toLocaleString('pt-BR'),
-        campaign.conversions,
-        `${campaign.ctr}%`,
-        `R$ ${campaign.cpc.toFixed(2)}`,
-        `R$ ${campaign.costPerConversion.toFixed(2)}`
-      ])
-    ];
-
-    const csvContent = csvData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `campanhas_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    toast({
-      title: "Relatório exportado!",
-      description: "O arquivo CSV foi baixado com sucesso.",
-    });
-  };
-
-  const handleClearFilters = () => {
-    setSearchTerm('');
-    setStatusFilter('ALL');
-    setTypeFilter('ALL');
-    setSortBy('name');
-    setSortOrder('asc');
-  };
-
-  const handleCreateCampaign = async (campaignData: any) => {
-    try {
-      const newCampaign = await api.createCampaign(campaignData);
-      setCampaigns([...campaigns, newCampaign]);
-      setShowCreateModal(false);
-      toast({
-        title: "Campanha criada com sucesso!",
-        description: `A campanha "${newCampaign.name}" foi criada e está ativa.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Erro ao criar campanha",
-        description: "Tente novamente em alguns instantes.",
-        variant: "destructive",
-      });
+  const campanhas = [
+    {
+      nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
+      impressoes: 8023,
+      cliques: 456,
+      ctr: "5,68%",
+      cpc: "R$0,69",
+      conversoes: 79,
+      custoPorConversao: "R$3,96",
+      taxaConversao: "17,32%",
+      custo: 313.02,
+      status: "Ativo"
+    },
+    {
+      nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: 3477,
+      cliques: 186,
+      ctr: "5,35%",
+      cpc: "R$1,62",
+      conversoes: 26.5,
+      custoPorConversao: "R$11,39",
+      taxaConversao: "14,25%",
+      custo: 301.88,
+      status: "Ativo"
+    },
+    {
+      nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: 4441,
+      cliques: 173,
+      ctr: "3,9%",
+      cpc: "R$1,71",
+      conversoes: 29.5,
+      custoPorConversao: "R$10,01",
+      taxaConversao: "17,05%",
+      custo: 295.34,
+      status: "Ativo"
+    },
+    {
+      nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25",
+      impressoes: 3268,
+      cliques: 164,
+      ctr: "5,02%",
+      cpc: "R$1,87",
+      conversoes: 28.5,
+      custoPorConversao: "R$10,78",
+      taxaConversao: "17,38%",
+      custo: 307.26,
+      status: "Ativo"
+    },
+    {
+      nome: "Leads-Search-Autofacilcertificados-09-07-25",
+      impressoes: 1814,
+      cliques: 73,
+      ctr: "4,02%",
+      cpc: "R$3,36",
+      conversoes: 17,
+      custoPorConversao: "R$14,41",
+      taxaConversao: "23,29%",
+      custo: 244.94,
+      status: "Ativo"
     }
-  };
-
-  const handleUpdateCampaign = async (campaignData: any) => {
-    try {
-      const updatedCampaign = await api.updateCampaign(selectedCampaign.id, campaignData);
-      setCampaigns(campaigns.map(c => c.id === selectedCampaign.id ? updatedCampaign : c));
-      setShowEditModal(false);
-      setSelectedCampaign(null);
-      toast({
-        title: "Campanha atualizada!",
-        description: "As alterações foram salvas com sucesso.",
-      });
-    } catch (error) {
-      toast({
-        title: "Erro ao atualizar campanha",
-        description: "Tente novamente em alguns instantes.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDeleteCampaign = async (campaignId: string) => {
-    if (window.confirm('Tem certeza que deseja excluir esta campanha?')) {
-      try {
-        await api.deleteCampaign(campaignId);
-        setCampaigns(campaigns.filter(c => c.id !== campaignId));
-        toast({
-          title: "Campanha excluída",
-          description: "A campanha foi removida permanentemente.",
-        });
-      } catch (error) {
-        toast({
-          title: "Erro ao excluir campanha",
-          description: "Tente novamente em alguns instantes.",
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
-  const handleToggleStatus = async (campaign: any) => {
-    const newStatus = campaign.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE';
-    try {
-      await handleUpdateCampaign({ ...campaign, status: newStatus });
-    } catch (error) {
-      toast({
-        title: "Erro ao alterar status",
-        description: "Tente novamente em alguns instantes.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return <span className="badge-success">Ativo</span>;
-      case 'PAUSED':
-        return <span className="badge-warning">Pausado</span>;
-      default:
-        return <span className="badge-error">Inativo</span>;
-    }
-  };
-
-  const openComments = (campaign: any) => {
-    setSelectedCampaign(campaign);
-    // Comentários reais da campanha
-    setComments([
-      {
-        id: 1,
-        author: 'Marcelino Silva',
-        date: '2025-06-30 14:30',
-        text: 'Campanha Florianópolis com 320 cliques e 85 conversões - excelente performance.',
-        type: 'success'
-      },
-      {
-        id: 2,
-        author: 'Carlos Mendes',
-        date: '2025-06-30 10:15',
-        text: 'São José com CTR de 3.89% - melhor performance entre as 3 cidades.',
-        type: 'insight'
-      },
-      {
-        id: 3,
-        author: 'Roberto Lima',
-        date: '2025-06-29 16:45',
-        text: 'Palhoça com CTR baixo (2.54%) - considerar otimização de keywords.',
-        type: 'warning'
-      }
-    ]);
-    setShowCommentsModal(true);
-  };
-
-  const addComment = (commentText: string) => {
-    const newComment = {
-      id: Date.now(),
-      author: mockData.user.name,
-      date: new Date().toLocaleString('pt-BR'),
-      text: commentText,
-      type: 'comment'
-    };
-    setComments([newComment, ...comments]);
-  };
+  ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header with Actions */}
+    <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Gerenciamento de Campanhas</h2>
-          <p className="text-muted-foreground">Crie, edite e monitore suas campanhas do Google Ads</p>
+          <h2 className="text-2xl font-bold text-foreground">Campanhas</h2>
+          <p className="text-muted-foreground">Gerencie suas campanhas do Google Ads</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="btn-premium"
-        >
-          <span className="material-icons-outlined">add</span>
-          Nova Campanha
-        </button>
+
       </div>
 
-      {/* Filters and Search */}
-      <div className="card-floating p-6">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Buscar</label>
-            <div className="relative">
-              <span className="material-icons-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
-                search
-              </span>
-              <input
-                type="text"
-                placeholder="Nome da campanha..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-premium pl-10"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Status</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="input-premium"
-            >
-              <option value="ALL">Todos os Status</option>
-              <option value="ACTIVE">Ativo</option>
-              <option value="PAUSED">Pausado</option>
-              <option value="INACTIVE">Inativo</option>
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Tipo</label>
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="input-premium"
-            >
-              <option value="ALL">Todos os Tipos</option>
-              <option value="SEARCH">Search</option>
-              <option value="DISPLAY">Display</option>
-              <option value="VIDEO">Video</option>
-              <option value="SHOPPING">Shopping</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Ordenar por</label>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="input-premium"
-            >
-              <option value="name">Nome</option>
-              <option value="budget">Orçamento</option>
-              <option value="clicks">Cliques</option>
-              <option value="ctr">CTR</option>
-              <option value="cpc">CPC</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Ordem</label>
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="input-premium"
-            >
-              <option value="asc">Crescente</option>
-              <option value="desc">Decrescente</option>
-            </select>
-          </div>
-          
-          <div className="flex items-end space-x-2">
-            <button 
-              onClick={handleClearFilters}
-              className="btn-glass flex-1"
-              title="Limpar filtros"
-            >
-              <span className="material-icons-outlined">clear</span>
-              Limpar
-            </button>
-            <button 
-              onClick={handleExportCampaigns}
-              className="btn-premium flex-1"
-              title="Exportar campanhas"
-            >
-              <span className="material-icons-outlined">download</span>
-              Exportar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Campaigns Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="card-floating p-6 text-center">
           <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-3">
             <span className="material-icons-outlined">campaign</span>
           </div>
-          <h3 className="text-2xl font-bold text-foreground">{campaigns.length}</h3>
-          <p className="text-muted-foreground text-sm">Total de Campanhas</p>
+          <h3 className="text-2xl font-bold text-foreground">{campanhas.length}</h3>
+          <p className="text-muted-foreground text-sm">Campanhas Ativas</p>
         </div>
         
         <div className="card-floating p-6 text-center">
           <div className="w-12 h-12 bg-accent/10 text-accent rounded-xl flex items-center justify-center mx-auto mb-3">
             <span className="material-icons-outlined">trending_up</span>
           </div>
-          <h3 className="text-2xl font-bold text-foreground">{campaigns.filter(c => c.status === 'ACTIVE').length}</h3>
-          <p className="text-muted-foreground text-sm">Campanhas Ativas</p>
+          <h3 className="text-2xl font-bold text-foreground">R$ 1.461,50</h3>
+          <p className="text-muted-foreground text-sm">Custo Total</p>
         </div>
         
         <div className="card-floating p-6 text-center">
-          <div className="w-12 h-12 bg-warning/10 text-warning rounded-xl flex items-center justify-center mx-auto mb-3">
-            <span className="material-icons-outlined">pause</span>
+          <div className="w-12 h-12 bg-google-green/10 text-google-green rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">mouse</span>
           </div>
-          <h3 className="text-2xl font-bold text-foreground">{campaigns.filter(c => c.status === 'PAUSED').length}</h3>
-          <p className="text-muted-foreground text-sm">Campanhas Pausadas</p>
+          <h3 className="text-2xl font-bold text-foreground">1.052</h3>
+          <p className="text-muted-foreground text-sm">Total de Cliques</p>
         </div>
         
         <div className="card-floating p-6 text-center">
-          <div className="w-12 h-12 bg-google-red/10 text-google-red rounded-xl flex items-center justify-center mx-auto mb-3">
-            <span className="material-icons-outlined">attach_money</span>
+          <div className="w-12 h-12 bg-google-yellow/10 text-google-yellow rounded-xl flex items-center justify-center mx-auto mb-3">
+            <span className="material-icons-outlined">check_circle</span>
           </div>
-          <h3 className="text-2xl font-bold text-foreground">
-            R$ {campaigns.reduce((sum, c) => sum + c.budget, 0).toLocaleString('pt-BR')}
-          </h3>
-          <p className="text-muted-foreground text-sm">Orçamento Total</p>
+          <h3 className="text-2xl font-bold text-foreground">180</h3>
+          <p className="text-muted-foreground text-sm">Conversões</p>
         </div>
       </div>
 
-      {/* Campaigns Table */}
+      {/* Tabela de Campanhas */}
       <div className="card-floating overflow-hidden">
         <div className="p-6 border-b border-border">
-          <h3 className="text-lg font-semibold text-foreground">
-            Campanhas ({filteredCampaigns.length})
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-foreground">
+              Campanhas ({campanhas.length})
+            </h3>
+          </div>
         </div>
         
-        {loading ? (
-          <SkeletonTable />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="table-premium">
-              <thead>
-                <tr>
-                  <th>Campanha</th>
-                  <th>Tipo</th>
-                  <th>Status</th>
-                  <th>Orçamento</th>
-                  <th>Cliques</th>
-                  <th>CTR</th>
-                  <th>CPC</th>
-                  <th>Conversões</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredAndSortedCampaigns.map(campaign => (
-                  <tr key={campaign.id}>
-                    <td>
+        <div className="overflow-x-auto">
+          <table className="table-premium">
+            <thead>
+              <tr>
+                <th className="text-left">
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" className="rounded" />
+                    Campanha
+                  </div>
+                </th>
+                <th>Status</th>
+                <th>Impressões</th>
+                <th>Cliques</th>
+                <th>CTR</th>
+                <th>CPC</th>
+                <th>Conversões</th>
+                <th>Conversões Umbler</th>
+                <th>Custo/Conv.</th>
+                <th>Custo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {campanhas.map((c, i) => (
+                <tr key={i} className="hover:bg-muted/30 transition-colors">
+                  <td>
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" className="rounded" />
                       <div>
-                        <div className="font-medium text-foreground">{campaign.name}</div>
-                        <div className="text-sm text-muted-foreground">ID: {campaign.id}</div>
+                        <div className="font-medium text-foreground">{c.nome}</div>
+                        <div className="text-sm text-muted-foreground">Search Network</div>
                       </div>
-                    </td>
-                    <td>
-                      <span className="px-3 py-1 bg-muted/50 rounded-full text-xs font-medium">
-                        {campaign.type}
-                      </span>
-                    </td>
-                    <td>{getStatusBadge(campaign.status)}</td>
-                    <td className="font-medium">
-                      R$ {campaign.budget.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </td>
-                    <td>{campaign.clicks.toLocaleString('pt-BR')}</td>
-                    <td>{campaign.ctr}%</td>
-                    <td>R$ {campaign.cpc.toFixed(2)}</td>
-                    <td>{campaign.conversions}</td>
-                    <td>
-                      <div className="flex space-x-1">
-                        <button
-                          onClick={() => {
-                            setSelectedCampaign(campaign);
-                            setShowEditModal(true);
-                          }}
-                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
-                          title="Editar"
-                        >
-                          <span className="material-icons-outlined text-sm">edit</span>
-                        </button>
-                        <button
-                          onClick={() => openComments(campaign)}
-                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
-                          title="Comentários"
-                        >
-                          <span className="material-icons-outlined text-sm">comment</span>
-                        </button>
-                        <button
-                          onClick={() => handleToggleStatus(campaign)}
-                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
-                          title={campaign.status === 'ACTIVE' ? 'Pausar' : 'Ativar'}
-                        >
-                          <span className="material-icons-outlined text-sm">
-                            {campaign.status === 'ACTIVE' ? 'pause' : 'play_arrow'}
-                          </span>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteCampaign(campaign.id)}
-                          className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-destructive"
-                          title="Excluir"
-                        >
-                          <span className="material-icons-outlined text-sm">delete</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                    </div>
+                  </td>
+                  <td>
+                    <span className="badge-success">{c.status}</span>
+                  </td>
+                  <td className="font-medium">{c.impressoes.toLocaleString('pt-BR')}</td>
+                  <td className="font-medium">{c.cliques.toLocaleString('pt-BR')}</td>
+                  <td>
+                    <span className={`text-sm ${
+                      parseFloat(c.ctr.replace(',', '.')) >= 4.0 ? 'text-green-600' : 
+                      parseFloat(c.ctr.replace(',', '.')) >= 3.0 ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
+                      {c.ctr}
+                    </span>
+                  </td>
+                  <td className="font-medium">{c.cpc}</td>
+                  <td>{c.conversoes.toLocaleString('pt-BR')}</td>
+                  <td className="font-medium text-muted-foreground">0</td>
+                  <td className="font-medium">{c.custoPorConversao}</td>
+                  <td className="font-medium">R$ {c.custo.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+                  <td>
+                    <div className="flex space-x-1">
+                      <button 
+                        className="p-2 hover:bg-muted/50 rounded-lg transition-colors" 
+                        title="Ver site da campanha"
+                        onClick={() => {
+                          // Mapear campanhas para URLs
+                          const campaignUrls: { [key: string]: string } = {
+                            "lead-search-despmarcelino-lpauto-estados_sul-junho_2026": "https://blog.grandeflorianopolis.autofacilpagamentos.com.br/",
+                            "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25": "https://blog.autofacilpagamentos.com.br/auto-facil-palhoca/",
+                            "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25": "https://blog.autofacilpagamentos.com.br/",
+                            "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25": "https://blog.autofacilpagamentos.com.br/marcelino-florianopolis/",
+                            "Leads-Search-Autofacilcertificados-09-07-25": "https://autofacilcertificados.com.br/"
+                          };
+                          const url = campaignUrls[c.nome];
+                          if (url) {
+                            window.open(url, '_blank');
+                          }
+                        }}
+                      >
+                        <span className="material-icons-outlined text-sm">visibility</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-
-      {/* Create Campaign Modal */}
-      {showCreateModal && (
-        <CampaignModal
-          title="Criar Nova Campanha"
-          onSave={handleCreateCampaign}
-          onClose={() => setShowCreateModal(false)}
-        />
-      )}
-
-      {/* Edit Campaign Modal */}
-      {showEditModal && selectedCampaign && (
-        <CampaignModal
-          title="Editar Campanha"
-          campaign={selectedCampaign}
-          onSave={handleUpdateCampaign}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedCampaign(null);
-          }}
-        />
-      )}
-
-      {/* Comments Modal */}
-      {showCommentsModal && selectedCampaign && (
-        <CommentsModal
-          campaign={selectedCampaign}
-          comments={comments}
-          onAddComment={addComment}
-          onClose={() => {
-            setShowCommentsModal(false);
-            setSelectedCampaign(null);
-          }}
-        />
-      )}
     </div>
   );
 };
@@ -2494,32 +2561,54 @@ const AdsPage: React.FC = () => {
   };
 
   const handleExportAds = () => {
+    // Criar dados mais organizados e bonitos
     const csvData = [
-      ['Título', 'Descrição', 'Campanha', 'Tipo', 'Status', 'URL'],
-      ...filteredAndSortedAds.map(ad => [
-        ad.headline,
-        ad.description,
-        getCampaignName(ad.campaignId),
-        ad.type,
-        ad.status,
-        ad.url
-      ])
+      // Cabeçalho principal
+      ['RELATÓRIO DE ANÚNCIOS - DESPACHANTE MARCELINO'],
+      [''],
+      ['Data de Exportação:', new Date().toLocaleDateString('pt-BR')],
+      ['Hora de Exportação:', new Date().toLocaleTimeString('pt-BR')],
+      ['Total de Anúncios:', filteredAndSortedAds.length.toString()],
+      [''],
+      // Cabeçalhos das colunas
+      ['ID', 'Título do Anúncio', 'Descrição', 'Campanha', 'Tipo de Anúncio', 'Status', 'URL de Destino', 'Data de Criação'],
+      // Separador visual
+      ['---', '---', '---', '---', '---', '---', '---', '---'],
+      // Dados dos anúncios
+      ...filteredAndSortedAds.map((ad, index) => [
+        `"${(index + 1).toString().padStart(3, '0')}"`,
+        `"${ad.headline.replace(/"/g, '""')}"`,
+        `"${ad.description.replace(/"/g, '""')}"`,
+        `"${getCampaignName(ad.campaignId).replace(/"/g, '""')}"`,
+        `"${ad.type.replace('_', ' ')}"`,
+        `"${ad.status === 'ACTIVE' ? 'ATIVO' : 'INATIVO'}"`,
+        `"${ad.url}"`,
+        `"${new Date().toLocaleDateString('pt-BR')}"`
+      ]),
+      [''],
+      // Rodapé com informações
+      ['INFORMAÇÕES ADICIONAIS:'],
+      ['• Anúncios Ativos:', filteredAndSortedAds.filter(ad => ad.status === 'ACTIVE').length.toString()],
+      ['• Anúncios Inativos:', filteredAndSortedAds.filter(ad => ad.status !== 'ACTIVE').length.toString()],
+      ['• Campanhas Únicas:', [...new Set(filteredAndSortedAds.map(ad => ad.campaignId))].length.toString()],
+      [''],
+      ['Gerado automaticamente pelo sistema de gestão de anúncios.']
     ];
 
-    const csvContent = csvData.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = csvData.map(row => row.join(';')).join('\n');
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `anuncios_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `relatorio_anuncios_despachante_marcelino_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     toast({
-      title: "Relatório exportado!",
-      description: "O arquivo CSV foi baixado com sucesso.",
+      title: "Relatório exportado com sucesso!",
+      description: "O arquivo CSV foi baixado com formatação melhorada.",
     });
   };
 
@@ -2600,13 +2689,7 @@ const AdsPage: React.FC = () => {
           <h2 className="text-2xl font-bold text-foreground">Gerenciamento de Anúncios</h2>
           <p className="text-muted-foreground">Crie e gerencie anúncios para suas campanhas</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="btn-premium"
-        >
-          <span className="material-icons-outlined">add</span>
-          Novo Anúncio
-        </button>
+        {/* Botão 'Novo Anúncio' removido */}
       </div>
 
       {/* Filters */}
@@ -2748,8 +2831,6 @@ const AdsPage: React.FC = () => {
                 <tr>
                   <th>Anúncio</th>
                   <th>Campanha</th>
-                  <th>Tipo</th>
-                  <th>Status</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -2770,12 +2851,6 @@ const AdsPage: React.FC = () => {
                       </span>
                     </td>
                     <td>
-                      <span className="px-3 py-1 bg-muted/50 rounded-full text-xs font-medium">
-                        {ad.type}
-                      </span>
-                    </td>
-                    <td>{getStatusBadge(ad.status)}</td>
-                    <td>
                       <div className="flex space-x-1">
                         <button
                           onClick={() => {
@@ -2783,28 +2858,9 @@ const AdsPage: React.FC = () => {
                             setShowEditModal(true);
                           }}
                           className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
-                          title="Editar"
+                          title="Ver detalhes"
                         >
-                          <span className="material-icons-outlined text-sm">edit</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            toast({
-                              title: "Preview do Anúncio",
-                              description: `Título: ${ad.headline}\nDescrição: ${ad.description}`,
-                            });
-                          }}
-                          className="p-2 hover:bg-muted/50 rounded-lg transition-colors"
-                          title="Preview"
-                        >
-                          <span className="material-icons-outlined text-sm">preview</span>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteAd(ad.id)}
-                          className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-destructive"
-                          title="Excluir"
-                        >
-                          <span className="material-icons-outlined text-sm">delete</span>
+                          <span className="material-icons-outlined text-sm">visibility</span>
                         </button>
                       </div>
                     </td>
@@ -2826,13 +2882,13 @@ const AdsPage: React.FC = () => {
         />
       )}
 
-      {/* Edit Ad Modal */}
+      {/* View Ad Modal */}
       {showEditModal && selectedAd && (
         <AdModal
-          title="Editar Anúncio"
+          title="Detalhes do Anúncio"
           ad={selectedAd}
           campaigns={campaigns}
-          onSave={handleUpdateAd}
+          onSave={() => {}}
           onClose={() => {
             setShowEditModal(false);
             setSelectedAd(null);
