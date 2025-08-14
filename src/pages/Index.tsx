@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { toast } from '@/components/ui/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
 
 // Sistema de Webhooks - Despachante Bruna
 const WebhookSystem = {
@@ -3628,8 +3630,29 @@ const ProfilePage: React.FC = () => {
 
 // Main App with Theme Provider
 const Index: React.FC = () => {
+  const { signOut, user } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
+  };
+
   return (
     <ThemeProvider>
+      <div className="fixed top-4 right-4 z-50">
+        <div className="flex items-center gap-4 bg-card/95 backdrop-blur-sm border border-border/50 rounded-xl px-4 py-2 shadow-card">
+          <span className="text-sm text-muted-foreground">
+            {user?.email}
+          </span>
+          <Button 
+            onClick={handleLogout}
+            variant="outline"
+            size="sm"
+            className="text-xs"
+          >
+            Sair
+          </Button>
+        </div>
+      </div>
       <GoogleAdsApp />
       <Toaster />
     </ThemeProvider>
