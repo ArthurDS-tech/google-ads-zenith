@@ -2034,7 +2034,7 @@ const campanhasDisplay = [
     taxaConversao: "43,4%",
     taxaCliques: "24,43%",
     taxaTopo: "73,28%",
-    custo: "R$96,01"
+    custo: "R$96,1"
   },
   {
     nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
