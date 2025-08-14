@@ -2167,71 +2167,71 @@ const campanhasDisplay = [
     </div>
   );
 };
-
 // Campaigns Page Component - CÓDIGO LIMPO
 const CampaignsPage: React.FC = () => {
   const campanhas = [
     {
       nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
-      impressoes: 8023,
-      cliques: 456,
-      ctr: "5,68%",
-      cpc: "R$0,69",
-      conversoes: 79,
-      custoPorConversao: "R$3,96",
-      taxaConversao: "17,32%",
-      custo: 313.02,
+      impressoes: 2269,
+      cliques: 63,
+      ctr: "2,78%",
+      cpc: "R$1,46",
+      conversoes: 1,
+      custoPorConversao: "R$91,83",
+      taxaConversao: "1,59%",
+      custo: 91.83,
+      status: "Ativo"
+    },
+    {
+      nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-lp1-29_07_25-01_08_25",
+      impressoes: 985,
+      cliques: 53,
+      ctr: "5,38%",
+      cpc: "R$1,81",
+      conversoes: 23,
+      custoPorConversao: "R$4,17",
+      taxaConversao: "43,4%",
+      custo: 96.01,
       status: "Ativo"
     },
     {
       nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
-      impressoes: 3477,
-      cliques: 186,
-      ctr: "5,35%",
-      cpc: "R$1,62",
-      conversoes: 26.5,
-      custoPorConversao: "R$11,39",
-      taxaConversao: "14,25%",
-      custo: 301.88,
-      status: "Ativo"
-    },
-    {
-      nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
-      impressoes: 4441,
-      cliques: 173,
-      ctr: "3,9%",
-      cpc: "R$1,71",
-      conversoes: 29.5,
-      custoPorConversao: "R$10,01",
-      taxaConversao: "17,05%",
-      custo: 295.34,
-      status: "Ativo"
-    },
-    {
-      nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25",
-      impressoes: 3268,
-      cliques: 164,
-      ctr: "5,02%",
-      cpc: "R$1,87",
-      conversoes: 28.5,
-      custoPorConversao: "R$10,78",
-      taxaConversao: "17,38%",
-      custo: 307.26,
+      impressoes: 505,
+      cliques: 43,
+      ctr: "8,51%",
+      cpc: "R$2,18",
+      conversoes: 10,
+      custoPorConversao: "R$9,39",
+      taxaConversao: "23,26%",
+      custo: 93.85,
       status: "Ativo"
     },
     {
       nome: "Leads-Search-Autofacilcertificados-09-07-25",
-      impressoes: 1814,
-      cliques: 73,
-      ctr: "4,02%",
-      cpc: "R$3,36",
-      conversoes: 17,
-      custoPorConversao: "R$14,41",
-      taxaConversao: "23,29%",
-      custo: 244.94,
+      impressoes: 811,
+      cliques: 39,
+      ctr: "4,81%",
+      cpc: "R$2,23",
+      conversoes: 7,
+      custoPorConversao: "R$12,41",
+      taxaConversao: "17,95%",
+      custo: 86.88,
+      status: "Ativo"
+    },
+    {
+      nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: 502,
+      cliques: 32,
+      ctr: "6,37%",
+      cpc: "R$2,87",
+      conversoes: 7,
+      custoPorConversao: "R$13,11",
+      taxaConversao: "21,88%",
+      custo: 91.8,
       status: "Ativo"
     }
   ];
+};
 
   return (
     <div className="space-y-6">
