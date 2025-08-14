@@ -1725,7 +1725,7 @@ const GoogleAdsApp: React.FC = () => {
   // Navigation items
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'chat', label: 'Chat', icon: 'chat', external: 'https://v0-fork-of-umbler-webhook-system-vn.vercel.app' },
+    { id: 'chat', label: 'Chat', icon: 'chat', external: 'https://v0-fork-of-umbler-webhook-system-alpha.vercel.app' },
     { id: 'campaigns', label: 'Campanhas', icon: 'campaign' },
     { id: 'ads', label: 'Anúncios', icon: 'ads_click' },
   ];
