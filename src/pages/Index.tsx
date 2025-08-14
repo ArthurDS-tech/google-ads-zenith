@@ -87,6 +87,7 @@ const LiveChat: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedTags, setSelectedTags] = useState<string[]>(["CLIENTE SITE"]);
   const [selectedAttendant, setSelectedAttendant] = useState('all');
+  const [filterPriority, setFilterPriority] = useState('all');
   const [showTagModal, setShowTagModal] = useState(false);
   const [showFiltersModal, setShowFiltersModal] = useState(false);
 
@@ -1724,7 +1725,7 @@ const GoogleAdsApp: React.FC = () => {
   // Navigation items
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'chat', label: 'Chat', icon: 'chat' },
+    { id: 'chat', label: 'Chat', icon: 'chat', external: 'https://v0-fork-of-umbler-webhook-system-vn.vercel.app' },
     { id: 'campaigns', label: 'Campanhas', icon: 'campaign' },
     { id: 'ads', label: 'Anúncios', icon: 'ads_click' },
   ];
@@ -1753,7 +1754,13 @@ const GoogleAdsApp: React.FC = () => {
             {navigationItems.map(item => (
               <li key={item.id}>
                 <button
-                  onClick={() => setCurrentPage(item.id)}
+                  onClick={() => {
+                    if (item.external) {
+                      window.open(item.external, '_blank');
+                    } else {
+                      setCurrentPage(item.id);
+                    }
+                  }}
                   className={`nav-item w-full ${currentPage === item.id ? 'active' : ''}`}
                 >
                   <span className="material-icons-outlined text-xl">{item.icon}</span>
