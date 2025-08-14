@@ -747,68 +747,68 @@ const mockData = {
   campaigns: [
     {
       id: "CAMP_001",
-      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Florianópolis - 05/11/25",
+      name: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-lp1-29_07_25-01_08_25",
       type: "SEARCH",
       status: "ACTIVE",
-      budget: 8000.00,
-      clicks: 320,
-      impressions: 8500,
-      conversions: 85,
-      ctr: 3.76,
-      cpc: 8.50,
-      costPerConversion: 2720.00
+      budget: 2500.00,
+      clicks: 53,
+      impressions: 985,
+      conversions: 23,
+      ctr: 5.38,
+      cpc: 1.81,
+      costPerConversion: 4.17
     },
     {
       id: "CAMP_002",
-      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] São José - 02/10/25",
+      name: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
       type: "SEARCH",
       status: "ACTIVE",
-      budget: 6000.00,
-      clicks: 280,
-      impressions: 7200,
-      conversions: 65,
-      ctr: 3.89,
-      cpc: 7.80,
-      costPerConversion: 2184.00
+      budget: 2000.00,
+      clicks: 43,
+      impressions: 505,
+      conversions: 10,
+      ctr: 8.51,
+      cpc: 2.18,
+      costPerConversion: 9.39
     },
     {
       id: "CAMP_003", 
-      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Palhoça - 05/11/25",
+      name: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
       type: "SEARCH",
       status: "ACTIVE",
-      budget: 5000.00,
-      clicks: 259,
-      impressions: 10196,
-      conversions: 43.33,
-      ctr: 2.54,
-      cpc: 6.20,
-      costPerConversion: 1605.86
+      budget: 1800.00,
+      clicks: 32,
+      impressions: 502,
+      conversions: 7,
+      ctr: 6.37,
+      cpc: 2.87,
+      costPerConversion: 13.11
     },
     {
       id: "CAMP_004",
-      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Região Sul - 01/07/25",
-      type: "SEARCH",
-      status: "ACTIVE",
-      budget: 12000.00,
-      clicks: 456,
-      impressions: 8023,
-      conversions: 79,
-      ctr: 5.68,
-      cpc: 0.69,
-      costPerConversion: 313.02
-    },
-    {
-      id: "CAMP_005",
-      name: "[LEAD] [SEARCH] [LP AUTOFÁCIL] Certificado Digital - 09/07/25",
+      name: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
       type: "SEARCH",
       status: "ACTIVE",
       budget: 3000.00,
-      clicks: 73,
-      impressions: 1814,
-      conversions: 17,
-      ctr: 4.02,
-      cpc: 3.36,
-      costPerConversion: 244.94
+      clicks: 63,
+      impressions: 2269,
+      conversions: 1,
+      ctr: 2.78,
+      cpc: 1.46,
+      costPerConversion: 91.83
+    },
+    {
+      id: "CAMP_005",
+      name: "Leads-Search-Autofacilcertificados-09-07-25",
+      type: "SEARCH",
+      status: "ACTIVE",
+      budget: 2200.00,
+      clicks: 39,
+      impressions: 811,
+      conversions: 7,
+      ctr: 4.81,
+      cpc: 2.23,
+      costPerConversion: 12.41
     }
   ],
   ads: [
@@ -859,13 +859,13 @@ const mockData = {
     }
   ],
   metrics: {
-    totalClicks: 859,
-    totalImpressions: 25896,
-    totalConversions: 193.33,
-    totalCost: 6509.86,
-    avgCtr: 3.32,
-    avgCpc: 7.58,
-    avgCostPerConversion: 33.67
+    totalClicks: 259,
+    totalImpressions: 5836,
+    totalConversions: 50,
+    totalCost: 517.82,
+    avgCtr: 4.44,
+    avgCpc: 2.00,
+    avgCostPerConversion: 10.36
   },
   notifications: [],
   user: {
@@ -1822,75 +1822,75 @@ const GoogleAdsApp: React.FC = () => {
 
 // Dashboard Page Component
 const DashboardPage: React.FC = () => {
-  // Dados estáticos conforme fornecido
-  const periodoAnalise = "01/07/2025 a 01/08/2025";
+  // Dados reais conforme fornecido
+  const periodoAnalise = "01/08/2025 a 14/08/2025";
   const periodoComparacao = "Sem período de comparação";
 
   const campanhas = [
     {
       nome: "lead-search-despmarcelino-lpauto-estados_sul-junho_2026",
-      impressoes: 8023,
-      cliques: 456,
-      ctr: 5.68,
-      cpc: 0.69,
-      conversoes: 79,
-      custoPorConversao: 3.96,
-      taxaConversao: 17.32,
-      taxaCliques: 12.23,
-      taxaTopo: 67.68,
-      custo: 313.02
+      impressoes: 2269,
+      cliques: 63,
+      ctr: 2.78,
+      cpc: 1.46,
+      conversoes: 1,
+      custoPorConversao: 91.83,
+      taxaConversao: 1.59,
+      taxaCliques: 18.87,
+      taxaTopo: 66.4,
+      custo: 91.83
+    },
+    {
+      nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-lp1-29_07_25-01_08_25",
+      impressoes: 985,
+      cliques: 53,
+      ctr: 5.38,
+      cpc: 1.81,
+      conversoes: 23,
+      custoPorConversao: 4.17,
+      taxaConversao: 43.4,
+      taxaCliques: 24.43,
+      taxaTopo: 73.28,
+      custo: 96.01
     },
     {
       nome: "lead-search-lp2-desp_marcelino-palhoca-02_10_24-01_08_25-lp1-04_08_25",
-      impressoes: 3477,
-      cliques: 186,
-      ctr: 5.35,
-      cpc: 1.62,
-      conversoes: 26.5,
-      custoPorConversao: 11.39,
-      taxaConversao: 14.25,
-      taxaCliques: 18.99,
-      taxaTopo: 76.01,
-      custo: 301.88
-    },
-    {
-      nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
-      impressoes: 4441,
-      cliques: 173,
-      ctr: 3.9,
-      cpc: 1.71,
-      conversoes: 29.5,
-      custoPorConversao: 10.01,
-      taxaConversao: 17.05,
-      taxaCliques: 17.39,
-      taxaTopo: 72.1,
-      custo: 295.34
-    },
-    {
-      nome: "lead-search-desp_marcelino-floripa-06_11_24-lp2-16_07_25-01_08_25",
-      impressoes: 3268,
-      cliques: 164,
-      ctr: 5.02,
-      cpc: 1.87,
-      conversoes: 28.5,
-      custoPorConversao: 10.78,
-      taxaConversao: 17.38,
-      taxaCliques: 15.1,
-      taxaTopo: 70.3,
-      custo: 307.26
+      impressoes: 505,
+      cliques: 43,
+      ctr: 8.51,
+      cpc: 2.18,
+      conversoes: 10,
+      custoPorConversao: 9.39,
+      taxaConversao: 23.26,
+      taxaCliques: 27.39,
+      taxaTopo: 72.11,
+      custo: 93.85
     },
     {
       nome: "Leads-Search-Autofacilcertificados-09-07-25",
-      impressoes: 1814,
-      cliques: 73,
-      ctr: 4.02,
-      cpc: 3.36,
-      conversoes: 17,
-      custoPorConversao: 14.41,
-      taxaConversao: 23.29,
-      taxaCliques: 12.99,
-      taxaTopo: 66.77,
-      custo: 244.94
+      impressoes: 811,
+      cliques: 39,
+      ctr: 4.81,
+      cpc: 2.23,
+      conversoes: 7,
+      custoPorConversao: 12.41,
+      taxaConversao: 17.95,
+      taxaCliques: 9.63,
+      taxaTopo: 68.15,
+      custo: 86.88
+    },
+    {
+      nome: "lead-search-lp2-desp_marcelino-sao_jose-02_10_24-01_08_25-lp1-04_08_25",
+      impressoes: 502,
+      cliques: 32,
+      ctr: 6.37,
+      cpc: 2.87,
+      conversoes: 7,
+      custoPorConversao: 13.11,
+      taxaConversao: 21.88,
+      taxaCliques: 32.99,
+      taxaTopo: 81.3,
+      custo: 91.80
     }
   ];
 
